@@ -1,59 +1,170 @@
-# ElevaforgeLanding
+# ElevaForge Landing Page
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.16.
+Landing page de ElevaForge construida con Next.js 14, Tailwind CSS y Supabase.
 
-## Development server
+## Requisitos
 
-To start a local development server, run:
+- Node.js 18+
+- npm o pnpm
 
-```bash
-ng serve
-```
+## Instalación
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+1. **Limpiar proyecto Angular anterior (si existe):**
 
 ```bash
-ng generate component component-name
+rm -rf src angular.json tsconfig.app.json tsconfig.spec.json .angular node_modules package-lock.json
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+2. **Renombrar archivos de configuración:**
 
 ```bash
-ng generate --help
+mv package-nextjs.json package.json
+mv tsconfig-nextjs.json tsconfig.json
 ```
 
-## Building
-
-To build the project run:
+3. **Mover fuentes:**
 
 ```bash
-ng build
+mkdir -p public/fonts
+cp /tmp/elevaforge-backup/fonts/* public/fonts/ 2>/dev/null || true
+# O si la fuente está en src/assets/fonts:
+# cp src/assets/fonts/* public/fonts/
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+4. **Instalar dependencias:**
 
 ```bash
-ng test
+npm install
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+5. **Configurar variables de entorno:**
 
 ```bash
-ng e2e
+cp .env.local.example .env.local
+# Editar .env.local con tus credenciales de Supabase y número de WhatsApp
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+6. **Crear tabla en Supabase:**
 
-## Additional Resources
+Ejecutar en el SQL Editor de Supabase:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```sql
+create table public.leads (
+  id          uuid default gen_random_uuid() primary key,
+  nombre      text not null,
+  email       text not null,
+  empresa     text,
+  mensaje     text,
+  origen      text default 'landing_elevaforge',
+  created_at  timestamptz default now()
+);
+
+alter table public.leads enable row level security;
+
+create policy "Solo service role puede insertar"
+  on public.leads for insert
+  with check (false);
+```
+
+7. **Iniciar servidor de desarrollo:**
+
+```bash
+npm run dev
+```
+
+## Estructura del Proyecto
+
+```
+/
+├── app/
+│   ├── layout.tsx              # Layout principal con fuentes y metadata
+│   ├── page.tsx                # Página principal
+│   ├── globals.css             # Estilos globales con Tailwind
+│   └── api/
+│       ├── leads/route.ts      # API para guardar leads
+│       └── health/route.ts     # Health check del servidor
+│
+├── components/
+│   ├── sections/               # Secciones de la landing
+│   │   ├── HeroSection.tsx
+│   │   ├── ForgeStandards.tsx
+│   │   ├── AutonomySection.tsx
+│   │   └── RoadmapSection.tsx
+│   ├── ui/                     # Componentes de UI reutilizables
+│   │   ├── CTAButton.tsx
+│   │   ├── Badge.tsx
+│   │   ├── SectionWrapper.tsx
+│   │   └── GlowDivider.tsx
+│   └── layout/
+│       ├── Navbar.tsx
+│       └── Footer.tsx
+│
+├── lib/
+│   ├── supabase/
+│   │   ├── client.ts           # Cliente browser
+│   │   └── server.ts           # Cliente servidor
+│   ├── whatsapp.ts             # Helper para links de WhatsApp
+│   └── validations.ts          # Schemas de validación con Zod
+│
+├── types/
+│   └── lead.ts                 # Tipos TypeScript
+│
+├── public/
+│   └── fonts/
+│       └── Humanist531BT-BlackA.woff2
+│
+└── tailwind.config.ts          # Configuración con Design System
+```
+
+## Design System
+
+### Colores (forge-*)
+
+- `bg-dark`: #19192E - Fondo principal oscuro
+- `bg-light`: #E9EAF5 - Secciones alternas claras
+- `blue-primary`: #3185C5 - Azul principal
+- `blue-deep`: #174166 - Azul profundo
+- `blue-light`: #49ACED - Azul claro / acentos
+- `blue-mid`: #306A9C - Azul medio / bordes
+- `orange-main`: #F97300 - CTAs principales
+- `orange-gold`: #FBA81E - Highlights / hover
+- `card-bg`: #1F1F3A - Fondo de cards
+
+### Sombras
+
+- `shadow-cta`: Glow naranja para botones
+- `shadow-card`: Sombra profunda para cards
+- `shadow-glow-blue`: Glow azul para hover
+
+## Scripts
+
+```bash
+npm run dev     # Desarrollo
+npm run build   # Build de producción
+npm run start   # Servidor de producción
+npm run lint    # Linting
+```
+
+## Objetivos de Lighthouse
+
+- Performance: 100
+- SEO: 100
+- Best Practices: 100
+- Accessibility: 90+
+
+## Preparación para separar Frontend/Backend
+
+Este proyecto está diseñado para facilitar la separación futura:
+
+- **Frontend**: Todo en `/app`, `/components`, `/public`
+- **Backend**: API routes en `/app/api`, lógica en `/lib`
+- **Shared**: Types en `/types`
+
+Para separar, puedes:
+1. Mover `/app/api` a un proyecto backend separado (Express, Fastify, etc.)
+2. Actualizar las llamadas del frontend para apuntar al nuevo backend
+3. Mantener los types compartidos como un paquete npm
+
+## Licencia
+
+© 2025 ElevaForge. Todos los derechos reservados.

@@ -1,15 +1,34 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
-
-# Node
+# Dependencies
 /node_modules
 npm-debug.log
 yarn-error.log
+.pnpm-debug.log*
+
+# Next.js
+/.next/
+/out/
+
+# Production build
+/build
+/dist
+
+# Angular (legacy)
+/tmp
+/out-tsc
+/bazel-out
+/.angular
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
 
 # IDEs and editors
 .idea/

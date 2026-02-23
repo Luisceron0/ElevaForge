@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-forge-bg-dark font-inter antialiased;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #19192E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #306A9C;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #49ACED;
+}
+
+/* Selección de texto */
+::selection {
+  background: rgba(249, 115, 0, 0.3);
+  color: white;
+}
