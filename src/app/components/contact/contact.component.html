@@ -1,0 +1,60 @@
+<section id="contacto" class="contact">
+  <div class="container">
+    <h2 class="section-title">Contáctanos</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Hablemos de tu proyecto</h3>
+        <p>Estamos listos para convertir tu idea en realidad. Contáctanos y comencemos a trabajar juntos.</p>
+        <div class="contact-item">
+          <i class="fas fa-instagram"></i>
+          <span>https://www.instagram.com/eleva_forge?igsh=MWl6cmZyNnk1cjJq</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span>{{ contactEmail }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Pasto, Nariño, Colombia</span>
+        </div>
+      </div>
+      <form class="contact-form" (ngSubmit)="onSubmit()" #contactForm="ngForm">
+        <div class="form-group">
+          <input 
+            type="text" 
+            placeholder="Tu nombre" 
+            [(ngModel)]="contact.name" 
+            name="name" 
+            required>
+        </div>
+        <div class="form-group">
+          <input 
+            type="email" 
+            placeholder="Tu email" 
+            [(ngModel)]="contact.email" 
+            name="email" 
+            required>
+        </div>
+        <div class="form-group">
+          <input 
+            type="text" 
+            placeholder="Asunto" 
+            [(ngModel)]="contact.subject" 
+            name="subject" 
+            required>
+        </div>
+        <div class="form-group">
+          <textarea 
+            rows="5" 
+            placeholder="Cuéntanos sobre tu proyecto" 
+            [(ngModel)]="contact.message" 
+            name="message" 
+            required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          Enviar Mensaje
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,32 @@
+<section id="equipo" class="team">
+  <div class="container">
+    <h2 class="section-title">Nuestro Equipo</h2>
+
+    <div class="team-carousel">
+      <div class="team-container" #teamContainer>
+        <div class="team-member" *ngFor="let member of teamMembers">
+          <div class="member-photo">
+            <div class="member-photo">
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">{{ member.name }}</h3>
+            <span class="member-role">{{ member.role }}</span>
+            <p class="member-description">{{ member.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-controls">
+      <button class="carousel-btn" (click)="moveCarousel(-1)">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="carousel-btn" (click)="moveCarousel(1)">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,26 @@
+// Variables
+$primary-dark: #151826;
+$secondary-dark: #011C40;
+$blue-accent: #5EBAF2;
+$yellow-accent: #F2A516;
+$orange-accent: #F27405;
+
+// Footer
+.footer {
+  background: $primary-dark;
+  padding: 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  p {
+    opacity: 0.7;
+    color: white;
+    margin: 0;
+  }
+}
+
+// Container utility
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}

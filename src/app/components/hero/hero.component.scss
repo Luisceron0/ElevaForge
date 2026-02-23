@@ -1,0 +1,149 @@
+// Variables
+$primary-dark: #151826;
+$secondary-dark: #011C40;
+$blue-accent: #5EBAF2;
+$yellow-accent: #F2A516;
+$orange-accent: #F27405;
+
+@mixin gradient-text {
+  background: linear-gradient(45deg, $blue-accent, $yellow-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@mixin button-hover-effect {
+  transition: all 0.3s ease;
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
+
+// Hero Section
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $primary-dark 0%, $secondary-dark 100%);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(94, 186, 242, 0.1) 0%, transparent 50%);
+  }
+
+  .hero-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      @include gradient-text;
+      animation: fadeInUp 1s ease;
+    }
+
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      animation: fadeInUp 1s ease 0.2s both;
+      color: white;
+    }
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 1s ease 0.4s both;
+  }
+}
+
+// Button Styles
+.btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  @include button-hover-effect;
+
+  &.btn-primary {
+    background: $yellow-accent;
+    color: $primary-dark;
+
+    &:hover {
+      box-shadow: 0 10px 25px rgba(94, 186, 242, 0.3);
+    }
+  }
+
+  &.btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid $blue-accent;
+
+    &:hover {
+      background: $blue-accent;
+      color: $primary-dark;
+    }
+  }
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .hero {
+    .hero-content {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      p {
+        font-size: 1.1rem;
+      }
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    .hero-content {
+      padding: 1rem;
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  }
+}

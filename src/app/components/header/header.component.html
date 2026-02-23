@@ -1,0 +1,22 @@
+<header class="header">
+  <nav class="nav-container">
+    <!-- Logo + Nombre -->
+    <div class="logo">
+      <img src="ElevaIcon.png" alt="ElevaForge Logo" class="logo-icon">
+      <span class="logo-text">ElevaForge</span>
+    </div>
+
+    <!-- Links -->
+    <ul class="nav-links" [class.mobile-active]="isMobileMenuOpen">
+      <li><a href="#inicio" (click)="scrollToSection('#inicio', $event)">Inicio</a></li>
+      <li><a href="#servicios" (click)="scrollToSection('#servicios', $event)">Servicios</a></li>
+      <li><a href="#equipo" (click)="scrollToSection('#equipo', $event)">Equipo</a></li>
+      <li><a href="#contacto" (click)="scrollToSection('#contacto', $event)">Contacto</a></li>
+    </ul>
+
+    <!-- Botón menú móvil -->
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+      <i class="fas" [class.fa-bars]="!isMobileMenuOpen" [class.fa-times]="isMobileMenuOpen"></i>
+    </button>
+  </nav>
+</header>

@@ -1,0 +1,120 @@
+// Variables importadas
+$primary-dark: #151826;
+$secondary-dark: #011C40;
+$blue-accent: #5EBAF2;
+$yellow-accent: #F2A516;
+$orange-accent: #F27405;
+
+h1 {
+  color: $yellow-accent;
+}
+
+.header {
+  background: #0f1119; // color sólido elegante
+  padding: 0.8rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .logo-text {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #f9a825; // naranja corporativo
+  }
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+
+  li a {
+    text-decoration: none;
+    color: #f1f1f1;
+    font-weight: 500;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #f9a825; // hover naranja
+    }
+  }
+}
+
+/* Botón menú móvil oculto en desktop */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* 🔹 Responsivo */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+}
+
+
+// Responsive Design
+@media (max-width: 768px) {
+  .header {
+    .nav-links {
+      display: none;
+    }
+
+    .mobile-menu-btn {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    .nav-container {
+      padding: 1rem;
+    }
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: white; // ajusta según tu tema
+  gap: 10px;
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .logo-text {
+    font-size: 1.3rem;
+  }
+}
