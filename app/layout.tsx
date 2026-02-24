@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: '/ElevaIcon.png',
     apple: '/ElevaIcon.png',
   },
   manifest: '/manifest.json',

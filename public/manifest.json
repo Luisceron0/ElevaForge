@@ -9,9 +9,9 @@
   "lang": "es",
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "/ElevaIcon.png",
       "sizes": "48x48",
-      "type": "image/x-icon"
+      "type": "image/png"
     },
     {
       "src": "/ElevaIcon.png",

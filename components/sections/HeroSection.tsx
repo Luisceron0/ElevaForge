@@ -102,6 +102,14 @@ export default function HeroSection() {
           />
           <button
             type="button"
+            onClick={() => scrollToSection('precios')}
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+          >
+            Paquetes
+          </button>
+
+          <button
+            type="button"
             onClick={() => scrollToSection('estandar')}
             className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
@@ -121,6 +129,14 @@ export default function HeroSection() {
             </svg>
             Nuestros Estándares
           </button>
+          <button
+            type="button"
+            onClick={() => scrollToSection('autonomia')}
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+          >
+            Diferencial
+          </button>
+
           <button
             type="button"
             onClick={() => scrollToSection('proceso')}
