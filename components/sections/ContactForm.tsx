@@ -92,14 +92,17 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
       const url = buildWhatsAppURL(waPlain)
       if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
 
-      // Fire-and-forget: send lead to ElevaForgeBack (Supabase CRM)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
-      if (apiUrl) {
-        fetch(`${apiUrl}/api/leads`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...sanitizedData, _hp: honeypot }),
-        }).catch(() => { /* network errors silenced — WhatsApp is primary channel */ })
+      // Send lead to local API route (which stores in Supabase)
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...sanitizedData, _hp: honeypot }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Error guardando lead:', errorData)
+        // Don't throw - WhatsApp is primary channel, DB storage is secondary
       }
 
       setStatus('success')
