@@ -10,8 +10,8 @@ export default function PricingSection() {
       priceCop: 125 * 3800,
       bullets: [
         'Landing + gestor de contenido (CMS) y panel de administración',
-        'Diseño responsivo y optimización básica',
-        'SEO básico y optimización de rendimiento',
+        'Diseño responsivo y optimización',
+        'SEO y optimización de rendimiento',
         'Entrega en 2-4 semanas',
       ],
     },
@@ -22,7 +22,7 @@ export default function PricingSection() {
       priceCop: 80 * 3800,
       bullets: [
         'Punto de venta funcional',
-        'Gestión de inventario básica',
+        'Gestión de inventario',
         'Capacitación incluida',
         'Entrega en 1-3 semanas',
       ],
@@ -33,7 +33,7 @@ export default function PricingSection() {
       priceUsd: 80,
       priceCop: 80 * 3800,
       bullets: [
-        'Soluciones a medida (desde opciones básicas hasta sistemas complejos)',
+        'Soluciones a medida (desde opciones sencillas hasta sistemas complejos)',
         'Arquitectura escalable',
         'Soporte y roadmap definido',
         'Entrega según alcance acordado',

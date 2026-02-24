@@ -121,6 +121,60 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
     }
   }
 
+  // Reusable function to build sanitized payload and perform WhatsApp + backend submit
+  const sendWhatsAppWithForm = async (fromClick = false) => {
+    setStatus('loading')
+    setErrorMsg('')
+
+    try {
+      const sanitizedData = {
+        nombre: sanitizeInput(formData.nombre),
+        email: sanitizeInput(formData.email),
+        empresa: sanitizeInput(formData.empresa),
+        mensaje: sanitizeInput(formData.mensaje).slice(0, 500),
+        telefono: sanitizeInput(formData.telefono).slice(0, 32),
+        contacto_pref: sanitizeInput(formData.contacto_pref).slice(0, 16),
+        presupuesto: sanitizeInput(formData.presupuesto).slice(0, 64),
+        servicio: sanitizeInput(formData.servicio).slice(0, 64),
+        utm_source: sanitizeInput(utmSource).slice(0, 100),
+        utm_medium: sanitizeInput(utmMedium).slice(0, 100),
+        utm_campaign: sanitizeInput(utmCampaign).slice(0, 100),
+        consent: Boolean(consent),
+      }
+
+      if (!sanitizedData.consent) {
+        throw new Error('Debe aceptar la política de privacidad para continuar')
+      }
+
+      const waPlain = `Hola ElevaForge,\nNombre: ${sanitizedData.nombre}\nEmail: ${sanitizedData.email}\nTeléfono: ${sanitizedData.telefono}\nEmpresa: ${sanitizedData.empresa}\nServicio: ${sanitizedData.servicio}\nPresupuesto: ${sanitizedData.presupuesto}\nMensaje: ${sanitizedData.mensaje}`
+      const url = buildWhatsAppURL(waPlain)
+      if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
+
+      // Fire-and-forget: send lead to backend
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+        const leadsEndpoint = apiUrl ? `${apiUrl}/api/leads` : '/api/leads'
+        fetch(leadsEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...sanitizedData, _hp: honeypot }),
+        }).catch(() => {})
+      } catch (e) {
+        // ignore
+      }
+
+      setStatus('success')
+      if (!fromClick) {
+        setFormData({ nombre: '', email: '', empresa: '', mensaje: '', telefono: '', contacto_pref: 'email', presupuesto: '', servicio: '' })
+        setHoneypot('')
+        setConsent(false)
+      }
+    } catch (err) {
+      setStatus('error')
+      setErrorMsg(err instanceof Error ? err.message : 'Error inesperado')
+    }
+  }
+
   if (status === 'success') {
     return (
       <div
@@ -386,24 +440,12 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
             Enviando...
           </span>
         ) : (
-          'Enviar mensaje'
+          'Contactar por WhatsApp'
         )}
       </button>
 
       {/* WhatsApp quick contact button (only shown if env var provided) */}
-      {typeof process !== 'undefined' && process.env.NEXT_PUBLIC_WHATSAPP_NUMBER && (
-        <div className="text-center">
-          <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mt-3 text-sm text-forge-bg-dark hover:text-forge-orange-main"
-          >
-            <svg className="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.92 11.92 0 0012 0C5.373 0 0 5.373 0 12c0 2.116.553 4.16 1.6 5.97L0 24l6.3-1.6A11.92 11.92 0 0012 24c6.627 0 12-5.373 12-12 0-3.2-1.18-6.16-3.48-8.52zM12 21.5c-1.7 0-3.37-.44-4.8-1.28l-.34-.2-3.75.95.95-3.66-.2-.34A9.4 9.4 0 012.5 12c0-5.2 4.3-9.5 9.5-9.5S21.5 6.8 21.5 12 17.2 21.5 12 21.5z"/></svg>
-            Contactar por WhatsApp
-          </a>
-        </div>
-      )}
+      {/* Botón rápido eliminado: ahora solo existe el botón principal que abre WhatsApp */}
     </form>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import Badge from '@/components/ui/Badge'
 import CTAButton from '@/components/ui/CTAButton'
 import { buildWhatsAppURL } from '@/lib/whatsapp'
 
@@ -88,13 +87,6 @@ export default function HeroSection() {
         ref={parallaxRef}
         className={`relative z-10 container mx-auto px-4 text-center ${reducedMotion ? '' : 'will-change-transform'}`}
       >
-        {/* Badge superior */}
-        <div className="mb-8">
-          <Badge variant="blue" className="mb-4">
-            Agencia de Desarrollo de Software
-          </Badge>
-        </div>
-
         {/* Headline */}
         <h1 className="font-humanst text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-balance leading-tight">{headline}</h1>
 
