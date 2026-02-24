@@ -68,6 +68,10 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
     setErrorMsg('')
 
     try {
+      if (!consent) {
+        throw new Error('Debe aceptar la política de privacidad para continuar')
+      }
+
       const sanitizedData = {
         nombre: sanitizeInput(formData.nombre),
         email: sanitizeInput(formData.email),
@@ -80,95 +84,28 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
         utm_source: sanitizeInput(utmSource).slice(0, 100),
         utm_medium: sanitizeInput(utmMedium).slice(0, 100),
         utm_campaign: sanitizeInput(utmCampaign).slice(0, 100),
-        consent: Boolean(consent),
-      }
-      if (!consent) {
-        throw new Error('Debe aceptar la política de privacidad para continuar')
+        consent: true,
       }
 
-      // Build WhatsApp message and open immediately so user is taken to chat
-      try {
-        const waPlain = `Hola ElevaForge,\nNombre: ${sanitizedData.nombre}\nEmail: ${sanitizedData.email}\nTeléfono: ${sanitizedData.telefono}\nEmpresa: ${sanitizedData.empresa}\nServicio: ${sanitizedData.servicio}\nPresupuesto: ${sanitizedData.presupuesto}\nMensaje: ${sanitizedData.mensaje}`
-        const url = buildWhatsAppURL(waPlain)
-        if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
-      } catch (e) {
-        // ignore
-      }
+      // Open WhatsApp with form data
+      const waPlain = `Hola ElevaForge,\nNombre: ${sanitizedData.nombre}\nEmail: ${sanitizedData.email}\nTeléfono: ${sanitizedData.telefono}\nEmpresa: ${sanitizedData.empresa}\nServicio: ${sanitizedData.servicio}\nPresupuesto: ${sanitizedData.presupuesto}\nMensaje: ${sanitizedData.mensaje}`
+      const url = buildWhatsAppURL(waPlain)
+      if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
 
-      // Fire-and-forget: send lead to backend but do not block user
-      // Uses NEXT_PUBLIC_API_URL for external backend, falls back to /api/leads for local
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
-        const leadsEndpoint = apiUrl ? `${apiUrl}/api/leads` : '/api/leads'
-        fetch(leadsEndpoint, {
+      // Fire-and-forget: send lead to ElevaForgeBack (Supabase CRM)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+      if (apiUrl) {
+        fetch(`${apiUrl}/api/leads`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...sanitizedData, _hp: honeypot }),
-        }).catch(() => {
-          /* ignore network errors for background submit */
-        })
-      } catch (e) {
-        // ignore
+        }).catch(() => { /* network errors silenced — WhatsApp is primary channel */ })
       }
 
       setStatus('success')
       setFormData({ nombre: '', email: '', empresa: '', mensaje: '', telefono: '', contacto_pref: 'email', presupuesto: '', servicio: '' })
       setHoneypot('')
       setConsent(false)
-    } catch (err) {
-      setStatus('error')
-      setErrorMsg(err instanceof Error ? err.message : 'Error inesperado')
-    }
-  }
-
-  // Reusable function to build sanitized payload and perform WhatsApp + backend submit
-  const sendWhatsAppWithForm = async (fromClick = false) => {
-    setStatus('loading')
-    setErrorMsg('')
-
-    try {
-      const sanitizedData = {
-        nombre: sanitizeInput(formData.nombre),
-        email: sanitizeInput(formData.email),
-        empresa: sanitizeInput(formData.empresa),
-        mensaje: sanitizeInput(formData.mensaje).slice(0, 500),
-        telefono: sanitizeInput(formData.telefono).slice(0, 32),
-        contacto_pref: sanitizeInput(formData.contacto_pref).slice(0, 16),
-        presupuesto: sanitizeInput(formData.presupuesto).slice(0, 64),
-        servicio: sanitizeInput(formData.servicio).slice(0, 64),
-        utm_source: sanitizeInput(utmSource).slice(0, 100),
-        utm_medium: sanitizeInput(utmMedium).slice(0, 100),
-        utm_campaign: sanitizeInput(utmCampaign).slice(0, 100),
-        consent: Boolean(consent),
-      }
-
-      if (!sanitizedData.consent) {
-        throw new Error('Debe aceptar la política de privacidad para continuar')
-      }
-
-      const waPlain = `Hola ElevaForge,\nNombre: ${sanitizedData.nombre}\nEmail: ${sanitizedData.email}\nTeléfono: ${sanitizedData.telefono}\nEmpresa: ${sanitizedData.empresa}\nServicio: ${sanitizedData.servicio}\nPresupuesto: ${sanitizedData.presupuesto}\nMensaje: ${sanitizedData.mensaje}`
-      const url = buildWhatsAppURL(waPlain)
-      if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
-
-      // Fire-and-forget: send lead to backend
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
-        const leadsEndpoint = apiUrl ? `${apiUrl}/api/leads` : '/api/leads'
-        fetch(leadsEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...sanitizedData, _hp: honeypot }),
-        }).catch(() => {})
-      } catch (e) {
-        // ignore
-      }
-
-      setStatus('success')
-      if (!fromClick) {
-        setFormData({ nombre: '', email: '', empresa: '', mensaje: '', telefono: '', contacto_pref: 'email', presupuesto: '', servicio: '' })
-        setHoneypot('')
-        setConsent(false)
-      }
     } catch (err) {
       setStatus('error')
       setErrorMsg(err instanceof Error ? err.message : 'Error inesperado')
@@ -444,8 +381,6 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
         )}
       </button>
 
-      {/* WhatsApp quick contact button (only shown if env var provided) */}
-      {/* Botón rápido eliminado: ahora solo existe el botón principal que abre WhatsApp */}
     </form>
   )
 }
