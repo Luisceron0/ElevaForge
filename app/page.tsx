@@ -1,19 +1,52 @@
+import dynamic from 'next/dynamic'
 import HeroSection from '@/components/sections/HeroSection'
-import ForgeStandards from '@/components/sections/ForgeStandards'
-import AutonomySection from '@/components/sections/AutonomySection'
-import RoadmapSection from '@/components/sections/RoadmapSection'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 
+// Lazy load below-the-fold sections for better performance
+const ForgeStandards = dynamic(
+  () => import('@/components/sections/ForgeStandards'),
+  { loading: () => <SectionSkeleton /> }
+)
+const AutonomySection = dynamic(
+  () => import('@/components/sections/AutonomySection'),
+  { loading: () => <SectionSkeleton /> }
+)
+const RoadmapSection = dynamic(
+  () => import('@/components/sections/RoadmapSection'),
+  { loading: () => <SectionSkeleton /> }
+)
+const PricingSection = dynamic(
+  () => import('@/components/sections/PricingSection'),
+  { loading: () => <SectionSkeleton /> }
+)
+
+function SectionSkeleton() {
+  return (
+    <div
+      className="py-20 animate-pulse bg-forge-bg-light"
+      aria-hidden="true"
+    >
+      <div className="container mx-auto px-4">
+        <div className="h-8 bg-forge-blue-mid/10 rounded w-1/3 mx-auto mb-4" />
+        <div className="h-4 bg-forge-blue-mid/10 rounded w-1/2 mx-auto" />
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   return (
-    <main>
+    <>
       <Navbar />
-      <HeroSection />
-      <ForgeStandards />
-      <AutonomySection />
-      <RoadmapSection />
+      <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
+        <HeroSection />
+        <PricingSection />
+        <ForgeStandards />
+        <AutonomySection />
+        <RoadmapSection />
+      </main>
       <Footer />
-    </main>
+    </>
   )
 }

@@ -1,11 +1,11 @@
-import Badge from '@/components/ui/Badge'
+import ContactForm from '@/components/sections/ContactForm'
 
 const features = [
   {
     icon: (
       <svg
         aria-hidden="true"
-        className="w-10 h-10 text-forge-blue-light"
+        className="h-6 w-6 text-forge-orange-main"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -19,15 +19,13 @@ const features = [
       </svg>
     ),
     badge: '100% tuya',
-    title: 'Dueño de tu Código',
-    description:
-      'Registramos hosting, código y dominio a tu nombre. La propiedad es completamente tuya desde el primer día.',
+    text: 'Registramos hosting, código y dominio a tu nombre. La propiedad es completamente tuya desde el primer día.',
   },
   {
     icon: (
       <svg
         aria-hidden="true"
-        className="w-10 h-10 text-forge-blue-light"
+        className="h-6 w-6 text-forge-orange-main"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -41,15 +39,13 @@ const features = [
       </svg>
     ),
     badge: 'Manual PDF + Video',
-    title: 'Capacitación ElevaForge',
-    description:
-      'Al finalizar recibes un Manual en PDF personalizado y video-tutoriales cortos para que tú y tu equipo dominen la herramienta sin depender de terceros.',
+    text: 'Al finalizar recibes un Manual en PDF personalizado y video-tutoriales cortos para dominar la herramienta.',
   },
   {
     icon: (
       <svg
         aria-hidden="true"
-        className="w-10 h-10 text-forge-blue-light"
+        className="h-6 w-6 text-forge-orange-main"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -63,48 +59,78 @@ const features = [
       </svg>
     ),
     badge: 'Soporte directo',
-    title: 'Acompañamiento por WhatsApp',
-    description:
-      'Una línea directa para que la tecnología nunca sea un obstáculo en tu día a día.',
+    text: 'Una línea directa de WhatsApp para que la tecnología nunca sea un obstáculo en tu día a día.',
+  },
+  {
+    icon: (
+      <svg
+        aria-hidden="true"
+        className="h-6 w-6 text-forge-orange-main"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    ),
+    badge: 'Sin dependencia',
+    text: 'Terminado el proyecto, no dependes de nosotros. Ese es el objetivo real de cada entrega.',
   },
 ]
 
 export default function AutonomySection() {
   return (
-    <section id="autonomia" className="py-24 bg-forge-bg-dark">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="autonomia" className="py-20 bg-forge-bg-dark">
+      <div className="container mx-auto px-4">
         {/* Encabezado */}
-        <div className="text-center mb-16">
-          <Badge variant="blue" className="mb-4">
-            Tu Diferencial
-          </Badge>
-          <h2 className="font-humanst text-3xl md:text-4xl text-white">
-            Autonomía y Formación
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Autonomía y{' '}
+            <span className="text-forge-orange-main">Formación</span>
           </h2>
-          <p className="mt-4 text-white/60 max-w-xl mx-auto">
-            Terminado el proyecto, no dependes de nosotros. Ese es el objetivo.
+          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+            No solo entregamos un producto; te empoderamos para que lo domines
           </p>
         </div>
 
-        {/* Grid de 3 cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((item, index) => (
-            <div
-              key={index}
-              className="bg-forge-card-bg rounded-2xl p-8 border border-forge-blue-mid/30 hover:border-forge-orange-main/50 transition-all duration-300"
-            >
-              <div className="mb-5">{item.icon}</div>
-              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-5 bg-forge-orange-main/10 text-forge-orange-main border border-forge-orange-main/30">
-                {item.badge}
-              </span>
-              <h3 className="font-humanst text-xl text-white mb-3">
-                {item.title}
+        {/* Grid 2 columnas - patrón AVC: Beneficios + Form */}
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Izquierda - Beneficios */}
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-white mb-4">
+                ¿Qué recibes con cada proyecto?
               </h3>
-              <p className="font-inter text-white/60 leading-relaxed">
-                {item.description}
-              </p>
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-start gap-4">
+                  <div className="p-3 bg-forge-orange-main/10 rounded-lg flex-shrink-0">
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <span className="inline-block px-2 py-0.5 rounded-full text-xs font-bold mb-1 bg-forge-orange-main/10 text-forge-orange-main border border-forge-orange-main/30">
+                      {feature.badge}
+                    </span>
+                    <p className="text-white/80 leading-relaxed">
+                      {feature.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Derecha - Formulario de contacto */}
+          <div className="bg-forge-bg-light rounded-2xl shadow-xl p-6 md:p-8">
+            <h3 className="text-xl font-semibold text-forge-bg-dark mb-6">
+              Cuéntanos tu proyecto
+            </h3>
+            <ContactForm type="proyecto" />
+          </div>
         </div>
       </div>
     </section>

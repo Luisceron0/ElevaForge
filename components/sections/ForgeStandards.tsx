@@ -5,7 +5,7 @@ const standards = [
     icon: (
       <svg
         aria-hidden="true"
-        className="w-10 h-10 text-forge-orange-main"
+        className="h-6 w-6 text-white"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -18,17 +18,17 @@ const standards = [
         />
       </svg>
     ),
-    title: 'Rendimiento Implacable',
+    title: 'Cargas rápidas',
     metric: '100',
-    metricLabel: 'Lighthouse Performance',
+    metricLabel: 'Performance',
     description:
-      'Desarrollamos bajo estándares de optimización del 100%, asegurando que tu sitio vuele.',
+      'Sitios optimizados para tiempos de carga mínimos y mejor experiencia para tus usuarios.',
   },
   {
     icon: (
       <svg
         aria-hidden="true"
-        className="w-10 h-10 text-forge-orange-main"
+        className="h-6 w-6 text-white"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -41,17 +41,17 @@ const standards = [
         />
       </svg>
     ),
-    title: 'Blindaje Digital',
+    title: 'Protegido por diseño',
     metric: 'A+',
-    metricLabel: 'Security Rating',
+    metricLabel: 'Seguridad',
     description:
-      'Seguridad y mejores prácticas integradas desde la primera línea de código.',
+      'Protegemos tus datos y reducimos riesgos desde el inicio del proyecto.',
   },
   {
     icon: (
       <svg
         aria-hidden="true"
-        className="w-10 h-10 text-forge-orange-main"
+        className="h-6 w-6 text-white"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -64,39 +64,41 @@ const standards = [
         />
       </svg>
     ),
-    title: 'Visibilidad Nativa',
+    title: 'Visible en Google',
     metric: '100',
-    metricLabel: 'Lighthouse SEO',
+    metricLabel: 'SEO',
     description:
-      'Estructuras pensadas para que Google te encuentre antes que a la competencia.',
+      'Estructura y contenido pensados para que te encuentren fácilmente en buscadores.',
   },
 ]
 
 export default function ForgeStandards() {
   return (
-    <section id="estandar" className="py-24 bg-forge-bg-light">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Encabezado de sección */}
-        <div className="text-center mb-16">
-          <Badge variant="orange" className="mb-4">
-            Nuestra Garantía
-          </Badge>
-          <h2 className="font-humanst text-3xl md:text-4xl text-forge-bg-dark">
-            El Estándar Forge
+    <section id="estandar" className="py-20 bg-forge-bg-light">
+      <div className="container mx-auto px-4">
+        {/* Encabezado */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-forge-bg-dark mb-4">
+            El Estándar{' '}
+            <span className="text-forge-orange-main">Forge</span>
           </h2>
-          <p className="mt-4 text-forge-bg-dark/65 max-w-xl mx-auto">
+          <p className="text-lg text-forge-bg-dark/70 max-w-2xl mx-auto">
             Cada proyecto entregado cumple estos tres pilares sin excepción.
           </p>
         </div>
 
-        {/* Grid de 3 cards */}
+        {/* Grid de 3 cards - patrón AVC */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {standards.map((item, index) => (
             <article
               key={index}
-              className="bg-white rounded-2xl p-8 shadow-card border border-forge-blue-mid/10 hover:shadow-glow-blue transition-all duration-300"
+              className="bg-white rounded-2xl p-8 shadow-card border border-forge-blue-mid/10 hover:shadow-glow-blue transition-all duration-300 hover:-translate-y-1"
             >
-              <div className="mb-5">{item.icon}</div>
+              <div className="p-3 bg-forge-orange-main/10 rounded-lg w-fit mb-5">
+                <div className="w-12 h-12 bg-forge-orange-main rounded-full flex items-center justify-center shadow-lg">
+                  {item.icon}
+                </div>
+              </div>
               <div className="flex items-baseline gap-2 mb-3">
                 <span className="font-humanst text-5xl text-forge-orange-main">
                   {item.metric}
@@ -108,7 +110,7 @@ export default function ForgeStandards() {
               <h3 className="font-humanst text-xl text-forge-bg-dark mb-3">
                 {item.title}
               </h3>
-              <p className="font-inter text-forge-bg-dark/65 leading-relaxed">
+              <p className="font-inter text-forge-bg-dark/70 leading-relaxed">
                 {item.description}
               </p>
             </article>

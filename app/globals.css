@@ -6,6 +6,22 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 body {
   @apply bg-forge-bg-dark font-inter antialiased;
 }
@@ -25,11 +41,29 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #49ACED;
+  background: #4a8bc4;
 }
 
 /* Selección de texto */
 ::selection {
   background: rgba(249, 115, 0, 0.3);
   color: white;
+}
+
+/* Focus visible global — ensures all interactive elements have visible focus */
+:focus-visible {
+  outline: 2px solid #F97300;
+  outline-offset: 2px;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-forge-blue-mid/20;
+  }
 }

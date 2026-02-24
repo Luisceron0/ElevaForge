@@ -1,0 +1,409 @@
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+import { buildWhatsAppURL } from '@/lib/whatsapp'
+
+interface ContactFormProps {
+  type?: 'general' | 'proyecto' | 'consulta'
+}
+
+/** Sanitize text input - strip control characters */
+function sanitizeInput(value: string): string {
+  return value.replace(/[\u0000-\u001F\u007F]/g, '').trim()
+}
+
+export default function ContactForm({ type = 'general' }: ContactFormProps) {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    email: '',
+    empresa: '',
+    mensaje: '',
+    telefono: '',
+    contacto_pref: 'email',
+    presupuesto: '',
+    servicio: '',
+  })
+  const [consent, setConsent] = useState(false)
+  const [utmSource, setUtmSource] = useState('')
+  const [utmMedium, setUtmMedium] = useState('')
+  const [utmCampaign, setUtmCampaign] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+  // A06: Honeypot anti-bot field — invisible to users, bots auto-fill it
+  const [honeypot, setHoneypot] = useState('')
+  const statusRef = useRef<HTMLDivElement>(null)
+
+  // Focus the status message when it changes (for screen readers)
+  useEffect(() => {
+    if ((status === 'success' || status === 'error') && statusRef.current) {
+      statusRef.current.focus()
+    }
+  }, [status])
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  // Capture common UTM params from the URL (client-side)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const s = params.get('utm_source') || ''
+      const m = params.get('utm_medium') || ''
+      const c = params.get('utm_campaign') || ''
+      setUtmSource(s)
+      setUtmMedium(m)
+      setUtmCampaign(c)
+    } catch (e) {
+      // ignore in non-browser contexts
+    }
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus('loading')
+    setErrorMsg('')
+
+    try {
+      const sanitizedData = {
+        nombre: sanitizeInput(formData.nombre),
+        email: sanitizeInput(formData.email),
+        empresa: sanitizeInput(formData.empresa),
+        mensaje: sanitizeInput(formData.mensaje).slice(0, 500),
+        telefono: sanitizeInput(formData.telefono).slice(0, 32),
+        contacto_pref: sanitizeInput(formData.contacto_pref).slice(0, 16),
+        presupuesto: sanitizeInput(formData.presupuesto).slice(0, 64),
+        servicio: sanitizeInput(formData.servicio).slice(0, 64),
+        utm_source: sanitizeInput(utmSource).slice(0, 100),
+        utm_medium: sanitizeInput(utmMedium).slice(0, 100),
+        utm_campaign: sanitizeInput(utmCampaign).slice(0, 100),
+        consent: Boolean(consent),
+      }
+      if (!consent) {
+        throw new Error('Debe aceptar la política de privacidad para continuar')
+      }
+
+      // Build WhatsApp message and open immediately so user is taken to chat
+      try {
+        const waPlain = `Hola ElevaForge,\nNombre: ${sanitizedData.nombre}\nEmail: ${sanitizedData.email}\nTeléfono: ${sanitizedData.telefono}\nEmpresa: ${sanitizedData.empresa}\nServicio: ${sanitizedData.servicio}\nPresupuesto: ${sanitizedData.presupuesto}\nMensaje: ${sanitizedData.mensaje}`
+        const url = buildWhatsAppURL(waPlain)
+        if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
+      } catch (e) {
+        // ignore
+      }
+
+      // Fire-and-forget: send lead to backend but do not block user
+      // Uses NEXT_PUBLIC_API_URL for external backend, falls back to /api/leads for local
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+        const leadsEndpoint = apiUrl ? `${apiUrl}/api/leads` : '/api/leads'
+        fetch(leadsEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...sanitizedData, _hp: honeypot }),
+        }).catch(() => {
+          /* ignore network errors for background submit */
+        })
+      } catch (e) {
+        // ignore
+      }
+
+      setStatus('success')
+      setFormData({ nombre: '', email: '', empresa: '', mensaje: '', telefono: '', contacto_pref: 'email', presupuesto: '', servicio: '' })
+      setHoneypot('')
+      setConsent(false)
+    } catch (err) {
+      setStatus('error')
+      setErrorMsg(err instanceof Error ? err.message : 'Error inesperado')
+    }
+  }
+
+  if (status === 'success') {
+    return (
+      <div
+        ref={statusRef}
+        className="text-center py-8"
+        role="status"
+        aria-live="polite"
+        tabIndex={-1}
+      >
+        <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg
+            className="w-8 h-8 text-green-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <h4 className="font-humanst text-xl text-forge-bg-dark mb-2">
+          ¡Mensaje enviado!
+        </h4>
+        <p className="text-forge-bg-dark/70">
+          Nos pondremos en contacto contigo pronto.
+        </p>
+        <button
+          onClick={() => setStatus('idle')}
+          className="mt-4 text-forge-orange-main hover:underline text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 rounded"
+        >
+          Enviar otro mensaje
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4"
+      noValidate
+      aria-label="Formulario de contacto"
+    >
+      {/* A06: Honeypot field — hidden from humans, bots auto-fill it */}
+      <div
+        aria-hidden="true"
+        className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden pointer-events-none"
+      >
+        <label htmlFor={`website-${type}`}>Website</label>
+        <input
+          id={`website-${type}`}
+          name="website"
+          type="text"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor={`nombre-${type}`}
+          className="block text-sm font-semibold text-forge-bg-dark mb-1.5"
+        >
+          Nombre <span aria-hidden="true">*</span>
+          <span className="sr-only">(requerido)</span>
+        </label>
+        <input
+          id={`nombre-${type}`}
+          name="nombre"
+          type="text"
+          required
+          autoComplete="name"
+          maxLength={100}
+          value={formData.nombre}
+          onChange={handleChange}
+          placeholder="Tu nombre completo"
+          aria-required="true"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor={`email-${type}`}
+          className="block text-sm font-semibold text-forge-bg-dark mb-1.5"
+        >
+          Email <span aria-hidden="true">*</span>
+          <span className="sr-only">(requerido)</span>
+        </label>
+        <input
+          id={`email-${type}`}
+          name="email"
+          type="email"
+          required
+          autoComplete="email"
+          maxLength={254}
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="tu@email.com"
+          aria-required="true"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor={`telefono-${type}`}
+          className="block text-sm font-semibold text-forge-bg-dark mb-1.5"
+        >
+          Teléfono / WhatsApp
+        </label>
+        <input
+          id={`telefono-${type}`}
+          name="telefono"
+          type="tel"
+          autoComplete="tel"
+          maxLength={32}
+          value={formData.telefono}
+          onChange={handleChange}
+          placeholder="+57 3xx xxx xxxx (opcional)"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-forge-bg-dark mb-1.5">Preferencia de contacto</label>
+        <div className="flex gap-3">
+          <label className="flex items-center gap-2 text-sm">
+            <input type="radio" name="contacto_pref" value="email" checked={formData.contacto_pref==='email'} onChange={(e)=> setFormData(prev=>({...prev, contacto_pref: e.target.value}))} />
+            <span>Email</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="radio" name="contacto_pref" value="telefono" checked={formData.contacto_pref==='telefono'} onChange={(e)=> setFormData(prev=>({...prev, contacto_pref: e.target.value}))} />
+            <span>Teléfono / WhatsApp</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor={`empresa-${type}`}
+          className="block text-sm font-semibold text-forge-bg-dark mb-1.5"
+        >
+          Empresa
+        </label>
+        <input
+          id={`empresa-${type}`}
+          name="empresa"
+          type="text"
+          autoComplete="organization"
+          maxLength={100}
+          value={formData.empresa}
+          onChange={handleChange}
+          placeholder="Nombre de tu empresa (opcional)"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor={`mensaje-${type}`}
+          className="block text-sm font-semibold text-forge-bg-dark mb-1.5"
+        >
+          Cuéntanos tu idea
+        </label>
+        <textarea
+          id={`mensaje-${type}`}
+          name="mensaje"
+          rows={4}
+          maxLength={500}
+          value={formData.mensaje}
+          onChange={handleChange}
+          placeholder="Describe brevemente tu proyecto o necesidad..."
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all resize-none"
+        />
+        <p className="text-xs text-forge-bg-dark/40 mt-1" aria-live="polite">
+          {formData.mensaje.length}/500 caracteres
+        </p>
+      </div>
+
+      <div>
+        <label htmlFor={`presupuesto-${type}`} className="block text-sm font-semibold text-forge-bg-dark mb-1.5">Presupuesto estimado (precios en USD; equivalente en COP)</label>
+        <select id={`presupuesto-${type}`} name="presupuesto" value={formData.presupuesto} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark focus:outline-none focus:ring-2 focus:ring-forge-orange-main">
+          <option value="">Selecciona una opción (opcional)</option>
+          <option value="80">Desde $80 (≈ 304.000 COP) — PoS / Gestor de inventario</option>
+          <option value="125_web">Desde $125 (≈ 475.000 COP) — Sitio web institucional</option>
+          <option value="125_custom">Desde $125 (≈ 475.000 COP) — Software personalizado</option>
+          <option value="otro">Otro / No estoy seguro</option>
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor={`servicio-${type}`} className="block text-sm font-semibold text-forge-bg-dark mb-1.5">Servicio de interés</label>
+        <select id={`servicio-${type}`} name="servicio" value={formData.servicio} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark focus:outline-none focus:ring-2 focus:ring-forge-orange-main">
+          <option value="">Selecciona</option>
+          <option value="mvp">MVP / Producto inicial</option>
+          <option value="crecimiento">Producto y crecimiento</option>
+          <option value="auditoria">Auditoría técnica</option>
+          <option value="consultoria">Consultoría técnica</option>
+        </select>
+      </div>
+
+      <div className="flex items-start gap-3">
+        <input id={`consent-${type}`} name="consent" type="checkbox" checked={consent} onChange={(e)=> setConsent(e.target.checked)} className="mt-1" />
+        <label htmlFor={`consent-${type}`} className="text-sm text-forge-bg-dark">Acepto la <a href="/privacidad" className="text-forge-orange-main underline">política de privacidad</a> y el tratamiento de mis datos.</label>
+      </div>
+
+      {/* Hidden UTM fields for server-side processing */}
+      <input type="hidden" name="utm_source" value={utmSource} />
+      <input type="hidden" name="utm_medium" value={utmMedium} />
+      <input type="hidden" name="utm_campaign" value={utmCampaign} />
+
+      {status === 'error' && (
+        <div
+          ref={statusRef}
+          role="alert"
+          aria-live="assertive"
+          tabIndex={-1}
+          className="text-red-600 text-sm font-medium flex items-center gap-2"
+        >
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {errorMsg}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        aria-busy={status === 'loading'}
+        className="w-full bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-4 px-8 rounded-xl shadow-cta hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2"
+      >
+        {status === 'loading' ? (
+          <span className="inline-flex items-center gap-2">
+            <svg
+              className="animate-spin h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            Enviando...
+          </span>
+        ) : (
+          'Enviar mensaje'
+        )}
+      </button>
+
+      {/* WhatsApp quick contact button (only shown if env var provided) */}
+      {typeof process !== 'undefined' && process.env.NEXT_PUBLIC_WHATSAPP_NUMBER && (
+        <div className="text-center">
+          <a
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-3 text-sm text-forge-bg-dark hover:text-forge-orange-main"
+          >
+            <svg className="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.92 11.92 0 0012 0C5.373 0 0 5.373 0 12c0 2.116.553 4.16 1.6 5.97L0 24l6.3-1.6A11.92 11.92 0 0012 24c6.627 0 12-5.373 12-12 0-3.2-1.18-6.16-3.48-8.52zM12 21.5c-1.7 0-3.37-.44-4.8-1.28l-.34-.2-3.75.95.95-3.66-.2-.34A9.4 9.4 0 012.5 12c0-5.2 4.3-9.5 9.5-9.5S21.5 6.8 21.5 12 17.2 21.5 12 21.5z"/></svg>
+            Contactar por WhatsApp
+          </a>
+        </div>
+      )}
+    </form>
+  )
+}

@@ -1,0 +1,22 @@
+{
+  "name": "ElevaForge",
+  "short_name": "ElevaForge",
+  "description": "Agencia de desarrollo de software con transparencia total. Sitios web, apps y herramientas digitales.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#19192E",
+  "theme_color": "#F97300",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/ElevaIcon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+Contact: mailto:contacto@elevaforge.com
+Canonical: https://elevaforge.com/.well-known/security.txt
+Preferred-Languages: es, en
+Expires: 2027-02-24T00:00:00.000Z

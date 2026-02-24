@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
 import { buildWhatsAppURL } from '@/lib/whatsapp'
 
 const navLinks = [
+  { href: '#precios', label: 'Paquetes' },
   { href: '#estandar', label: 'Garantía' },
   { href: '#autonomia', label: 'Diferencial' },
   { href: '#proceso', label: 'Proceso' },
@@ -13,33 +13,101 @@ const navLinks = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const hamburgerRef = useRef<HTMLButtonElement>(null)
+
+  // Close mobile menu on Escape key & return focus to hamburger
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && isOpen) {
+      setIsOpen(false)
+      hamburgerRef.current?.focus()
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [isOpen])
+
+  // Focus trap: keep Tab inside mobile menu when open
+  useEffect(() => {
+    if (!isOpen || !menuRef.current) return
+
+    const menu = menuRef.current
+    const focusables = menu.querySelectorAll<HTMLElement>(
+      'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+    )
+    if (focusables.length === 0) return
+
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+
+    // Auto-focus first link when menu opens
+    first.focus()
+
+    const trapFocus = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', trapFocus)
+    return () => document.removeEventListener('keydown', trapFocus)
+  }, [isOpen])
+
+  const scrollToSection = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    e.preventDefault()
+    setIsOpen(false)
+    const element = document.querySelector(href)
+    if (element) element.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-forge-bg-dark/90 backdrop-blur-md border-b border-forge-blue-mid/20">
       <nav
-        className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between"
+        className="container mx-auto px-4 h-16 flex items-center justify-between"
         aria-label="Navegación principal"
       >
-        {/* Logo */}
-        <Link href="/" aria-label="ElevaForge - Inicio">
-          <span className="font-humanst text-2xl text-white">
-            Eleva<span className="text-forge-orange-main">Forge</span>
-          </span>
-        </Link>
+        {/* Logo: usar LogoEleva.svg con tamaño mayor */}
+        <a
+          href="#inicio"
+          onClick={(e) => scrollToSection(e, '#inicio')}
+          aria-label="ElevaForge - Inicio"
+          className="flex items-center gap-3"
+        >
+          <img src="/LogoEleva.svg" alt="ElevaForge" className="h-10 w-auto object-contain" />
+          <span className="sr-only">ElevaForge</span>
+        </a>
 
         {/* Links desktop */}
-        <ul
-          className="hidden md:flex items-center gap-8"
-          role="list"
-        >
+        <ul className="hidden md:flex items-center gap-8" role="list">
           {navLinks.map((link) => (
             <li key={link.href}>
-              <Link
+              <a
                 href={link.href}
+                onClick={(e) => scrollToSection(e, link.href)}
                 className="text-white/70 hover:text-white transition-colors text-sm"
               >
                 {link.label}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>
@@ -53,10 +121,12 @@ export default function Navbar() {
 
         {/* Botón hamburger móvil */}
         <button
-          className="md:hidden text-white p-2"
+          ref={hamburgerRef}
+          className="md:hidden text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-forge-orange-main"
           onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-label={isOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
           aria-expanded={isOpen}
+          aria-controls="mobile-nav-menu"
         >
           {isOpen ? (
             <svg
@@ -64,6 +134,7 @@ export default function Navbar() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -78,6 +149,7 @@ export default function Navbar() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -92,17 +164,24 @@ export default function Navbar() {
 
       {/* Menú móvil */}
       {isOpen && (
-        <div className="md:hidden bg-forge-bg-dark/95 backdrop-blur-md border-b border-forge-blue-mid/20">
+        <div
+          ref={menuRef}
+          id="mobile-nav-menu"
+          className="md:hidden bg-forge-bg-dark/95 backdrop-blur-md border-b border-forge-blue-mid/20"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menú de navegación móvil"
+        >
           <ul className="px-6 py-4 space-y-4" role="list">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <Link
+                <a
                   href={link.href}
+                  onClick={(e) => scrollToSection(e, link.href)}
                   className="block text-white/70 hover:text-white transition-colors text-lg"
-                  onClick={() => setIsOpen(false)}
                 >
                   {link.label}
-                </Link>
+                </a>
               </li>
             ))}
             <li className="pt-4">
