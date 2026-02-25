@@ -1,22 +1,22 @@
-import dynamic from 'next/dynamic'
+import nextDynamic from 'next/dynamic'
 import HeroSection from '@/components/sections/HeroSection'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 
 // Lazy load below-the-fold sections for better performance
-const ForgeStandards = dynamic(
+const ForgeStandards = nextDynamic(
   () => import('@/components/sections/ForgeStandards'),
   { loading: () => <SectionSkeleton /> }
 )
-const AutonomySection = dynamic(
+const AutonomySection = nextDynamic(
   () => import('@/components/sections/AutonomySection'),
   { loading: () => <SectionSkeleton /> }
 )
-const RoadmapSection = dynamic(
+const RoadmapSection = nextDynamic(
   () => import('@/components/sections/RoadmapSection'),
   { loading: () => <SectionSkeleton /> }
 )
-const PricingSection = dynamic(
+const PricingSection = nextDynamic(
   () => import('@/components/sections/PricingSection'),
   { loading: () => <SectionSkeleton /> }
 )

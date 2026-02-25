@@ -1,6 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-export function createServerSupabaseClient() {
+// Singleton: reuse a single Supabase client across invocations in the same
+// cold-start to avoid re-creating the HTTP transport each time.
+let _cached: SupabaseClient | null = null
+
+export function createServerSupabaseClient(): SupabaseClient {
+  if (_cached) return _cached
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -8,5 +14,6 @@ export function createServerSupabaseClient() {
     throw new Error('Missing Supabase environment variables')
   }
 
-  return createClient(supabaseUrl, serviceRoleKey)
+  _cached = createClient(supabaseUrl, serviceRoleKey)
+  return _cached
 }

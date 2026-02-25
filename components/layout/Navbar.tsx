@@ -93,7 +93,7 @@ export default function Navbar() {
           aria-label="ElevaForge - Inicio"
           className="flex items-center gap-3"
         >
-          <img src="/LogoEleva.svg" alt="ElevaForge" className="h-20 w-auto object-contain" />
+          <img src="/LogoEleva.svg" alt="ElevaForge" className="h-12 w-auto object-contain" />
           <span className="sr-only">ElevaForge</span>
         </a>
 

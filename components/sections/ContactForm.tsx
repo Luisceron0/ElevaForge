@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { buildWhatsAppURL } from '@/lib/whatsapp'
 
 interface ContactFormProps {
   type?: 'general' | 'proyecto' | 'consulta'
@@ -24,9 +23,6 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
     servicio: '',
   })
   const [consent, setConsent] = useState(false)
-  const [utmSource, setUtmSource] = useState('')
-  const [utmMedium, setUtmMedium] = useState('')
-  const [utmCampaign, setUtmCampaign] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   // A06: Honeypot anti-bot field — invisible to users, bots auto-fill it
@@ -47,62 +43,50 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Capture common UTM params from the URL (client-side)
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search)
-      const s = params.get('utm_source') || ''
-      const m = params.get('utm_medium') || ''
-      const c = params.get('utm_campaign') || ''
-      setUtmSource(s)
-      setUtmMedium(m)
-      setUtmCampaign(c)
-    } catch (e) {
-      // ignore in non-browser contexts
+  /** Store lightweight lead in DB via /api/contact (outbox pattern). */
+  async function saveLead(extra?: Record<string, string>) {
+    const payload = {
+      nombre: sanitizeInput(formData.nombre),
+      email: sanitizeInput(formData.email),
+      contacto_pref: sanitizeInput(formData.contacto_pref).slice(0, 16),
+      presupuesto: sanitizeInput(formData.presupuesto).slice(0, 64),
+      consent: true,
+      _hp: honeypot,
+      ...extra,
     }
-  }, [])
+    const resp = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    return resp
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.nombre || formData.nombre.trim().length < 2) {
+      setStatus('error')
+      setErrorMsg('El nombre es requerido (mínimo 2 caracteres)')
+      return
+    }
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setStatus('error')
+      setErrorMsg('Por favor ingresa un email válido')
+      return
+    }
+    if (!consent) {
+      setStatus('error')
+      setErrorMsg('Debe aceptar la política de privacidad para continuar')
+      return
+    }
+
     setStatus('loading')
     setErrorMsg('')
-
     try {
-      if (!consent) {
-        throw new Error('Debe aceptar la política de privacidad para continuar')
-      }
-
-      const sanitizedData = {
-        nombre: sanitizeInput(formData.nombre),
-        email: sanitizeInput(formData.email),
-        empresa: sanitizeInput(formData.empresa),
-        mensaje: sanitizeInput(formData.mensaje).slice(0, 500),
-        telefono: sanitizeInput(formData.telefono).slice(0, 32),
-        contacto_pref: sanitizeInput(formData.contacto_pref).slice(0, 16),
-        presupuesto: sanitizeInput(formData.presupuesto).slice(0, 64),
-        servicio: sanitizeInput(formData.servicio).slice(0, 64),
-        utm_source: sanitizeInput(utmSource).slice(0, 100),
-        utm_medium: sanitizeInput(utmMedium).slice(0, 100),
-        utm_campaign: sanitizeInput(utmCampaign).slice(0, 100),
-        consent: true,
-      }
-
-      // Open WhatsApp with form data
-      const waPlain = `Hola ElevaForge,\nNombre: ${sanitizedData.nombre}\nEmail: ${sanitizedData.email}\nTeléfono: ${sanitizedData.telefono}\nEmpresa: ${sanitizedData.empresa}\nServicio: ${sanitizedData.servicio}\nPresupuesto: ${sanitizedData.presupuesto}\nMensaje: ${sanitizedData.mensaje}`
-      const url = buildWhatsAppURL(waPlain)
-      if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
-
-      // Send lead to local API route (which stores in Supabase)
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...sanitizedData, _hp: honeypot }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Error guardando lead:', errorData)
-        // Don't throw - WhatsApp is primary channel, DB storage is secondary
+      const resp = await saveLead()
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}))
+        throw new Error(err?.error || 'Error al enviar el mensaje')
       }
 
       setStatus('success')
@@ -249,11 +233,11 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
       <div>
         <label className="block text-sm font-semibold text-forge-bg-dark mb-1.5">Preferencia de contacto</label>
         <div className="flex gap-3">
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm text-forge-bg-dark">
             <input type="radio" name="contacto_pref" value="email" checked={formData.contacto_pref==='email'} onChange={(e)=> setFormData(prev=>({...prev, contacto_pref: e.target.value}))} />
             <span>Email</span>
           </label>
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm text-forge-bg-dark">
             <input type="radio" name="contacto_pref" value="telefono" checked={formData.contacto_pref==='telefono'} onChange={(e)=> setFormData(prev=>({...prev, contacto_pref: e.target.value}))} />
             <span>Teléfono / WhatsApp</span>
           </label>
@@ -308,7 +292,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
           <option value="">Selecciona una opción (opcional)</option>
           <option value="80">Desde $80 (≈ 304.000 COP) — PoS / Gestor de inventario</option>
           <option value="125_web">Desde $125 (≈ 475.000 COP) — Sitio web institucional</option>
-          <option value="125_custom">Desde $125 (≈ 475.000 COP) — Software personalizado</option>
+          <option value="80_custom">Desde $80 (≈ 304.000 COP) — Software personalizado</option>
           <option value="otro">Otro / No estoy seguro</option>
         </select>
       </div>
@@ -329,11 +313,6 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
         <label htmlFor={`consent-${type}`} className="text-sm text-forge-bg-dark">Acepto la <a href="/privacidad" className="text-forge-orange-main underline">política de privacidad</a> y el tratamiento de mis datos.</label>
       </div>
 
-      {/* Hidden UTM fields for server-side processing */}
-      <input type="hidden" name="utm_source" value={utmSource} />
-      <input type="hidden" name="utm_medium" value={utmMedium} />
-      <input type="hidden" name="utm_campaign" value={utmCampaign} />
-
       {status === 'error' && (
         <div
           ref={statusRef}
@@ -353,7 +332,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
         type="submit"
         disabled={status === 'loading'}
         aria-busy={status === 'loading'}
-        className="w-full bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-4 px-8 rounded-xl shadow-cta hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2"
+        className="w-full bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-3 px-6 rounded-xl shadow-cta hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 flex items-center justify-center gap-2"
       >
         {status === 'loading' ? (
           <span className="inline-flex items-center gap-2">
@@ -380,7 +359,12 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
             Enviando...
           </span>
         ) : (
-          'Contactar por WhatsApp'
+          <>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Enviar mensaje
+          </>
         )}
       </button>
 

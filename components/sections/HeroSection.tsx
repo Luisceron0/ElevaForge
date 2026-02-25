@@ -31,8 +31,12 @@ export default function HeroSection() {
         ticking = false
       })
     }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    // Only enable parallax on larger screens to reduce CPU on mobile
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      return () => window.removeEventListener('scroll', handleScroll)
+    }
+    return () => {}
   }, [reducedMotion])
 
   const scrollToSection = (sectionId: string) => {
@@ -98,12 +102,12 @@ export default function HeroSection() {
           <CTAButton
             href={buildWhatsAppURL()}
             label={ctaLabel}
-            className="px-6 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-all duration-200 w-full sm:w-auto"
+            className="w-full sm:w-auto"
           />
           <button
             type="button"
             onClick={() => scrollToSection('precios')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             Paquetes
           </button>
@@ -111,7 +115,7 @@ export default function HeroSection() {
           <button
             type="button"
             onClick={() => scrollToSection('estandar')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             <svg
               className="w-5 h-5"
@@ -132,7 +136,7 @@ export default function HeroSection() {
           <button
             type="button"
             onClick={() => scrollToSection('autonomia')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             Diferencial
           </button>
@@ -140,7 +144,7 @@ export default function HeroSection() {
           <button
             type="button"
             onClick={() => scrollToSection('proceso')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             <svg
               className="w-5 h-5"
@@ -162,26 +166,7 @@ export default function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div
-            className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${reducedMotion ? '' : 'animate-bounce'}`}
-        role="presentation"
-        aria-hidden="true"
-      >
-        <svg
-          className="h-8 w-8 text-white/60"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-          />
-        </svg>
-      </div>
+      {/* Scroll indicator removed to reduce visual clutter on mobile */}
     </section>
   )
 }

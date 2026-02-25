@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/workers/process-leads",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/workers/cleanup?days=30",
+      "schedule": "0 1 * * *"
+    }
+  ]
+}
