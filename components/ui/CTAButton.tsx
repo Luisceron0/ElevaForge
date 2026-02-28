@@ -14,11 +14,11 @@ export default function CTAButton({
   className = '',
 }: CTAButtonProps) {
   const baseClasses =
-    'inline-flex items-center gap-3 font-bold px-6 py-3 md:px-8 md:py-4 rounded-xl transition-all duration-300 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark'
+    'inline-flex items-center gap-3 font-bold px-6 py-3 md:px-8 md:py-4 rounded-xl transition-colors duration-200 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark'
 
   const variantClasses =
     variant === 'primary'
-      ? 'bg-forge-orange-main hover:bg-forge-orange-gold text-white shadow-cta hover:scale-105'
+      ? 'bg-forge-orange-main hover:bg-forge-orange-gold text-white shadow-cta'
       : 'border-2 border-forge-orange-main text-forge-orange-main hover:bg-forge-orange-main hover:text-white'
 
   return (
