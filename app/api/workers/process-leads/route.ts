@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { isAuthorizedWorker } from '@/lib/security/worker-auth'
+import { logSecurityEvent } from '@/lib/security/logger'
 
 const MAX_ATTEMPTS = 5
 // When running once per day we can increase the batch size to process backlog.
 const BATCH_SIZE = 200
-
-/** Verify the request comes from an authorized cron/scheduler. */
-function isAuthorized(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET
-  if (!secret) return false // block if not configured
-  const header = req.headers.get('authorization')
-  return header === `Bearer ${secret}`
-}
 
 async function processBatch() {
   const supabase = createServerSupabaseClient()
@@ -115,28 +109,40 @@ async function processBatch() {
   return { processed: rows.length, sent, failed }
 }
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorized(req)) {
+function getClientIp(req: NextRequest): string {
+  return (
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    'unknown'
+  )
+}
+
+async function handleWorkerRequest(req: NextRequest) {
+  // A07: Timing-safe auth check via shared utility
+  if (!isAuthorizedWorker(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   try {
     const result = await processBatch()
     return NextResponse.json({ ok: true, ...result })
   } catch (err: unknown) {
+    // A10: Never expose internal errors to caller — log and return generic message
+    logSecurityEvent({
+      type: 'UNHANDLED_ERROR',
+      ip: getClientIp(req),
+      path: req.nextUrl.pathname,
+      method: req.method,
+      details: err instanceof Error ? err.message : 'unknown',
+    })
     console.error('Worker error:', err)
-    return NextResponse.json({ ok: false, error: String(err) }, { status: 500 })
+    return NextResponse.json({ ok: false, error: 'Internal processing error' }, { status: 500 })
   }
 }
 
+export async function GET(req: NextRequest) {
+  return handleWorkerRequest(req)
+}
+
 export async function POST(req: NextRequest) {
-  if (!isAuthorized(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-  try {
-    const result = await processBatch()
-    return NextResponse.json({ ok: true, ...result })
-  } catch (err: unknown) {
-    console.error('Worker error:', err)
-    return NextResponse.json({ ok: false, error: String(err) }, { status: 500 })
-  }
+  return handleWorkerRequest(req)
 }
