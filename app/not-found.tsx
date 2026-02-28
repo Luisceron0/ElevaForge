@@ -25,7 +25,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="inline-block bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+          className="inline-block bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-3 px-8 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
         >
           Volver al inicio
         </Link>

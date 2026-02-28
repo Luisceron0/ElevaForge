@@ -92,7 +92,7 @@ export default function ForgeStandards() {
           {standards.map((item, index) => (
             <article
               key={index}
-              className="bg-white rounded-2xl p-8 shadow-card border border-forge-blue-mid/10 hover:shadow-glow-blue transition-all duration-300 hover:-translate-y-1"
+              className="bg-white rounded-2xl p-8 shadow-card border border-forge-blue-mid/10 hover:shadow-glow-blue transition-shadow duration-200"
             >
               <div className="p-3 bg-forge-orange-main/10 rounded-lg w-fit mb-5">
                 <div className="w-12 h-12 bg-forge-orange-main rounded-full flex items-center justify-center shadow-lg">

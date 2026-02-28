@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
 import { buildWhatsAppURL } from '@/lib/whatsapp'
 
@@ -16,58 +16,55 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
 
-  // Close mobile menu on Escape key & return focus to hamburger
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape' && isOpen) {
-      setIsOpen(false)
-      hamburgerRef.current?.focus()
-    }
-  }, [isOpen])
-
+  // Consolidated keyboard handler: Escape to close + focus trap when open
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
+    if (!isOpen) return
 
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [isOpen])
+    document.body.style.overflow = 'hidden'
 
-  // Focus trap: keep Tab inside mobile menu when open
-  useEffect(() => {
-    if (!isOpen || !menuRef.current) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+        hamburgerRef.current?.focus()
+        return
+      }
 
-    const menu = menuRef.current
-    const focusables = menu.querySelectorAll<HTMLElement>(
-      'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
-    )
-    if (focusables.length === 0) return
+      // Focus trap
+      if (e.key === 'Tab' && menuRef.current) {
+        const focusables = menuRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+        )
+        if (focusables.length === 0) return
+        const first = focusables[0]
+        const last = focusables[focusables.length - 1]
 
-    const first = focusables[0]
-    const last = focusables[focusables.length - 1]
-
-    // Auto-focus first link when menu opens
-    first.focus()
-
-    const trapFocus = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault()
-          last.focus()
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault()
-          first.focus()
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault()
+            last.focus()
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault()
+            first.focus()
+          }
         }
       }
     }
 
-    document.addEventListener('keydown', trapFocus)
-    return () => document.removeEventListener('keydown', trapFocus)
+    // Auto-focus first link when menu opens
+    if (menuRef.current) {
+      const firstFocusable = menuRef.current.querySelector<HTMLElement>(
+        'a[href], button'
+      )
+      firstFocusable?.focus()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [isOpen])
 
   const scrollToSection = (
@@ -81,7 +78,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-forge-bg-dark/90 backdrop-blur-md border-b border-forge-blue-mid/20">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-forge-bg-dark/95 border-b border-forge-blue-mid/20">
       <nav
         className="container mx-auto px-4 h-16 flex items-center justify-between"
         aria-label="Navegación principal"
@@ -104,7 +101,7 @@ export default function Navbar() {
               <a
                 href={link.href}
                 onClick={(e) => scrollToSection(e, link.href)}
-                className="text-white/70 hover:text-white transition-colors text-sm"
+                className="text-white/70 hover:text-white transition-colors duration-150 text-sm"
               >
                 {link.label}
               </a>
@@ -167,7 +164,7 @@ export default function Navbar() {
         <div
           ref={menuRef}
           id="mobile-nav-menu"
-          className="md:hidden bg-forge-bg-dark/95 backdrop-blur-md border-b border-forge-blue-mid/20"
+          className="md:hidden bg-forge-bg-dark border-b border-forge-blue-mid/20"
           role="dialog"
           aria-modal="true"
           aria-label="Menú de navegación móvil"
