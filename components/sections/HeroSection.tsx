@@ -6,10 +6,10 @@ import { buildWhatsAppURL } from '@/lib/whatsapp'
 
 export default function HeroSection() {
   const parallaxRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
-    // Check user preference for reduced motion
     const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReducedMotion(mql.matches)
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
@@ -18,11 +18,22 @@ export default function HeroSection() {
   }, [])
 
   useEffect(() => {
-    if (reducedMotion) return // Skip parallax if user prefers reduced motion
+    if (reducedMotion) return
+    // Only enable parallax on larger screens
+    if (typeof window === 'undefined' || window.innerWidth < 768) return
 
     let ticking = false
+    let isVisible = true
+
+    // Use IntersectionObserver to pause parallax when section is off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting },
+      { threshold: 0 }
+    )
+    if (sectionRef.current) observer.observe(sectionRef.current)
+
     const handleScroll = () => {
-      if (ticking) return
+      if (ticking || !isVisible) return
       ticking = true
       requestAnimationFrame(() => {
         if (!parallaxRef.current) { ticking = false; return }
@@ -31,12 +42,12 @@ export default function HeroSection() {
         ticking = false
       })
     }
-    // Only enable parallax on larger screens to reduce CPU on mobile
-    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-      window.addEventListener('scroll', handleScroll, { passive: true })
-      return () => window.removeEventListener('scroll', handleScroll)
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      observer.disconnect()
     }
-    return () => {}
   }, [reducedMotion])
 
   const scrollToSection = (sectionId: string) => {
@@ -50,7 +61,7 @@ export default function HeroSection() {
     try {
       const params = new URLSearchParams(window.location.search)
       if (params.get('ab') === 'variantB') setAbVariant('B')
-    } catch (e) {
+    } catch {
       // ignore server-side
     }
   }, [])
@@ -67,6 +78,7 @@ export default function HeroSection() {
 
   return (
     <section
+      ref={sectionRef}
       id="inicio"
       className="relative py-20 min-h-[60vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-forge-bg-dark to-[#0f0f22] text-white"
     >
@@ -107,7 +119,7 @@ export default function HeroSection() {
           <button
             type="button"
             onClick={() => scrollToSection('precios')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             Paquetes
           </button>
@@ -115,7 +127,7 @@ export default function HeroSection() {
           <button
             type="button"
             onClick={() => scrollToSection('estandar')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             <svg
               className="w-5 h-5"
@@ -136,7 +148,7 @@ export default function HeroSection() {
           <button
             type="button"
             onClick={() => scrollToSection('autonomia')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             Diferencial
           </button>
@@ -144,7 +156,7 @@ export default function HeroSection() {
           <button
             type="button"
             onClick={() => scrollToSection('proceso')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-all duration-300 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
           >
             <svg
               className="w-5 h-5"

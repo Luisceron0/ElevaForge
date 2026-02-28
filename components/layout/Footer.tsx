@@ -1,6 +1,7 @@
 'use client'
 
 import type React from 'react'
+import { memo } from 'react'
 import Link from 'next/link'
 import { buildWhatsAppURL } from '@/lib/whatsapp'
 
@@ -11,7 +12,9 @@ const quickLinks = [
   { label: 'Proceso', href: '#proceso' },
 ]
 
-export default function Footer() {
+const CURRENT_YEAR = new Date().getFullYear()
+
+export default memo(function Footer() {
   const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
@@ -115,10 +118,10 @@ export default function Footer() {
                   />
                 </svg>
                 <a
-                  href="mailto:contacto@elevaforge.com"
+                  href="mailto:elevaforge@gmail.com"
                   className="text-sm sm:text-base text-white/80 hover:text-forge-orange-main transition-colors break-all"
                 >
-                  contacto@elevaforge.com
+                  elevaforge@gmail.com
                 </a>
               </li>
             </ul>
@@ -130,11 +133,11 @@ export default function Footer() {
       <div className="border-t border-white/20">
         <div className="container mx-auto px-4 py-4 sm:py-6 text-center">
           <p className="text-xs sm:text-sm text-white/70">
-            © {new Date().getFullYear()} ElevaForge. Todos los derechos
+            © {CURRENT_YEAR} ElevaForge. Todos los derechos
             reservados.
           </p>
         </div>
       </div>
     </footer>
   )
-}
+})

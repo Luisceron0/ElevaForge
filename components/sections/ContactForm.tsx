@@ -183,7 +183,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
           onChange={handleChange}
           placeholder="Tu nombre completo"
           aria-required="true"
-          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-[border-color,box-shadow] duration-150"
         />
       </div>
 
@@ -206,7 +206,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
           onChange={handleChange}
           placeholder="tu@email.com"
           aria-required="true"
-          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-[border-color,box-shadow] duration-150"
         />
       </div>
 
@@ -226,7 +226,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
           value={formData.telefono}
           onChange={handleChange}
           placeholder="+57 3xx xxx xxxx (opcional)"
-          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-[border-color,box-shadow] duration-150"
         />
       </div>
 
@@ -260,7 +260,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
           value={formData.empresa}
           onChange={handleChange}
           placeholder="Nombre de tu empresa (opcional)"
-          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-[border-color,box-shadow] duration-150"
         />
       </div>
 
@@ -279,7 +279,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
           value={formData.mensaje}
           onChange={handleChange}
           placeholder="Describe brevemente tu proyecto o necesidad..."
-          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-all resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-forge-blue-mid/20 bg-white text-forge-bg-dark placeholder:text-forge-bg-dark/40 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:border-transparent transition-[border-color,box-shadow] duration-150 resize-none"
         />
         <p className="text-xs text-forge-bg-dark/40 mt-1" aria-live="polite">
           {formData.mensaje.length}/500 caracteres
@@ -332,7 +332,7 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
         type="submit"
         disabled={status === 'loading'}
         aria-busy={status === 'loading'}
-        className="w-full bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-3 px-6 rounded-xl shadow-cta hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 flex items-center justify-center gap-2"
+        className="w-full bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-3 px-6 rounded-xl shadow-cta transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 flex items-center justify-center gap-2"
       >
         {status === 'loading' ? (
           <span className="inline-flex items-center gap-2">
