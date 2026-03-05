@@ -1,4 +1,5 @@
 import CTAButton from '@/components/ui/CTAButton'
+import { buildWhatsAppURL } from '@/lib/whatsapp'
 
 export default function PricingSection() {
   // Prices in USD with COP equivalents (1 USD = 3800 COP)
@@ -64,7 +65,11 @@ export default function PricingSection() {
                   <li key={i}>• {b}</li>
                 ))}
               </ul>
-              <CTAButton href="#proceso" label="Solicitar propuesta" className="w-full justify-center" />
+              <CTAButton
+                href={buildWhatsAppURL(`Hola ElevaForge, estoy interesado en el paquete ${p.title} (id: ${p.id}). ¿Podemos conversar sobre alcance y costos?`)}
+                label="Solicitar propuesta"
+                className="w-full justify-center"
+              />
             </article>
           ))}
         </div>

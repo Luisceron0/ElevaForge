@@ -93,6 +93,15 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
       setFormData({ nombre: '', email: '', empresa: '', mensaje: '', telefono: '', contacto_pref: 'email', presupuesto: '', servicio: '' })
       setHoneypot('')
       setConsent(false)
+
+      // Abrir nueva pestaña en la sección Roadmap de Transparencia y pedir ocultar testimonials
+      try {
+        const url = '/?hideTestimonials=1#proceso'
+        const w = window.open(url, '_blank', 'noopener,noreferrer')
+        if (w && 'opener' in w) w.opener = null
+      } catch (err) {
+        // Silenciar errores de apertura de ventana
+      }
     } catch (err) {
       setStatus('error')
       setErrorMsg(err instanceof Error ? err.message : 'Error inesperado')
