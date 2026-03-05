@@ -35,10 +35,7 @@ function SectionSkeleton() {
   )
 }
 
-export default function Home({ searchParams }: { searchParams?: { hideTestimonials?: string } }) {
-  const hideTestimonials =
-    Boolean(searchParams && (searchParams.hideTestimonials === '1' || searchParams.hideTestimonials === 'true'))
-
+export default function Home() {
   return (
     <>
       <Navbar />
@@ -47,7 +44,7 @@ export default function Home({ searchParams }: { searchParams?: { hideTestimonia
         <PricingSection />
         <ForgeStandards />
         <AutonomySection />
-        <RoadmapSection hideTestimonials={hideTestimonials} />
+        <RoadmapSection />
       </main>
       <Footer />
     </>

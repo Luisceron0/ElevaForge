@@ -45,28 +45,9 @@ const steps = [
   },
 ]
 
-const testimonials = [
-  {
-    name: 'Carlos M.',
-    role: 'Fundador, Startup Tech',
-    text: 'ElevaForge no solo entregó un producto excelente, nos capacitó para que pudiéramos operar de forma autónoma desde el día uno.',
-    rating: 5,
-  },
-  {
-    name: 'Ana R.',
-    role: 'Directora, PyME Retail',
-    text: 'El proceso fue completamente transparente. Siempre supimos en qué etapa estaba nuestro proyecto y los costos fueron claros desde el inicio.',
-    rating: 5,
-  },
-  {
-    name: 'Miguel S.',
-    role: 'CEO, Agencia Digital',
-    text: 'Lighthouse 100 en performance y SEO. Nuestro sitio nunca había cargado tan rápido. El ROI fue inmediato.',
-    rating: 5,
-  },
-]
+// Testimonials removed per request
 
-export default function RoadmapSection({ hideTestimonials = false }: { hideTestimonials?: boolean }) {
+export default function RoadmapSection() {
   return (
     <section id="proceso" className="py-20 bg-forge-bg-light">
       <div className="container mx-auto px-4">
@@ -120,57 +101,7 @@ export default function RoadmapSection({ hideTestimonials = false }: { hideTesti
               </div>
             </div>
 
-            {/* Testimonials - patrón AVC (ocultar si hideTestimonials=true) */}
-            {!hideTestimonials && (
-              <div>
-                <h3 className="text-xl font-semibold text-forge-bg-dark mb-6">
-                  Lo que dicen nuestros clientes
-                </h3>
-                <div className="space-y-4">
-                  {testimonials.map((testimonial, index) => (
-                    <blockquote
-                      key={index}
-                      className="bg-white p-5 rounded-xl shadow-md border border-forge-blue-mid/10"
-                    >
-                      {/* Quote icon */}
-                      <svg
-                        className="h-6 w-6 text-forge-orange-main mb-3"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151C7.546 6.068 5.983 8.789 5.983 11h4v10H0z" />
-                      </svg>
-                      <p className="text-forge-bg-dark mb-3 italic">
-                        &ldquo;{testimonial.text}&rdquo;
-                      </p>
-                      <footer className="flex items-center justify-between">
-                        <cite className="not-italic">
-                          <span className="block font-semibold text-forge-bg-dark">
-                            {testimonial.name}
-                          </span>
-                          <span className="block text-sm text-forge-bg-dark/70">
-                            {testimonial.role}
-                          </span>
-                        </cite>
-                        <div className="flex gap-1" role="img" aria-label={`${testimonial.rating} de 5 estrellas`}>
-                          {[...Array(testimonial.rating)].map((_, i) => (
-                            <svg
-                              key={i}
-                              className="w-4 h-4 text-yellow-400 fill-current"
-                              viewBox="0 0 20 20"
-                              aria-hidden="true"
-                            >
-                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                            </svg>
-                          ))}
-                        </div>
-                      </footer>
-                    </blockquote>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Testimonials removed */}
           </div>
 
           {/* Columna derecha - CTA grande */}
