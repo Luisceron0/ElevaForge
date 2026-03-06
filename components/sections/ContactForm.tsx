@@ -94,13 +94,23 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
       setHoneypot('')
       setConsent(false)
 
-      // Abrir nueva pestaña en la sección Roadmap de Transparencia y pedir ocultar testimonials
+      // Navegar en la misma pestaña a la sección Roadmap de Transparencia y hacer scroll suave
       try {
         const url = '/?hideTestimonials=1#proceso'
-        const w = window.open(url, '_blank', 'noopener,noreferrer')
-        if (w && 'opener' in w) w.opener = null
+        // Si ya estamos en la página raíz, actualizamos la URL y hacemos scroll suave.
+        if (window.location.pathname === '/' || window.location.pathname === '') {
+          history.replaceState(null, '', url)
+          setTimeout(() => {
+            const el = document.getElementById('proceso')
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            else window.scrollTo({ top: 0, behavior: 'smooth' })
+          }, 100)
+        } else {
+          // Si estamos en otra ruta, navegamos en la misma pestaña hacia la URL con ancla.
+          window.location.href = url
+        }
       } catch (err) {
-        // Silenciar errores de apertura de ventana
+        // Silenciar errores de navegación
       }
     } catch (err) {
       setStatus('error')
