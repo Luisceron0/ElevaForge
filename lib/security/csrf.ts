@@ -15,15 +15,30 @@ export interface OriginCheckResult {
   reason?: string
 }
 
+/**
+ * Accept both the configured origin and its www/non-www variant.
+ * This prevents accidental 403s when the site is served from the www host.
+ */
 export function validateOrigin(request: Request): OriginCheckResult {
   // Skip in development for local testing convenience
   if (process.env.NODE_ENV === 'development') {
     return { valid: true }
   }
 
-  let allowedOrigin: string
+  let allowedOrigins = new Set<string>()
   try {
-    allowedOrigin = new URL(SITE_URL).origin
+    const parsed = new URL(SITE_URL)
+    const origin = parsed.origin
+    allowedOrigins.add(origin)
+
+    const host = parsed.hostname
+    // If SITE_URL is example.com, also allow https://www.example.com
+    // If SITE_URL is www.example.com, also allow https://example.com
+    if (host.startsWith('www.')) {
+      allowedOrigins.add(`${parsed.protocol}//${host.replace(/^www\./, '')}`)
+    } else {
+      allowedOrigins.add(`${parsed.protocol}//www.${host}`)
+    }
   } catch {
     // If SITE_URL is misconfigured, fail closed (A10)
     return { valid: false, reason: 'Server misconfiguration: invalid SITE_URL' }
@@ -32,7 +47,7 @@ export function validateOrigin(request: Request): OriginCheckResult {
   // 1. Check Origin header (most reliable — sent by all modern browsers)
   const origin = request.headers.get('origin')
   if (origin) {
-    if (origin === allowedOrigin) return { valid: true }
+    if (allowedOrigins.has(origin)) return { valid: true }
     return { valid: false, reason: `Rejected origin: ${origin}` }
   }
 
@@ -41,7 +56,7 @@ export function validateOrigin(request: Request): OriginCheckResult {
   if (referer) {
     try {
       const refererOrigin = new URL(referer).origin
-      if (refererOrigin === allowedOrigin) return { valid: true }
+      if (allowedOrigins.has(refererOrigin)) return { valid: true }
       return { valid: false, reason: `Rejected referer origin: ${refererOrigin}` }
     } catch {
       return { valid: false, reason: 'Malformed referer header' }
