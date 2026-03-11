@@ -37,6 +37,12 @@ export const leadSchema = z.object({
         .email('Email inválido')
         .max(254, 'El email es demasiado largo'),
     ),
+  telefono: z
+    .string()
+    .max(32, 'El teléfono no puede exceder 32 caracteres')
+    .transform((v) => stripControlChars(v).trim())
+    .optional()
+    .or(z.literal('')),
   empresa: z
     .string()
     .max(100, 'El nombre de empresa no puede exceder 100 caracteres')
@@ -49,6 +55,7 @@ export const leadSchema = z.object({
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
+<<<<<<< HEAD
   telefono: z
     .string()
     .max(32, 'El teléfono no puede exceder 32 caracteres')
@@ -64,12 +71,15 @@ export const leadSchema = z.object({
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
+=======
+>>>>>>> 6346743 (Add telefono and servicio fields to contact form and validations)
   servicio: z
     .string()
     .max(64, 'El servicio no puede exceder 64 caracteres')
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
+<<<<<<< HEAD
   consent: z.boolean().default(false),
   origen: z
     .string()
@@ -77,6 +87,8 @@ export const leadSchema = z.object({
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
+=======
+>>>>>>> 6346743 (Add telefono and servicio fields to contact form and validations)
 })
 
 export type LeadInput = z.infer<typeof leadSchema>

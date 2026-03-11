@@ -60,14 +60,19 @@ export async function POST(request: NextRequest) {
     const parsed = leadSchema.safeParse({
       nombre: record.nombre,
       email: record.email,
+      telefono: record.telefono,
       empresa: record.empresa,
       mensaje: record.mensaje,
+<<<<<<< HEAD
       telefono: record.telefono,
       contacto_pref: record.contacto_pref,
       presupuesto: record.presupuesto,
       servicio: record.servicio,
       consent: record.consent === true,
       origen: record.origen,
+=======
+      servicio: record.servicio,
+>>>>>>> 6346743 (Add telefono and servicio fields to contact form and validations)
     })
 
     if (!parsed.success) {
@@ -89,6 +94,7 @@ export async function POST(request: NextRequest) {
     const insertData = {
       nombre: parsed.data.nombre,
       email: parsed.data.email,
+<<<<<<< HEAD
       empresa: parsed.data.empresa || null,
       mensaje: parsed.data.mensaje || null,
       telefono: parsed.data.telefono || null,
@@ -97,6 +103,16 @@ export async function POST(request: NextRequest) {
       servicio: parsed.data.servicio || null,
       consent: parsed.data.consent,
       origen: parsed.data.origen || 'web-contact-form',
+=======
+      telefono: parsed.data.telefono || null,
+      empresa: parsed.data.empresa || null,
+      mensaje: parsed.data.mensaje || null,
+      servicio: parsed.data.servicio || null,
+      contacto_pref,
+      presupuesto,
+      consent: record.consent === true,
+      origen: 'web-contact-form',
+>>>>>>> 6346743 (Add telefono and servicio fields to contact form and validations)
       status: 'pending',
       attempts: 0,
     }

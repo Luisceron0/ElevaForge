@@ -48,9 +48,16 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
     const payload = {
       nombre: sanitizeInput(formData.nombre),
       email: sanitizeInput(formData.email),
+<<<<<<< HEAD
       empresa: sanitizeInput(formData.empresa).slice(0, 100),
       mensaje: sanitizeInput(formData.mensaje).slice(0, 500),
       telefono: sanitizeInput(formData.telefono).slice(0, 32),
+=======
+      telefono: sanitizeInput(formData.telefono).slice(0, 32),
+      empresa: sanitizeInput(formData.empresa).slice(0, 100),
+      mensaje: sanitizeInput(formData.mensaje).slice(0, 500),
+      servicio: sanitizeInput(formData.servicio).slice(0, 64),
+>>>>>>> 6346743 (Add telefono and servicio fields to contact form and validations)
       contacto_pref: sanitizeInput(formData.contacto_pref).slice(0, 16),
       presupuesto: sanitizeInput(formData.presupuesto).slice(0, 64),
       servicio: sanitizeInput(formData.servicio).slice(0, 64),
