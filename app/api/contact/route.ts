@@ -60,8 +60,10 @@ export async function POST(request: NextRequest) {
     const parsed = leadSchema.safeParse({
       nombre: record.nombre,
       email: record.email,
+      telefono: record.telefono,
       empresa: record.empresa,
       mensaje: record.mensaje,
+      servicio: record.servicio,
     })
 
     if (!parsed.success) {
@@ -89,6 +91,10 @@ export async function POST(request: NextRequest) {
     const insertData = {
       nombre: parsed.data.nombre,
       email: parsed.data.email,
+      telefono: parsed.data.telefono || null,
+      empresa: parsed.data.empresa || null,
+      mensaje: parsed.data.mensaje || null,
+      servicio: parsed.data.servicio || null,
       contacto_pref,
       presupuesto,
       consent: record.consent === true,
