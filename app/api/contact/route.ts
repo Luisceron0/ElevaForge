@@ -62,6 +62,12 @@ export async function POST(request: NextRequest) {
       email: record.email,
       empresa: record.empresa,
       mensaje: record.mensaje,
+      telefono: record.telefono,
+      contacto_pref: record.contacto_pref,
+      presupuesto: record.presupuesto,
+      servicio: record.servicio,
+      consent: record.consent === true,
+      origen: record.origen,
     })
 
     if (!parsed.success) {
@@ -78,21 +84,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Extra fields validated manually (not part of the base lead schema)
-    const contacto_pref = ['email', 'telefono'].includes(String(record.contacto_pref ?? ''))
-      ? String(record.contacto_pref)
-      : 'email'
-    const presupuesto = String(record.presupuesto ?? '').slice(0, 64).replace(/[\u0000-\u001F\u007F]/g, '').trim()
-
     const supabase = createServerSupabaseClient()
 
     const insertData = {
       nombre: parsed.data.nombre,
       email: parsed.data.email,
-      contacto_pref,
-      presupuesto,
-      consent: record.consent === true,
-      origen: 'web-contact-form',
+      empresa: parsed.data.empresa || null,
+      mensaje: parsed.data.mensaje || null,
+      telefono: parsed.data.telefono || null,
+      contacto_pref: parsed.data.contacto_pref,
+      presupuesto: parsed.data.presupuesto || null,
+      servicio: parsed.data.servicio || null,
+      consent: parsed.data.consent,
+      origen: parsed.data.origen || 'web-contact-form',
       status: 'pending',
       attempts: 0,
     }

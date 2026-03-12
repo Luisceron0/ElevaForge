@@ -7,6 +7,8 @@ import { buildWhatsAppURL } from '@/lib/whatsapp'
 
 const quickLinks = [
   { label: 'Paquetes', href: '#precios' },
+  { label: 'Quiénes somos', href: '#quienes' },
+  { label: 'Proyectos', href: '#proyectos' },
   { label: 'Estándares', href: '#estandar' },
   { label: 'Diferencial', href: '#autonomia' },
   { label: 'Proceso', href: '#proceso' },

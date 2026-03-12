@@ -2,8 +2,12 @@ export interface Lead {
   id?: string
   nombre: string
   email: string
+  empresa?: string
+  mensaje?: string
+  telefono?: string
   contacto_pref?: string
   presupuesto?: string
+  servicio?: string
   consent?: boolean
   origen?: string
   status?: 'pending' | 'sent' | 'failed'
@@ -16,8 +20,12 @@ export interface Lead {
 export interface LeadInsert {
   nombre: string
   email: string
+  empresa?: string
+  mensaje?: string
+  telefono?: string
   contacto_pref?: string
   presupuesto?: string
+  servicio?: string
   consent?: boolean
   origen?: string
   status?: string

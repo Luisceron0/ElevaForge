@@ -48,9 +48,14 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
     const payload = {
       nombre: sanitizeInput(formData.nombre),
       email: sanitizeInput(formData.email),
+      empresa: sanitizeInput(formData.empresa).slice(0, 100),
+      mensaje: sanitizeInput(formData.mensaje).slice(0, 500),
+      telefono: sanitizeInput(formData.telefono).slice(0, 32),
       contacto_pref: sanitizeInput(formData.contacto_pref).slice(0, 16),
       presupuesto: sanitizeInput(formData.presupuesto).slice(0, 64),
+      servicio: sanitizeInput(formData.servicio).slice(0, 64),
       consent: true,
+      origen: `web-contact-${type}`,
       _hp: honeypot,
       ...extra,
     }
