@@ -1,18 +1,5 @@
 import { z } from 'zod'
 
-/**
- * Shared input-validation schemas.
- *
- * OWASP A05:2025 — Injection prevention via strict allowlists.
- * OWASP A10:2025 — Fail-closed on invalid input.
- *
- * Every field uses:
- *  • Type coercion + trimming to normalise input
- *  • Regex allowlists (not blocklists) where possible
- *  • Length caps to prevent oversized payloads
- */
-
-/** Strip ASCII control characters (0x00-0x1F, 0x7F) — never legitimate in user text. */
 function stripControlChars(v: string): string {
   return v.replace(/[\u0000-\u001F\u007F]/g, '')
 }
@@ -31,64 +18,45 @@ export const leadSchema = z.object({
   email: z
     .string()
     .transform((v) => stripControlChars(v).toLowerCase().trim())
-    .pipe(
-      z
-        .string()
-        .email('Email inválido')
-        .max(254, 'El email es demasiado largo'),
-    ),
+    .pipe(z.string().email('Email inválido').max(254, 'El email es demasiado largo')),
   telefono: z
     .string()
-    .max(32, 'El teléfono no puede exceder 32 caracteres')
     .transform((v) => stripControlChars(v).trim())
+    .max(32, 'El teléfono no puede exceder 32 caracteres')
     .optional()
     .or(z.literal('')),
   empresa: z
     .string()
-    .max(100, 'El nombre de empresa no puede exceder 100 caracteres')
     .transform((v) => stripControlChars(v).trim())
+    .max(100, 'El nombre de empresa no puede exceder 100 caracteres')
     .optional()
     .or(z.literal('')),
   mensaje: z
     .string()
+    .transform((v) => stripControlChars(v).trim())
     .max(500, 'El mensaje no puede exceder 500 caracteres')
-    .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
-<<<<<<< HEAD
-  telefono: z
-    .string()
-    .max(32, 'El teléfono no puede exceder 32 caracteres')
-    .transform((v) => stripControlChars(v).trim())
-    .optional()
-    .or(z.literal('')),
-  contacto_pref: z
-    .enum(['email', 'telefono'])
-    .default('email'),
+  contacto_pref: z.enum(['email', 'telefono']).default('email'),
   presupuesto: z
     .string()
-    .max(64, 'El presupuesto no puede exceder 64 caracteres')
     .transform((v) => stripControlChars(v).trim())
+    .max(64, 'El presupuesto no puede exceder 64 caracteres')
     .optional()
     .or(z.literal('')),
-=======
->>>>>>> 6346743 (Add telefono and servicio fields to contact form and validations)
   servicio: z
     .string()
-    .max(64, 'El servicio no puede exceder 64 caracteres')
     .transform((v) => stripControlChars(v).trim())
+    .max(64, 'El servicio no puede exceder 64 caracteres')
     .optional()
     .or(z.literal('')),
-<<<<<<< HEAD
   consent: z.boolean().default(false),
   origen: z
     .string()
-    .max(64, 'El origen no puede exceder 64 caracteres')
     .transform((v) => stripControlChars(v).trim())
+    .max(64, 'El origen no puede exceder 64 caracteres')
     .optional()
     .or(z.literal('')),
-=======
->>>>>>> 6346743 (Add telefono and servicio fields to contact form and validations)
 })
 
 export type LeadInput = z.infer<typeof leadSchema>
