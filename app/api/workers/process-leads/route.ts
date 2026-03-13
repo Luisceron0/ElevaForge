@@ -61,52 +61,54 @@ async function processBatch() {
     throw new Error('DISCORD_WEBHOOK_URL has an invalid host or format')
   }
 
-  // Build aggregated messages while respecting Discord's 2000 char limit.
+  // Build aggregated message chunks respecting Discord's 2000 char limit.
+  // Track which lead IDs belong to each chunk so delivery outcome is per-lead.
   const MAX_LEN = 1900
-  const messages: string[] = []
+  const messageGroups: { content: string; leadIds: string[] }[] = []
   const header = `Nuevos leads: ${pendingCount} (procesando ${rows.length} en este lote)`
-  let current = header + '\n\n'
+  let currentContent = header + '\n\n'
+  let currentIds: string[] = []
 
   for (const lead of rows) {
     const line = `- ${lead.nombre} — ${lead.email} — ${lead.presupuesto || 'N/A'} — ${lead.contacto_pref || 'N/A'}`
-    if ((current + line + '\n').length > MAX_LEN) {
-      messages.push(current)
-      current = ''
+    if ((currentContent + line + '\n').length > MAX_LEN) {
+      messageGroups.push({ content: currentContent, leadIds: currentIds })
+      currentContent = ''
+      currentIds = []
     }
-    current += line + '\n'
+    currentContent += line + '\n'
+    currentIds.push(lead.id)
   }
-  if (current.trim().length > 0) messages.push(current)
+  if (currentContent.trim().length > 0) messageGroups.push({ content: currentContent, leadIds: currentIds })
 
-  let deliveryOk = true
+  const succeededIds = new Set<string>()
 
-  // Send each aggregated message with a small delay between to avoid rate limits
-  for (const msg of messages) {
+  // Send each chunk with a small delay between to avoid rate limits.
+  // Only leads whose chunk delivered successfully are marked as sent.
+  for (const group of messageGroups) {
     try {
       const res = await fetch(webhook, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: msg }),
+        body: JSON.stringify({ content: group.content }),
       })
-
-      if (!res.ok) {
-        deliveryOk = false
+      if (res.ok) {
+        group.leadIds.forEach((id) => succeededIds.add(id))
       }
-
       // Small sleep to be nice with rate limits
       await new Promise((r) => setTimeout(r, 200))
     } catch (err) {
       console.error('Error sending aggregated message to Discord:', err)
-      deliveryOk = false
     }
   }
 
-  // Update each lead's status individually (to track attempts and failures precisely)
+  // Update each lead's status individually based on per-chunk delivery outcome
   for (const lead of rows) {
     const id = lead.id
     const now = new Date().toISOString()
     const nextAttempts = (lead.attempts || 0) + 1
     const update: Record<string, unknown> = { attempts: nextAttempts, last_attempt_at: now }
-    if (deliveryOk) {
+    if (succeededIds.has(id)) {
       update.status = 'sent'
       update.discord_sent_at = now
     } else {
@@ -121,8 +123,8 @@ async function processBatch() {
 
   return {
     processed: rows.length,
-    sent: deliveryOk ? rows.length : 0,
-    failed: deliveryOk ? 0 : rows.length,
+    sent: succeededIds.size,
+    failed: rows.length - succeededIds.size,
   }
 }
 

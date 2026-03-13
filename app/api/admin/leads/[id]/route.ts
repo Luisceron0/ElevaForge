@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { runApiGuard } from '@/lib/security/api-guard'
 
 const ALLOWED_STATUS = new Set(['pending', 'sent', 'failed'])
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function unauthorized() {
   return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
@@ -25,6 +26,9 @@ export async function PATCH(
   if (guard.blocked) return guard.response
 
   const { id } = await context.params
+  if (!UUID_RE.test(id)) {
+    return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+  }
 
   let body: unknown
   try {

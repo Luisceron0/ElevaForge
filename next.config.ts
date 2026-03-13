@@ -40,23 +40,6 @@ const config: NextConfig = {
         { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
         { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
         { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
-        {
-          key: 'Content-Security-Policy',
-          value: [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "img-src 'self' data: blob:",
-            "font-src 'self' https://fonts.gstatic.com",
-            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.railway.app https://*.onrender.com https://*.fly.dev",
-            "frame-ancestors 'none'",
-            "form-action 'self'",
-            "base-uri 'self'",
-            "object-src 'none'",
-            "worker-src 'self' blob:",
-            'upgrade-insecure-requests',
-          ].join('; '),
-        },
       ],
     },
     {

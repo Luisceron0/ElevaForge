@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
-import { hasAdminSession } from '@/lib/security/admin-session'
+import { hasActiveAdminSession } from '@/lib/security/admin-access'
 import LoginForm from './LoginForm'
 
 // Prevent search engines from indexing the admin login page
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 }
 
 export default async function AdminLoginPage() {
-  // Server-side: redirect to dashboard if already authenticated
-  if (await hasAdminSession()) {
+  // Server-side: redirect to dashboard if already authenticated (checks DB active status)
+  if (await hasActiveAdminSession()) {
     redirect('/admin')
   }
 

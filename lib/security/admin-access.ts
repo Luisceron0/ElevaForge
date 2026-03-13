@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getAdminCookieName, getSessionUsername } from '@/lib/security/admin-session'
 
@@ -27,10 +28,18 @@ export async function hasActiveAdminSessionInRequest(req: NextRequest): Promise<
   const username = getSessionUsername(token)
   if (!username) return false
 
-  // If Supabase is not configured, trust the HMAC-signed session token alone.
-  // This allows the admin to work with legacy env-var credentials while
-  // Supabase is being set up.
-  if (!supabaseConfigured()) return true
+  if (!supabaseConfigured()) return false
+
+  return isActiveAdminUser(username)
+}
+
+export async function hasActiveAdminSession(): Promise<boolean> {
+  const store = await cookies()
+  const token = store.get(getAdminCookieName())?.value
+  const username = getSessionUsername(token)
+  if (!username) return false
+
+  if (!supabaseConfigured()) return false
 
   return isActiveAdminUser(username)
 }

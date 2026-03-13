@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { hasAdminSessionInRequest, hashAdminPassword } from '@/lib/security/admin-session'
+import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
+import { hashAdminPassword } from '@/lib/security/admin-session'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { runApiGuard } from '@/lib/security/api-guard'
 
 function unauthorized() {
   return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 }
 
 export async function GET(request: NextRequest) {
-  if (!hasAdminSessionInRequest(request)) {
+  if (!(await hasActiveAdminSessionInRequest(request))) {
     return unauthorized()
   }
 
@@ -25,9 +27,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!hasAdminSessionInRequest(request)) {
+  if (!(await hasActiveAdminSessionInRequest(request))) {
     return unauthorized()
   }
+
+  const guard = await runApiGuard(request, {
+    maxBodyBytes: 4_096,
+    rateLimitMax: 12,
+    rateLimitWindowMs: 60_000,
+  })
+  if (guard.blocked) return guard.response
 
   let body: unknown
   try {

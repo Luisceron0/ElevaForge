@@ -87,6 +87,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
   }
 
   function remove(i: number) {
+    if (!window.confirm('¿Eliminar este miembro del equipo?')) return
     setMembers((prev) => prev.filter((_, idx) => idx !== i))
     if (editingIndex === i) setEditingIndex(null)
   }

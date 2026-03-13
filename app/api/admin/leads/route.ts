@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   let query = supabase
     .from('leads')
     .select('id,nombre,email,empresa,mensaje,telefono,contacto_pref,presupuesto,servicio,consent,origen,status,attempts,created_at')
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: true })
     .limit(safeLimit)
 
   if (status) {

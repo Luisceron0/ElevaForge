@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import AdminDashboard from '@/components/admin/AdminDashboard'
-import { hasAdminSession } from '@/lib/security/admin-session'
+import { hasActiveAdminSession } from '@/lib/security/admin-access'
 import { getSiteContent } from '@/lib/site-content'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
@@ -17,7 +17,7 @@ async function getAdminLeads() {
     const { data } = await supabase
       .from('leads')
       .select('id,nombre,email,empresa,mensaje,telefono,contacto_pref,presupuesto,servicio,consent,origen,status,attempts,created_at')
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: true })
       .limit(200)
 
     return data ?? []
@@ -27,7 +27,7 @@ async function getAdminLeads() {
 }
 
 export default async function AdminPage() {
-  const session = await hasAdminSession()
+  const session = await hasActiveAdminSession()
   if (!session) {
     redirect('/admin/login')
   }

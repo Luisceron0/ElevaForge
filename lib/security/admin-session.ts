@@ -24,7 +24,9 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 function getSessionSeed() {
-  return process.env.ADMIN_SESSION_SEED || process.env.SUPABASE_SERVICE_ROLE_KEY || 'elevaforge-admin'
+  const seed = process.env.ADMIN_SESSION_SEED || process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!seed) throw new Error('ADMIN_SESSION_SEED environment variable is not set')
+  return seed
 }
 
 function base64Url(input: string): string {
@@ -86,21 +88,10 @@ async function verifyAgainstSupabase(username: string, password: string): Promis
   }
 }
 
-function verifyAgainstLegacyEnv(username: string, password: string): boolean {
-  const envUsername = process.env.ADMIN_USERNAME
-  const envPassword = process.env.ADMIN_PASSWORD
-  if (!envUsername || !envPassword) return false
-  return timingSafeEqual(username, envUsername) && timingSafeEqual(password, envPassword)
-}
-
 export async function verifyAdminCredentials(username: string, password: string): Promise<boolean> {
   if (!username || !password) return false
 
-  const supabaseOk = await verifyAgainstSupabase(username, password)
-  if (supabaseOk) return true
-
-  // Backward compatibility for one legacy env admin while migrating.
-  return verifyAgainstLegacyEnv(username, password)
+  return verifyAgainstSupabase(username, password)
 }
 
 export function createAdminSessionToken(username: string): string {

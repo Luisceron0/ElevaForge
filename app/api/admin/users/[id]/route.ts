@@ -1,20 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { hasAdminSessionInRequest } from '@/lib/security/admin-session'
+import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { runApiGuard } from '@/lib/security/api-guard'
 
 function unauthorized() {
   return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
-  if (!hasAdminSessionInRequest(request)) {
+  if (!(await hasActiveAdminSessionInRequest(request))) {
     return unauthorized()
   }
 
+  const guard = await runApiGuard(request, {
+    maxBodyBytes: 2_048,
+    rateLimitMax: 20,
+    rateLimitWindowMs: 60_000,
+  })
+  if (guard.blocked) return guard.response
+
   const { id } = await context.params
+  if (!UUID_RE.test(id)) {
+    return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+  }
 
   let body: unknown
   try {

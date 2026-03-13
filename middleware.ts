@@ -75,46 +75,79 @@ function reject(status: number, error: string, extraHeaders?: Record<string, str
   return NextResponse.json({ error }, { status, headers: extraHeaders })
 }
 
+/** Build a strict nonce-based CSP per request (OWASP A05). */
+function buildCsp(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'nonce-${nonce}' 'strict-dynamic'`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: blob:",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "worker-src 'self' blob:",
+    'upgrade-insecure-requests',
+  ].join('; ')
+}
+
 export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
   const method = req.method.toUpperCase()
 
-  // Only guard API admin routes
-  if (!path.startsWith('/api/admin/')) {
-    return NextResponse.next()
+  // Generate a per-request nonce — Edge-compatible Web Crypto, no Node.js APIs
+  const nonce = btoa(crypto.randomUUID())
+  const csp = buildCsp(nonce)
+
+  // Forward nonce to server components via request header
+  const requestHeaders = new Headers(req.headers)
+  requestHeaders.set('x-nonce', nonce)
+
+  // ── CSRF / origin + Content-Type guard for admin API routes ────────
+  if (path.startsWith('/api/admin/')) {
+    if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+      if (!allowOrigin(req)) {
+        return reject(403, 'Solicitud no autorizada')
+      }
+
+      const ct = req.headers.get('content-type') ?? ''
+      if (!ct.includes('application/json')) {
+        return reject(415, 'Content-Type debe ser application/json')
+      }
+
+      const len = Number(req.headers.get('content-length') ?? '0')
+      if (Number.isFinite(len) && len > 128_000) {
+        return reject(413, 'Payload demasiado grande')
+      }
+    }
+
+    // Login-specific rate limiting
+    if (path === '/api/admin/login' && method === 'POST') {
+      const ip = getClientIp(req)
+      const rl = checkLoginRate(ip)
+      if (!rl.ok) {
+        return reject(429, 'Demasiados intentos, intenta más tarde', {
+          'Retry-After': String(rl.retryAfterSec),
+        })
+      }
+    }
   }
 
-  // CSRF / origin check for mutating requests
-  if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
-    if (!allowOrigin(req)) {
-      return reject(403, 'Solicitud no autorizada')
-    }
-
-    const ct = req.headers.get('content-type') ?? ''
-    if (!ct.includes('application/json')) {
-      return reject(415, 'Content-Type debe ser application/json')
-    }
-
-    const len = Number(req.headers.get('content-length') ?? '0')
-    if (Number.isFinite(len) && len > 128_000) {
-      return reject(413, 'Payload demasiado grande')
-    }
-  }
-
-  // Login-specific rate limiting
-  if (path === '/api/admin/login' && method === 'POST') {
-    const ip = getClientIp(req)
-    const rl = checkLoginRate(ip)
-    if (!rl.ok) {
-      return reject(429, 'Demasiados intentos, intenta más tarde', {
-        'Retry-After': String(rl.retryAfterSec),
-      })
-    }
-  }
-
-  return NextResponse.next()
+  // ── Set CSP and forward modified request ───────────────────────────
+  const response = NextResponse.next({ request: { headers: requestHeaders } })
+  response.headers.set('content-security-policy', csp)
+  return response
 }
 
 export const config = {
-  matcher: ['/api/admin/:path*'],
+  matcher: [
+    /*
+     * Match all routes except Next.js internals and static assets.
+     * The generated nonce is forwarded to server components via the
+     * x-nonce request header and set on the CSP response header.
+     */
+    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|eot)$).*)',
+  ],
 }

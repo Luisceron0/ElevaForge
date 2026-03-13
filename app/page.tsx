@@ -3,7 +3,6 @@ import HeroSection from '@/components/sections/HeroSection'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import WhoWeAreSection from '@/components/sections/WhoWeAreSection'
-import ProjectsSection from '@/components/sections/ProjectsSection'
 import { getSiteContent } from '@/lib/site-content'
 
 // Lazy load below-the-fold sections for better performance
@@ -57,8 +56,7 @@ async function HomeContent({
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
         <HeroSection />
         <PricingSection plans={content.packages} />
-        <WhoWeAreSection about={content.about} />
-        <ProjectsSection projects={content.projects} />
+        <WhoWeAreSection about={content.about} projects={content.projects} />
         <ForgeStandards />
         <AutonomySection />
         <RoadmapSection />

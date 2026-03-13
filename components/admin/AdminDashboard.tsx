@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Lead } from '@/types/lead'
-import { SiteContent, TeamCapability } from '@/lib/site-content'
+import { AboutContent, PackagePlan, ProjectItem, SiteContent, TeamCapability } from '@/lib/site-content'
 import TeamAdminEditor from './TeamAdminEditor'
+import ProjectsAdminEditor from './ProjectsAdminEditor'
+import PackagesAdminEditor from './PackagesAdminEditor'
+import AboutAdminEditor from './AboutAdminEditor'
 
 interface Props {
   initialContent: SiteContent
@@ -29,10 +32,6 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
   const [newAdminPassword, setNewAdminPassword] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [okMsg, setOkMsg] = useState('')
-
-  const [aboutText, setAboutText] = useState(JSON.stringify(content.about, null, 2))
-  const [projectsText, setProjectsText] = useState(JSON.stringify(content.projects, null, 2))
-  const [packagesText, setPackagesText] = useState(JSON.stringify(content.packages, null, 2))
 
   const filteredLeads = useMemo(() => {
     if (statusFilter === 'all') return leads
@@ -87,38 +86,21 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
     }
   }
 
-  function saveAbout() {
-    try {
-      const parsed = JSON.parse(aboutText)
-      saveContent('about', parsed)
-    } catch {
-      setErrorMsg('El JSON de Quiénes somos no es válido')
-    }
-  }
-
-  function saveProjects() {
-    try {
-      const parsed = JSON.parse(projectsText)
-      saveContent('projects', parsed)
-    } catch {
-      setErrorMsg('El JSON de proyectos no es válido')
-    }
-  }
-
-  function savePackages() {
-    try {
-      const parsed = JSON.parse(packagesText)
-      saveContent('packages', parsed)
-    } catch {
-      setErrorMsg('El JSON de paquetes no es válido')
-    }
+  async function saveAboutVisual(about: AboutContent) {
+    await saveContent('about', about)
   }
 
   async function saveTeam(team: TeamCapability[]) {
     const updatedAbout = { ...content.about, team }
     await saveContent('about', updatedAbout)
-    // Sync textarea so both editors stay consistent
-    setAboutText(JSON.stringify(updatedAbout, null, 2))
+  }
+
+  async function saveProjectsVisual(projects: ProjectItem[]) {
+    await saveContent('projects', projects)
+  }
+
+  async function savePackagesVisual(plans: PackagePlan[]) {
+    await saveContent('packages', plans)
   }
 
   async function createAdminUser() {
@@ -154,6 +136,8 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
   }
 
   async function toggleAdminUser(user: AdminUserRow) {
+    if (user.is_active && !window.confirm('¿Desactivar este administrador?')) return
+
     setErrorMsg('')
     setOkMsg('')
 
@@ -204,7 +188,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
   }
 
   async function logout() {
-    await fetch('/api/admin/logout', { method: 'POST' })
+    await fetch('/api/admin/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
     window.location.href = '/admin/login'
   }
 
@@ -309,68 +293,29 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
           </div>
         </section>
 
+        <PackagesAdminEditor
+          plans={content.packages}
+          saving={savingKey === 'packages'}
+          onSave={savePackagesVisual}
+        />
+
+        <AboutAdminEditor
+          about={content.about}
+          saving={savingKey === 'about'}
+          onSave={saveAboutVisual}
+        />
+
         <TeamAdminEditor
           team={content.about.team}
           saving={savingKey === 'about' || savingKey === 'team'}
           onSave={saveTeam}
         />
 
-        <section className="bg-white rounded-2xl shadow p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-forge-bg-dark">Quiénes somos (JSON avanzado)</h2>
-            <button
-              onClick={saveAbout}
-              disabled={savingKey === 'about'}
-              className="bg-forge-orange-main text-white px-4 py-2 rounded-lg disabled:opacity-50"
-            >
-              {savingKey === 'about' ? 'Guardando...' : 'Guardar'}
-            </button>
-          </div>
-          <p className="text-sm text-forge-bg-dark/70">Edita el JSON completo de la sección (avanzado). Los cambios del equipo aquí sobreescriben el editor visual de arriba.</p>
-          <textarea
-            value={aboutText}
-            onChange={(e) => setAboutText(e.target.value)}
-            className="w-full min-h-[300px] font-mono text-sm border rounded-lg p-3"
-          />
-        </section>
-
-        <section className="bg-white rounded-2xl shadow p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-forge-bg-dark">Proyectos</h2>
-            <button
-              onClick={saveProjects}
-              disabled={savingKey === 'projects'}
-              className="bg-forge-orange-main text-white px-4 py-2 rounded-lg disabled:opacity-50"
-            >
-              {savingKey === 'projects' ? 'Guardando...' : 'Guardar'}
-            </button>
-          </div>
-          <p className="text-sm text-forge-bg-dark/70">Incluye textos, URLs e imágenes (imageUrl).</p>
-          <textarea
-            value={projectsText}
-            onChange={(e) => setProjectsText(e.target.value)}
-            className="w-full min-h-[240px] font-mono text-sm border rounded-lg p-3"
-          />
-        </section>
-
-        <section className="bg-white rounded-2xl shadow p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-forge-bg-dark">Paquetes</h2>
-            <button
-              onClick={savePackages}
-              disabled={savingKey === 'packages'}
-              className="bg-forge-orange-main text-white px-4 py-2 rounded-lg disabled:opacity-50"
-            >
-              {savingKey === 'packages' ? 'Guardando...' : 'Guardar'}
-            </button>
-          </div>
-          <p className="text-sm text-forge-bg-dark/70">Puedes ajustar precios, bullets y textos de venta.</p>
-          <textarea
-            value={packagesText}
-            onChange={(e) => setPackagesText(e.target.value)}
-            className="w-full min-h-[240px] font-mono text-sm border rounded-lg p-3"
-          />
-        </section>
+        <ProjectsAdminEditor
+          projects={content.projects}
+          saving={savingKey === 'projects'}
+          onSave={saveProjectsVisual}
+        />
 
         <section className="bg-white rounded-2xl shadow p-5 space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">

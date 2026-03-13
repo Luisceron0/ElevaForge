@@ -6,6 +6,7 @@ import {
   saveSiteContent,
   SiteContent,
 } from '@/lib/site-content'
+import { validateContentByKey } from '@/lib/admin-content-validation'
 import { runApiGuard } from '@/lib/security/api-guard'
 
 function unauthorized() {
@@ -56,8 +57,13 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: 'El valor debe ser un objeto' }, { status: 400 })
   }
 
+  const validated = validateContentByKey(key, value)
+  if (!validated.ok) {
+    return NextResponse.json({ error: validated.error }, { status: 400 })
+  }
+
   try {
-    await saveSiteContent(key, value as SiteContent[typeof key])
+    await saveSiteContent(key, validated.data)
     return NextResponse.json({ success: true })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'No se pudo guardar el contenido'

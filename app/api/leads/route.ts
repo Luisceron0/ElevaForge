@@ -105,9 +105,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
-  return NextResponse.json(
-    { error: 'Este endpoint solo acepta POST requests' },
-    { status: 405, headers: { Allow: 'POST' } },
-  )
+export async function GET(req: NextRequest) {
+  const redirectUrl = new URL('/api/contact', req.url)
+  return NextResponse.redirect(redirectUrl, 308)
 }
