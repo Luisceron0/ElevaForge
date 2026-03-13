@@ -10,6 +10,9 @@ const config: NextConfig = {
   reactStrictMode: true,
 
   // Scanner/probe blocking — static redirects, no middleware needed
+  // NOTE: '/admin' is intentionally NOT blocked here because the app has its
+  // own admin UI at /admin. External scanner probes are blocked by auth +
+  // rate-limiting in the API layer. Common CMS/PHP probe paths are still 404'd.
   redirects: async () => [
     ...['.git', '.env', '.svn', 'wp-admin', 'wp-login', 'phpmyadmin', 'wp-content', 'node_modules'].map((seg) => ({
       source: `/${seg}/:path*`,
@@ -18,7 +21,6 @@ const config: NextConfig = {
     })),
     { source: '/xmlrpc.php', destination: '/404', permanent: false },
     { source: '/.htaccess', destination: '/404', permanent: false },
-    { source: '/admin/:path*', destination: '/404', permanent: false },
   ],
 
   // Security headers in config (static) instead of middleware (dynamic)

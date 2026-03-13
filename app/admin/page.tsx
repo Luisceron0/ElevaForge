@@ -1,8 +1,15 @@
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 import AdminDashboard from '@/components/admin/AdminDashboard'
 import { hasAdminSession } from '@/lib/security/admin-session'
 import { getSiteContent } from '@/lib/site-content'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+
+// Prevent search engines from indexing the admin dashboard
+export const metadata: Metadata = {
+  title: 'Panel admin — ElevaForge',
+  robots: { index: false, follow: false, noarchive: true },
+}
 
 async function getAdminLeads() {
   try {
