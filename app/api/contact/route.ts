@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     logSecurityEvent({
       type: 'UNHANDLED_ERROR',
-      ip: (await runApiGuard(request)).ip,
+      ip: guard.ip,
       path: '/api/contact',
       method: 'POST',
       details: err instanceof Error ? err.message : 'unknown',

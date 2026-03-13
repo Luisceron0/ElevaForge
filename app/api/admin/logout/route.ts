@@ -1,7 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getAdminCookieName } from '@/lib/security/admin-session'
+import { validateOrigin } from '@/lib/security/csrf'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const origin = validateOrigin(request)
+  if (!origin.valid) {
+    return NextResponse.json({ error: 'Solicitud no autorizada' }, { status: 403 })
+  }
+
   const response = NextResponse.json({ success: true })
   response.cookies.set({
     name: getAdminCookieName(),

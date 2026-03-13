@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { hasAdminSessionInRequest } from '@/lib/security/admin-session'
+import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 function unauthorized() {
@@ -7,7 +7,7 @@ function unauthorized() {
 }
 
 export async function GET(request: NextRequest) {
-  if (!hasAdminSessionInRequest(request)) {
+  if (!(await hasActiveAdminSessionInRequest(request))) {
     return unauthorized()
   }
 

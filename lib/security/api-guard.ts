@@ -77,8 +77,9 @@ export async function runApiGuard(
   }
 
   // ── 2. Payload size check (A05, A10) ───────────────────────────────
-  const contentLength = Number(request.headers.get('content-length') ?? '0')
-  if (contentLength > maxBodyBytes) {
+  const contentLengthRaw = request.headers.get('content-length')
+  const contentLength = Number(contentLengthRaw ?? '0')
+  if (Number.isFinite(contentLength) && contentLength > maxBodyBytes) {
     logSecurityEvent({ type: 'OVERSIZED_PAYLOAD', ip, path, method: request.method, details: `${contentLength} bytes` })
     return {
       blocked: true,
@@ -87,6 +88,35 @@ export async function runApiGuard(
         { status: 413 },
       ),
       ip,
+    }
+  }
+
+  // Fallback for chunked requests or missing/invalid Content-Length.
+  if (!contentLengthRaw || !Number.isFinite(contentLength) || contentLength <= 0) {
+    try {
+      const preview = await request.clone().text()
+      const bytes = Buffer.byteLength(preview, 'utf8')
+      if (bytes > maxBodyBytes) {
+        logSecurityEvent({ type: 'OVERSIZED_PAYLOAD', ip, path, method: request.method, details: `${bytes} bytes (measured)` })
+        return {
+          blocked: true,
+          response: NextResponse.json(
+            { error: 'Payload demasiado grande' },
+            { status: 413 },
+          ),
+          ip,
+        }
+      }
+    } catch {
+      logSecurityEvent({ type: 'MALFORMED_BODY', ip, path, method: request.method, details: 'Body preview failed in guard' })
+      return {
+        blocked: true,
+        response: NextResponse.json(
+          { error: 'Cuerpo de solicitud inválido' },
+          { status: 400 },
+        ),
+        ip,
+      }
     }
   }
 

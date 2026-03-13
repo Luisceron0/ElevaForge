@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { hasAdminSessionInRequest } from '@/lib/security/admin-session'
+import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import {
   DEFAULT_SITE_CONTENT,
   getSiteContent,
   saveSiteContent,
   SiteContent,
 } from '@/lib/site-content'
+import { runApiGuard } from '@/lib/security/api-guard'
 
 function unauthorized() {
   return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 }
 
 export async function GET(request: NextRequest) {
-  if (!hasAdminSessionInRequest(request)) {
+  if (!(await hasActiveAdminSessionInRequest(request))) {
     return unauthorized()
   }
 
@@ -21,9 +22,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  if (!hasAdminSessionInRequest(request)) {
+  if (!(await hasActiveAdminSessionInRequest(request))) {
     return unauthorized()
   }
+
+  const guard = await runApiGuard(request, {
+    maxBodyBytes: 128_000,
+    rateLimitMax: 20,
+    rateLimitWindowMs: 60_000,
+  })
+  if (guard.blocked) return guard.response
 
   let body: unknown
   try {

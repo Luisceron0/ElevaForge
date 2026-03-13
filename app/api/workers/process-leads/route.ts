@@ -7,6 +7,18 @@ const MAX_ATTEMPTS = 5
 // When running once per day we can increase the batch size to process backlog.
 const BATCH_SIZE = 200
 
+function isAllowedDiscordWebhook(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol !== 'https:') return false
+    const host = parsed.hostname.toLowerCase()
+    const isDiscordHost = host === 'discord.com' || host === 'discordapp.com'
+    return isDiscordHost && parsed.pathname.startsWith('/api/webhooks/')
+  } catch {
+    return false
+  }
+}
+
 async function processBatch() {
   const supabase = createServerSupabaseClient()
 
@@ -45,6 +57,9 @@ async function processBatch() {
 
   const webhook = process.env.DISCORD_WEBHOOK_URL
   if (!webhook) throw new Error('DISCORD_WEBHOOK_URL not configured')
+  if (!isAllowedDiscordWebhook(webhook)) {
+    throw new Error('DISCORD_WEBHOOK_URL has an invalid host or format')
+  }
 
   // Build aggregated messages while respecting Discord's 2000 char limit.
   const MAX_LEN = 1900
@@ -62,8 +77,7 @@ async function processBatch() {
   }
   if (current.trim().length > 0) messages.push(current)
 
-  let sent = 0
-  let failed = 0
+  let deliveryOk = true
 
   // Send each aggregated message with a small delay between to avoid rate limits
   for (const msg of messages) {
@@ -74,20 +88,15 @@ async function processBatch() {
         body: JSON.stringify({ content: msg }),
       })
 
-      const now = new Date().toISOString()
-
-      if (res.ok) {
-        // Mark all leads in this batch as sent — we mark individually below as well
-        sent += rows.length
-      } else {
-        failed += rows.length
+      if (!res.ok) {
+        deliveryOk = false
       }
 
       // Small sleep to be nice with rate limits
       await new Promise((r) => setTimeout(r, 200))
     } catch (err) {
       console.error('Error sending aggregated message to Discord:', err)
-      failed += rows.length
+      deliveryOk = false
     }
   }
 
@@ -97,8 +106,12 @@ async function processBatch() {
     const now = new Date().toISOString()
     const nextAttempts = (lead.attempts || 0) + 1
     const update: Record<string, unknown> = { attempts: nextAttempts, last_attempt_at: now }
-    if (sent > 0) update.status = 'sent'
-    if (failed > 0 && sent === 0) update.status = nextAttempts >= MAX_ATTEMPTS ? 'failed' : 'pending'
+    if (deliveryOk) {
+      update.status = 'sent'
+      update.discord_sent_at = now
+    } else {
+      update.status = nextAttempts >= MAX_ATTEMPTS ? 'failed' : 'pending'
+    }
     try {
       await supabase.from('leads').update(update).eq('id', id)
     } catch (err) {
@@ -106,7 +119,11 @@ async function processBatch() {
     }
   }
 
-  return { processed: rows.length, sent, failed }
+  return {
+    processed: rows.length,
+    sent: deliveryOk ? rows.length : 0,
+    failed: deliveryOk ? 0 : rows.length,
+  }
 }
 
 function getClientIp(req: NextRequest): string {

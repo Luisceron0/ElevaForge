@@ -9,10 +9,10 @@ export default function ProjectsSection({ projects }: Props) {
     <section id="proyectos" className="py-20 bg-forge-bg-light">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <p className="text-sm uppercase tracking-[0.2em] text-forge-orange-main font-semibold">Proyectos</p>
+          <p className="text-sm uppercase tracking-[0.2em] text-forge-orange-main font-semibold">Proyectos, experiencia y resultados</p>
           <h2 className="text-3xl md:text-4xl font-bold text-forge-bg-dark mt-3">Trabajos que respaldan nuestro estándar</h2>
           <p className="text-forge-bg-dark/70 mt-4 text-lg">
-            Aquí puedes mostrar proyectos entregados y casos en curso. Todo este contenido es editable desde el panel de administración.
+            Aquí consolidamos experiencia aplicada y resultados medibles en proyectos entregados y casos en curso. Todo este contenido es editable desde el panel de administración.
           </p>
         </div>
 

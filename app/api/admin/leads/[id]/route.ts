@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { hasAdminSessionInRequest } from '@/lib/security/admin-session'
+import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { runApiGuard } from '@/lib/security/api-guard'
 
 const ALLOWED_STATUS = new Set(['pending', 'sent', 'failed'])
 
@@ -12,9 +13,16 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
-  if (!hasAdminSessionInRequest(request)) {
+  if (!(await hasActiveAdminSessionInRequest(request))) {
     return unauthorized()
   }
+
+  const guard = await runApiGuard(request, {
+    maxBodyBytes: 2_048,
+    rateLimitMax: 30,
+    rateLimitWindowMs: 60_000,
+  })
+  if (guard.blocked) return guard.response
 
   const { id } = await context.params
 

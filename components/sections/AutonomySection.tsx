@@ -104,7 +104,7 @@ export default function AutonomySection() {
           <div className="space-y-8">
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-white mb-4">
-                ¿Qué recibes con cada proyecto?
+                Soporte y mantenimiento: ¿Qué recibes con cada proyecto?
               </h3>
               {features.map((feature, index) => (
                 <div key={index} className="flex items-start gap-4">
