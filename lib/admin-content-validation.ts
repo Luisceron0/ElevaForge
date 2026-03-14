@@ -25,8 +25,9 @@ const aboutSchema = z.object({
   experience: z.object({
     title: text(180),
     description: text(1200),
+    items: z.array(text(220)).max(20),
   }),
-  projectsInProgress: text(1200),
+  projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),
 })
 

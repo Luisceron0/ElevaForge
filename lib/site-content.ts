@@ -44,8 +44,9 @@ export interface AboutContent {
   experience: {
     title: string
     description: string
+    items: string[]
   }
-  projectsInProgress: string
+  projectsInProgress: string[]
   supportItems: string[]
 }
 
@@ -234,9 +235,16 @@ export const DEFAULT_ABOUT: AboutContent = {
     title: 'AVC Inmobiliaria y Constructora',
     description:
       'Caso de referencia con puntuaciones sobresalientes en rendimiento, accesibilidad, buenas prácticas y SEO, validando el Estándar Forge en producción.',
+    items: [
+      'Puntuación destacada en rendimiento y SEO en Lighthouse',
+      'Arquitectura técnica preparada para escalar',
+    ],
   },
-  projectsInProgress:
-    'Actualmente tenemos varios proyectos en desarrollo en distintos sectores, lo que mantiene al equipo en práctica continua y acelera la mejora técnica.',
+  projectsInProgress: [
+    'Actualmente tenemos varios proyectos en desarrollo en distintos sectores.',
+    'El trabajo continuo mantiene al equipo en práctica constante.',
+    'Los aprendizajes entre proyectos aceleran la mejora técnica.',
+  ],
   supportItems: [
     'Corrección de errores funcionales durante los primeros 6 meses',
     'Actualizaciones de seguridad y parches ante vulnerabilidades',
@@ -267,6 +275,101 @@ function safeMerge<T>(value: unknown, fallback: T): T {
   return fallback
 }
 
+function normalizeTextList(value: unknown, fallback: string[]): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item ?? '').trim())
+      .filter(Boolean)
+      .slice(0, 20)
+  }
+
+  if (typeof value === 'string') {
+    const single = value.trim()
+    return single ? [single] : fallback
+  }
+
+  return fallback
+}
+
+function dedupeTextList(items: string[]): string[] {
+  const seen = new Set<string>()
+  const result: string[] = []
+
+  for (const item of items) {
+    const value = item.trim()
+    if (!value) continue
+    const key = value.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push(value)
+  }
+
+  return result
+}
+
+function mergeAboutItems(primary: AboutItem[], secondary: AboutItem[]): AboutItem[] {
+  const seen = new Set<string>()
+  const result: AboutItem[] = []
+
+  for (const item of [...primary, ...secondary]) {
+    const title = String(item?.title ?? '').trim()
+    const description = String(item?.description ?? '').trim()
+    if (!title || !description) continue
+
+    const key = `${title.toLowerCase()}::${description.toLowerCase()}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push({ title, description })
+  }
+
+  return result
+}
+
+function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutContent {
+  const merged = safeMerge(value, fallback)
+
+  const experienceRecord =
+    merged.experience && typeof merged.experience === 'object' && !Array.isArray(merged.experience)
+      ? merged.experience
+      : fallback.experience
+
+  const normalizedExperience = {
+    ...fallback.experience,
+    ...experienceRecord,
+    items: dedupeTextList(
+      normalizeTextList((experienceRecord as Record<string, unknown>).items, fallback.experience.items),
+    ),
+  }
+
+  const normalizedPillars = Array.isArray(merged.pillars)
+    ? merged.pillars.filter(isRecord).map((item) => ({
+      title: String(item.title ?? ''),
+      description: String(item.description ?? ''),
+    }))
+    : fallback.pillars
+
+  const normalizedDifferentiators = Array.isArray(merged.differentiators)
+    ? merged.differentiators.filter(isRecord).map((item) => ({
+      title: String(item.title ?? ''),
+      description: String(item.description ?? ''),
+    }))
+    : fallback.differentiators
+
+  const mergedDifferentiationItems = mergeAboutItems(normalizedPillars, normalizedDifferentiators)
+
+  return {
+    ...fallback,
+    ...merged,
+    pillars: mergedDifferentiationItems,
+    differentiators: [],
+    experience: normalizedExperience,
+    projectsInProgress: dedupeTextList(
+      normalizeTextList(merged.projectsInProgress, fallback.projectsInProgress),
+    ),
+    supportItems: dedupeTextList(normalizeTextList(merged.supportItems, fallback.supportItems)),
+  }
+}
+
 export async function getSiteContent(): Promise<SiteContent> {
   try {
     const supabase = createServerSupabaseClient()
@@ -285,7 +388,7 @@ export async function getSiteContent(): Promise<SiteContent> {
     }
 
     return {
-      about: safeMerge(byKey.get('about'), DEFAULT_SITE_CONTENT.about),
+      about: normalizeAboutContent(byKey.get('about'), DEFAULT_SITE_CONTENT.about),
       projects: safeMerge(byKey.get('projects'), DEFAULT_SITE_CONTENT.projects),
       packages: safeMerge(byKey.get('packages'), DEFAULT_SITE_CONTENT.packages),
     }
