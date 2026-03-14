@@ -9,8 +9,8 @@ const navLinks = [
   { href: '#quienes', label: 'Quiénes somos' },
   { href: '#proyectos', label: 'Proyectos' },
   { href: '#estandar', label: 'Garantía' },
-  { href: '#autonomia', label: 'Diferencial' },
   { href: '#proceso', label: 'Proceso' },
+  { href: '#autonomia', label: 'Diferencial' },
 ]
 
 export default function Navbar() {

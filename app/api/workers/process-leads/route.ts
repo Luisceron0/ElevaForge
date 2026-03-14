@@ -158,8 +158,8 @@ async function handleWorkerRequest(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  return handleWorkerRequest(req)
+export async function GET() {
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
 }
 
 export async function POST(req: NextRequest) {

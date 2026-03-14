@@ -58,8 +58,8 @@ async function HomeContent({
         <PricingSection plans={content.packages} />
         <WhoWeAreSection about={content.about} projects={content.projects} />
         <ForgeStandards />
-        <AutonomySection />
         <RoadmapSection />
+        <AutonomySection />
       </main>
       <Footer />
     </>

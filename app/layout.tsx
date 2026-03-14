@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Inter } from 'next/font/google'
-import { headers } from 'next/headers'
 import './globals.css'
+
+// Force per-request server rendering so middleware-provided headers
+// (x-nonce) are available during server render and match the CSP.
+export const dynamic = 'force-dynamic'
 
 const humanst = localFont({
   src: '../public/fonts/Humanist531BT-BlackA.woff2',
@@ -95,7 +98,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const nonce = (await headers()).get('x-nonce') ?? ''
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
@@ -157,7 +159,6 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
-          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(jsonLd).replace(/</g, '\u003c'),
           }}

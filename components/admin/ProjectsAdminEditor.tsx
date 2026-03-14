@@ -148,6 +148,7 @@ export default function ProjectsAdminEditor({ projects, saving, onSave }: Props)
         <div>
           <h2 className="text-xl font-semibold text-forge-bg-dark">Proyectos</h2>
           <p className="text-sm text-forge-bg-dark/70">Editor visual: agrega, ordena y modifica proyectos sin JSON.</p>
+          <p className="text-xs text-forge-bg-dark/60 mt-1">Estado del proyecto: <strong>entregado</strong> se muestra en "Proyectos terminados" y <strong>en-curso</strong> en "Proyectos en desarrollo".</p>
         </div>
         <div className="flex gap-2">
           <button

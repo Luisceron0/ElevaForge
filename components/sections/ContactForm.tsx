@@ -94,22 +94,6 @@ export default function ContactForm({ type = 'general' }: ContactFormProps) {
       setFormData({ nombre: '', email: '', empresa: '', mensaje: '', telefono: '', contacto_pref: 'email', presupuesto: '', servicio: '' })
       setHoneypot('')
       setConsent(false)
-
-      try {
-        const url = '/?hideTestimonials=1#proceso'
-        if (window.location.pathname === '/' || window.location.pathname === '') {
-          history.replaceState(null, '', url)
-          setTimeout(() => {
-            const el = document.getElementById('proceso')
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            else window.scrollTo({ top: 0, behavior: 'smooth' })
-          }, 100)
-        } else {
-          window.location.href = url
-        }
-      } catch (err) {
-        // ignore
-      }
     } catch (err) {
       setStatus('error')
       setErrorMsg(err instanceof Error ? err.message : 'Error inesperado')

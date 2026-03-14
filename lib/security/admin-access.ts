@@ -7,7 +7,14 @@ function supabaseConfigured(): boolean {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
 }
 
-async function isActiveAdminUser(username: string): Promise<boolean> {
+/**
+ * Three-state DB lookup to distinguish 'not found' from 'found but inactive'.
+ * This prevents deactivated admins from bypassing DB controls via the legacy
+ * env-var fallback — OWASP A01 (Broken Access Control).
+ */
+type AdminStatus = 'active' | 'inactive' | 'not-found'
+
+async function getAdminUserStatus(username: string): Promise<AdminStatus> {
   try {
     const supabase = createServerSupabaseClient()
     const { data, error } = await supabase
@@ -16,10 +23,11 @@ async function isActiveAdminUser(username: string): Promise<boolean> {
       .eq('username', username)
       .maybeSingle()
 
-    if (error || !data) return false
-    return Boolean(data.is_active)
+    if (error) return 'not-found'
+    if (!data) return 'not-found'
+    return data.is_active ? 'active' : 'inactive'
   } catch {
-    return false
+    return 'not-found'
   }
 }
 
@@ -36,8 +44,10 @@ export async function hasActiveAdminSessionInRequest(req: NextRequest): Promise<
 
   if (!supabaseConfigured()) return isLegacyAdminUsername(username)
 
-  if (await isActiveAdminUser(username)) return true
-
+  const status = await getAdminUserStatus(username)
+  if (status === 'active') return true
+  if (status === 'inactive') return false // explicitly deactivated — no legacy bypass
+  // 'not-found': user not in DB yet → support legacy migration accounts
   return isLegacyAdminUsername(username)
 }
 
@@ -49,7 +59,9 @@ export async function hasActiveAdminSession(): Promise<boolean> {
 
   if (!supabaseConfigured()) return isLegacyAdminUsername(username)
 
-  if (await isActiveAdminUser(username)) return true
-
+  const status = await getAdminUserStatus(username)
+  if (status === 'active') return true
+  if (status === 'inactive') return false // explicitly deactivated — no legacy bypass
+  // 'not-found': user not in DB yet → support legacy migration accounts
   return isLegacyAdminUsername(username)
 }

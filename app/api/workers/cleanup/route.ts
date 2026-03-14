@@ -69,7 +69,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  // Allow GET for manual trigger via browser (still requires auth)
-  return POST(req)
+export async function GET() {
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
 }
