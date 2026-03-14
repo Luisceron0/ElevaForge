@@ -58,39 +58,6 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
     }))
   }
 
-  function addExperienceItem() {
-    setDraft((prev) => ({
-      ...prev,
-      experience: { ...prev.experience, items: [...prev.experience.items, ''] },
-    }))
-  }
-
-  function removeExperienceItem(index: number) {
-    if (!window.confirm('¿Eliminar este item del caso de experiencia?')) return
-    setDraft((prev) => ({
-      ...prev,
-      experience: {
-        ...prev.experience,
-        items: prev.experience.items.filter((_, idx) => idx !== index),
-      },
-    }))
-  }
-
-  function addProjectInProgressItem() {
-    setDraft((prev) => ({
-      ...prev,
-      projectsInProgress: [...prev.projectsInProgress, ''],
-    }))
-  }
-
-  function removeProjectInProgressItem(index: number) {
-    if (!window.confirm('¿Eliminar este item de proyectos en progreso?')) return
-    setDraft((prev) => ({
-      ...prev,
-      projectsInProgress: prev.projectsInProgress.filter((_, idx) => idx !== index),
-    }))
-  }
-
   return (
     <section className="bg-white rounded-2xl shadow p-5 space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -131,85 +98,6 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
         onRemove={removeDifferentiationItem}
         onChange={(items) => setDraft((prev) => ({ ...prev, pillars: items }))}
       />
-
-      <div className="space-y-2">
-        <label className="block text-sm font-semibold text-forge-bg-dark">Caso de experiencia - título</label>
-        <input
-          value={draft.experience.title}
-          onChange={(e) =>
-            setDraft((prev) => ({
-              ...prev,
-              experience: { ...prev.experience, title: e.target.value },
-            }))
-          }
-          className="w-full border rounded-lg px-3 py-2 text-sm"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-semibold text-forge-bg-dark">Caso de experiencia - descripción</label>
-        <textarea
-          value={draft.experience.description}
-          onChange={(e) =>
-            setDraft((prev) => ({
-              ...prev,
-              experience: { ...prev.experience, description: e.target.value },
-            }))
-          }
-          className="w-full min-h-[90px] border rounded-lg px-3 py-2 text-sm"
-        />
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-forge-bg-dark">Caso de experiencia - items</h3>
-          <button onClick={addExperienceItem} className="border rounded px-3 py-1 text-sm">Agregar item</button>
-        </div>
-
-        <div className="space-y-2">
-          {draft.experience.items.map((item, index) => (
-            <div key={index} className="flex gap-2">
-              <input
-                value={item}
-                onChange={(e) => {
-                  const next = [...draft.experience.items]
-                  next[index] = e.target.value
-                  setDraft((prev) => ({
-                    ...prev,
-                    experience: { ...prev.experience, items: next },
-                  }))
-                }}
-                className="flex-1 border rounded-lg px-3 py-2 text-sm"
-              />
-              <button onClick={() => removeExperienceItem(index)} className="border rounded px-3 py-2 text-sm text-red-600">Eliminar</button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-forge-bg-dark">Proyectos en progreso</h3>
-          <button onClick={addProjectInProgressItem} className="border rounded px-3 py-1 text-sm">Agregar item</button>
-        </div>
-
-        <div className="space-y-2">
-          {draft.projectsInProgress.map((item, index) => (
-            <div key={index} className="flex gap-2">
-              <input
-                value={item}
-                onChange={(e) => {
-                  const next = [...draft.projectsInProgress]
-                  next[index] = e.target.value
-                  setDraft((prev) => ({ ...prev, projectsInProgress: next }))
-                }}
-                className="flex-1 border rounded-lg px-3 py-2 text-sm"
-              />
-              <button onClick={() => removeProjectInProgressItem(index)} className="border rounded px-3 py-2 text-sm text-red-600">Eliminar</button>
-            </div>
-          ))}
-        </div>
-      </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
