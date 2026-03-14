@@ -23,14 +23,22 @@ async function isActiveAdminUser(username: string): Promise<boolean> {
   }
 }
 
+function isLegacyAdminUsername(username: string): boolean {
+  const legacy = process.env.ADMIN_USERNAME
+  if (!legacy) return false
+  return username.trim().toLowerCase() === legacy.trim().toLowerCase()
+}
+
 export async function hasActiveAdminSessionInRequest(req: NextRequest): Promise<boolean> {
   const token = req.cookies.get(getAdminCookieName())?.value
   const username = getSessionUsername(token)
   if (!username) return false
 
-  if (!supabaseConfigured()) return false
+  if (!supabaseConfigured()) return isLegacyAdminUsername(username)
 
-  return isActiveAdminUser(username)
+  if (await isActiveAdminUser(username)) return true
+
+  return isLegacyAdminUsername(username)
 }
 
 export async function hasActiveAdminSession(): Promise<boolean> {
@@ -39,7 +47,9 @@ export async function hasActiveAdminSession(): Promise<boolean> {
   const username = getSessionUsername(token)
   if (!username) return false
 
-  if (!supabaseConfigured()) return false
+  if (!supabaseConfigured()) return isLegacyAdminUsername(username)
 
-  return isActiveAdminUser(username)
+  if (await isActiveAdminUser(username)) return true
+
+  return isLegacyAdminUsername(username)
 }

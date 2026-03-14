@@ -15,6 +15,10 @@ interface SessionPayload {
   exp: number
 }
 
+function normalizeAdminUsername(username: string): string {
+  return username.trim().toLowerCase()
+}
+
 function timingSafeEqual(a: string, b: string): boolean {
   const aBuf = Buffer.from(a)
   const bBuf = Buffer.from(b)
@@ -69,6 +73,25 @@ function verifyPasswordWithHash(plainPassword: string, storedHash: string): bool
   return timingSafeEqual(candidate, expected)
 }
 
+function timingSafeStringMatch(a: string, b: string): boolean {
+  const digestA = crypto.createHash('sha256').update(a, 'utf8').digest()
+  const digestB = crypto.createHash('sha256').update(b, 'utf8').digest()
+  return crypto.timingSafeEqual(digestA, digestB)
+}
+
+function verifyAgainstLegacyEnv(username: string, password: string): boolean {
+  const legacyUser = process.env.ADMIN_USERNAME
+  const legacyPass = process.env.ADMIN_PASSWORD
+  if (!legacyUser || !legacyPass) return false
+
+  const normalizedInputUser = normalizeAdminUsername(username)
+  const normalizedLegacyUser = normalizeAdminUsername(legacyUser)
+  return (
+    timingSafeStringMatch(normalizedInputUser, normalizedLegacyUser) &&
+    timingSafeStringMatch(password, legacyPass)
+  )
+}
+
 async function verifyAgainstSupabase(username: string, password: string): Promise<boolean> {
   try {
     const supabase = createServerSupabaseClient()
@@ -89,9 +112,15 @@ async function verifyAgainstSupabase(username: string, password: string): Promis
 }
 
 export async function verifyAdminCredentials(username: string, password: string): Promise<boolean> {
-  if (!username || !password) return false
+  const normalizedUsername = normalizeAdminUsername(username)
+  if (!normalizedUsername || !password) return false
 
-  return verifyAgainstSupabase(username, password)
+  if (await verifyAgainstSupabase(normalizedUsername, password)) {
+    return true
+  }
+
+  // Legacy fallback during migration: allows bootstrap login once env creds are set.
+  return verifyAgainstLegacyEnv(normalizedUsername, password)
 }
 
 export function createAdminSessionToken(username: string): string {

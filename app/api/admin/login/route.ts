@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   }
 
   const record = body as Record<string, unknown>
-  const username = String(record.username ?? '')
+  const username = String(record.username ?? '').trim().toLowerCase()
   const password = String(record.password ?? '')
 
   if (!(await verifyAdminCredentials(username, password))) {
