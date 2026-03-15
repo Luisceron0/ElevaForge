@@ -34,9 +34,20 @@ function getBucketName(): string {
   return process.env.SUPABASE_STORAGE_BUCKET || 'site-assets'
 }
 
-function sanitizeFolder(raw: string): 'projects' | 'about' {
+function sanitizeFolder(raw: string): 'projects' | 'about' | 'members' {
   const folder = raw.trim().toLowerCase()
+  if (folder === 'members') return 'members'
   return folder === 'about' ? 'about' : 'projects'
+}
+
+function toSlug(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\.[^.]+$/, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'image'
 }
 
 export async function POST(request: NextRequest) {
@@ -80,7 +91,8 @@ export async function POST(request: NextRequest) {
 
   const folder = sanitizeFolder(String(form.get('folder') ?? 'projects'))
   const ext = EXT_BY_MIME[file.type] || 'bin'
-  const path = `${folder}/${Date.now()}-${randomUUID()}.${ext}`
+  const filenameSlug = toSlug(file.name)
+  const path = `${folder}/${Date.now()}-${filenameSlug}-${randomUUID()}.${ext}`
   const bucket = getBucketName()
 
   const bytes = await file.arrayBuffer()

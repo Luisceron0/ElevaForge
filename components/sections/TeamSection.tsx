@@ -69,19 +69,29 @@ function TeamProfileCard({ member, index }: TeamProfileCardProps) {
       <div className="flex flex-col gap-5 p-7">
         {/* Avatar + datos de identidad */}
         <div className="flex items-center gap-4">
-          {/* Avatar circular con gradiente e iniciales */}
-          <div
-            className="relative h-16 w-16 flex-shrink-0 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg"
-            style={{
-              background: `linear-gradient(135deg, ${palette.from}, ${palette.to})`,
-              color: palette.text,
-            }}
-            aria-hidden="true"
-          >
-            {initials}
-            {/* Brillo interno */}
-            <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </div>
+          {member.imageUrl ? (
+            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl shadow-lg">
+              <img
+                src={member.imageUrl}
+                alt={member.owner}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+          ) : (
+            <div
+              className="relative h-16 w-16 flex-shrink-0 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg"
+              style={{
+                background: `linear-gradient(135deg, ${palette.from}, ${palette.to})`,
+                color: palette.text,
+              }}
+              aria-hidden="true"
+            >
+              {initials}
+              <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+          )}
 
           <div className="min-w-0">
             <p className="text-xl font-bold text-white leading-tight">{member.owner}</p>

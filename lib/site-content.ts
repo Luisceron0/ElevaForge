@@ -33,6 +33,7 @@ export interface TeamCapability {
   area: string
   owner: string
   description: string
+  imageUrl?: string
 }
 
 export interface AboutContent {
@@ -212,24 +213,28 @@ export const DEFAULT_ABOUT: AboutContent = {
       owner: 'Luis',
       description:
         'Diseño de sistemas, requisitos, documentación, pruebas de calidad y seguridad de aplicaciones.',
+      imageUrl: '',
     },
     {
       area: 'Backend, Bases de Datos y Nube',
       owner: 'Jhonatan',
       description:
         'Desarrollo backend, modelado de datos e infraestructura cloud alineada al negocio.',
+      imageUrl: '',
     },
     {
       area: 'Optimización y Rendimiento',
       owner: 'Miguel',
       description:
         'Detección y eliminación de cuellos de botella para asegurar tiempos de respuesta óptimos.',
+      imageUrl: '',
     },
     {
       area: 'Frontend y Pruebas',
       owner: 'Santiago',
       description:
         'Construcción de interfaces, pruebas funcionales y optimización de recursos del cliente.',
+      imageUrl: '',
     },
   ],
   experience: {

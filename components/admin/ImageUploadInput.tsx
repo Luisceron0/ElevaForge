@@ -2,10 +2,84 @@
 
 import { useState } from 'react'
 
+const MAX_DIMENSION = 1600
+const WEBP_QUALITY = 0.82
+
+function replaceFileExtension(filename: string, newExtension: string): string {
+  const cleanName = filename.replace(/\.[^.]+$/, '') || 'image'
+  return `${cleanName}.${newExtension}`
+}
+
+async function loadImageElement(file: File): Promise<HTMLImageElement> {
+  const objectUrl = URL.createObjectURL(file)
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = () => reject(new Error('No se pudo procesar la imagen'))
+      img.src = objectUrl
+    })
+
+    return image
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
+}
+
+async function compressImageIfNeeded(file: File): Promise<File> {
+  if (file.type === 'image/gif') {
+    return file
+  }
+
+  if (!file.type.startsWith('image/')) {
+    return file
+  }
+
+  const image = await loadImageElement(file)
+  const width = image.naturalWidth || image.width
+  const height = image.naturalHeight || image.height
+  if (!width || !height) {
+    return file
+  }
+
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height))
+  const targetWidth = Math.max(1, Math.round(width * scale))
+  const targetHeight = Math.max(1, Math.round(height * scale))
+
+  const canvas = document.createElement('canvas')
+  canvas.width = targetWidth
+  canvas.height = targetHeight
+
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return file
+  }
+
+  context.drawImage(image, 0, 0, targetWidth, targetHeight)
+
+  const blob = await new Promise<Blob | null>((resolve) => {
+    canvas.toBlob((result) => resolve(result), 'image/webp', WEBP_QUALITY)
+  })
+
+  if (!blob) {
+    return file
+  }
+
+  if (blob.size >= file.size && scale === 1 && file.type === 'image/webp') {
+    return file
+  }
+
+  return new File([blob], replaceFileExtension(file.name, 'webp'), {
+    type: 'image/webp',
+    lastModified: Date.now(),
+  })
+}
+
 interface Props {
   label: string
   value: string
-  folder: 'projects' | 'about'
+  folder: 'projects' | 'about' | 'members'
   onChange: (next: string) => void
   placeholder?: string
 }
@@ -13,14 +87,18 @@ interface Props {
 export default function ImageUploadInput({ label, value, folder, onChange, placeholder }: Props) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [uploadHint, setUploadHint] = useState('')
 
   async function handleUpload(file: File) {
     setError('')
+    setUploadHint('')
     setUploading(true)
 
     try {
+      const optimizedFile = await compressImageIfNeeded(file)
+
       const form = new FormData()
-      form.append('file', file)
+      form.append('file', optimizedFile)
       form.append('folder', folder)
 
       const response = await fetch('/api/admin/uploads/image', {
@@ -36,6 +114,14 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
       const publicUrl = String(payload?.publicUrl ?? '')
       if (!publicUrl) {
         throw new Error('La API no devolvió URL de la imagen')
+      }
+
+      if (optimizedFile !== file) {
+        const originalKb = Math.max(1, Math.round(file.size / 1024))
+        const optimizedKb = Math.max(1, Math.round(optimizedFile.size / 1024))
+        setUploadHint(`Optimizada antes de subir: ${originalKb} KB -> ${optimizedKb} KB`)
+      } else {
+        setUploadHint('Imagen subida sin compresión adicional')
       }
 
       onChange(publicUrl)
@@ -74,12 +160,13 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
         </label>
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
+      {uploadHint && <p className="text-xs text-emerald-700">{uploadHint}</p>}
       {value && (
         <div className="rounded-lg border border-forge-blue-mid/20 bg-forge-bg-light/50 p-2">
           <img src={value} alt="Vista previa" className="h-24 w-auto object-contain" />
         </div>
       )}
-      <p className="text-xs text-forge-bg-dark/60">Opcional. Formatos: JPG, PNG, WEBP, GIF, AVIF (máx 5 MB).</p>
+      <p className="text-xs text-forge-bg-dark/60">Opcional. Formatos: JPG, PNG, WEBP, GIF, AVIF (máx 5 MB). Las imágenes estáticas se optimizan automáticamente a WebP y máximo 1600 px.</p>
     </div>
   )
 }

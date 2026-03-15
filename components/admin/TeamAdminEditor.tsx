@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { TeamCapability } from '@/lib/site-content'
+import ImageUploadInput from './ImageUploadInput'
 
 /** Paleta de colores — debe coincidir con TeamSection.tsx */
 const AVATAR_PALETTES = [
@@ -16,12 +17,16 @@ function MiniPreview({ member, index }: { member: TeamCapability; index: number 
   const initials = (member.owner || '??').slice(0, 2).toUpperCase()
   return (
     <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#1F1F3A] px-3 py-2">
-      <div
-        className="h-9 w-9 flex-shrink-0 rounded-lg flex items-center justify-center text-sm font-bold"
-        style={{ background: `linear-gradient(135deg,${p.from},${p.to})`, color: p.text }}
-      >
-        {initials}
-      </div>
+      {member.imageUrl ? (
+        <img src={member.imageUrl} alt={member.owner || 'Miembro del equipo'} className="h-9 w-9 flex-shrink-0 rounded-lg object-cover" />
+      ) : (
+        <div
+          className="h-9 w-9 flex-shrink-0 rounded-lg flex items-center justify-center text-sm font-bold"
+          style={{ background: `linear-gradient(135deg,${p.from},${p.to})`, color: p.text }}
+        >
+          {initials}
+        </div>
+      )}
       <div className="min-w-0">
         <p className="text-sm font-semibold text-white truncate">{member.owner || 'Sin nombre'}</p>
         <p className="text-xs text-white/50 truncate">{member.area || 'Sin área'}</p>
@@ -30,7 +35,7 @@ function MiniPreview({ member, index }: { member: TeamCapability; index: number 
   )
 }
 
-const EMPTY_MEMBER: TeamCapability = { owner: '', area: '', description: '' }
+const EMPTY_MEMBER: TeamCapability = { owner: '', area: '', description: '', imageUrl: '' }
 
 interface Props {
   team: TeamCapability[]
@@ -296,6 +301,13 @@ function MemberForm({ draft, errors, index, onChange, onSave, onCancel }: FormPr
           {errors.area && <p className="text-red-400 text-xs mt-1">{errors.area}</p>}
         </div>
       </div>
+      <ImageUploadInput
+        label="Foto del miembro"
+        value={draft.imageUrl || ''}
+        folder="members"
+        onChange={(next) => onChange({ ...draft, imageUrl: next })}
+        placeholder="URL de foto (opcional)"
+      />
       <div>
         <label className="block text-xs font-semibold text-white/70 mb-1">Descripción *</label>
         <textarea

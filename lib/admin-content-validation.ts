@@ -14,6 +14,10 @@ const teamCapabilitySchema = z.object({
   area: text(120),
   owner: text(80),
   description: text(400),
+  imageUrl: optionalText(300).refine(
+    (value) => !value || /^\/?.*[\w./-]+$|^https?:\/\//i.test(value),
+    'team.imageUrl debe ser ruta relativa o URL http(s)',
+  ).optional(),
 })
 
 const aboutSchema = z.object({
