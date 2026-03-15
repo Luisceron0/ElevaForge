@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import ImageUploadInput from './ImageUploadInput'
 
 interface ProjectNarrativeValue {
   experience: {
     title: string
     description: string
     items: string[]
+    imageUrl?: string
   }
   projectsInProgress: string[]
 }
@@ -106,6 +108,19 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
         />
       </div>
 
+      <ImageUploadInput
+        label="Caso de experiencia - imagen"
+        value={draft.experience.imageUrl || ''}
+        folder="about"
+        onChange={(next) =>
+          setDraft((prev) => ({
+            ...prev,
+            experience: { ...prev.experience, imageUrl: next },
+          }))
+        }
+        placeholder="URL imagen (opcional)"
+      />
+
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h4 className="font-semibold text-forge-bg-dark">Caso de experiencia - items</h4>
@@ -170,6 +185,7 @@ function normalizeDraft(value: ProjectNarrativeValue): ProjectNarrativeValue {
       title: String(value?.experience?.title ?? '').trim(),
       description: String(value?.experience?.description ?? '').trim(),
       items: experienceItems,
+      imageUrl: String(value?.experience?.imageUrl ?? '').trim(),
     },
     projectsInProgress: dedupeTextItems(
       Array.isArray(value?.projectsInProgress) ? value.projectsInProgress : [],

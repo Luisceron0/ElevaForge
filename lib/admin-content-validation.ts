@@ -26,6 +26,10 @@ const aboutSchema = z.object({
     title: text(180),
     description: text(1200),
     items: z.array(text(220)).max(20),
+    imageUrl: optionalText(300).refine(
+      (value) => !value || /^\/?.*[\w./-]+$|^https?:\/\//i.test(value),
+      'experience.imageUrl debe ser ruta relativa o URL http(s)',
+    ).optional(),
   }),
   projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),

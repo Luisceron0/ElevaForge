@@ -14,7 +14,7 @@ export interface ProjectItem {
   sector: string
   summary: string
   results: string[]
-  imageUrl: string
+  imageUrl?: string
   externalUrl?: string
   status: 'entregado' | 'en-curso'
 }
@@ -45,6 +45,7 @@ export interface AboutContent {
     title: string
     description: string
     items: string[]
+    imageUrl?: string
   }
   projectsInProgress: string[]
   supportItems: string[]
@@ -239,6 +240,7 @@ export const DEFAULT_ABOUT: AboutContent = {
       'Puntuación destacada en rendimiento y SEO en Lighthouse',
       'Arquitectura técnica preparada para escalar',
     ],
+    imageUrl: '',
   },
   projectsInProgress: [
     'Actualmente tenemos varios proyectos en desarrollo en distintos sectores.',

@@ -10,6 +10,7 @@ export default function WhoWeAreSection({ about, projects }: Props) {
   const differentiationItems = mergeDifferentiationItems(about)
   const finishedProjects = projects.filter((project) => project.status === 'entregado')
   const inProgressProjects = projects.filter((project) => project.status === 'en-curso')
+  const shouldShowExperience = !isExperienceDuplicated(about.experience, finishedProjects)
 
   return (
     <section id="quienes" className="py-20 bg-white">
@@ -40,16 +41,30 @@ export default function WhoWeAreSection({ about, projects }: Props) {
         </div>
 
         <article id="proyectos" className="rounded-2xl bg-forge-bg-light p-6 border border-forge-blue-mid/20">
-          <h3 className="text-2xl font-semibold text-forge-bg-dark mb-4">{about.experience.title}</h3>
-          <p className="text-forge-bg-dark/75 mb-4">{about.experience.description}</p>
-          {about.experience.items.length > 0 && (
-            <ul className="grid gap-2 sm:grid-cols-2 mb-6">
-              {about.experience.items.map((item, index) => (
-                <li key={`${item}-${index}`} className="bg-white rounded-xl border border-forge-blue-mid/15 p-3 text-sm text-forge-bg-dark/80">
-                  {item}
-                </li>
-              ))}
-            </ul>
+          {shouldShowExperience && (
+            <>
+              <h3 className="text-2xl font-semibold text-forge-bg-dark mb-4">{about.experience.title}</h3>
+              {about.experience.imageUrl && (
+                <div className="mb-4 overflow-hidden rounded-xl border border-forge-blue-mid/20 bg-white p-3">
+                  <img
+                    src={about.experience.imageUrl}
+                    alt={about.experience.title || 'Caso de experiencia'}
+                    loading="lazy"
+                    className="h-44 w-full object-cover rounded-lg"
+                  />
+                </div>
+              )}
+              <p className="text-forge-bg-dark/75 mb-4">{about.experience.description}</p>
+              {about.experience.items.length > 0 && (
+                <ul className="grid gap-2 sm:grid-cols-2 mb-6">
+                  {about.experience.items.map((item, index) => (
+                    <li key={`${item}-${index}`} className="bg-white rounded-xl border border-forge-blue-mid/15 p-3 text-sm text-forge-bg-dark/80">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
           )}
 
           <div className="space-y-8">
@@ -64,6 +79,16 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                 <div className="space-y-4">
                   {finishedProjects.map((project) => (
                     <div key={project.id} className="bg-white rounded-xl border border-emerald-600/20 p-4">
+                      {project.imageUrl && (
+                        <div className="mb-3 overflow-hidden rounded-lg border border-emerald-600/20 bg-forge-bg-light/50 p-2">
+                          <img
+                            src={project.imageUrl}
+                            alt={project.title || 'Proyecto'}
+                            loading="lazy"
+                            className="h-36 w-full rounded object-cover"
+                          />
+                        </div>
+                      )}
                       <div className="flex items-center justify-between gap-3 mb-2">
                         <h4 className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</h4>
                         <span className="px-2 py-1 rounded-full text-xs font-semibold bg-emerald-600/10 text-emerald-700">
@@ -72,6 +97,16 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                       </div>
                       <p className="text-sm text-forge-blue-mid font-semibold">{project.sector || 'Sector no especificado'}</p>
                       <p className="text-forge-bg-dark/75 mt-2 text-sm">{project.summary || 'Sin resumen'}</p>
+                      {project.externalUrl && (
+                        <a
+                          href={project.externalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center mt-3 rounded-lg border border-emerald-600/30 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-600/10"
+                        >
+                          Ver proyecto
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -103,6 +138,16 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                 <div className="space-y-4">
                   {inProgressProjects.map((project) => (
                     <div key={project.id} className="bg-white rounded-xl border border-forge-orange-main/20 p-4">
+                      {project.imageUrl && (
+                        <div className="mb-3 overflow-hidden rounded-lg border border-forge-orange-main/20 bg-forge-bg-light/50 p-2">
+                          <img
+                            src={project.imageUrl}
+                            alt={project.title || 'Proyecto en curso'}
+                            loading="lazy"
+                            className="h-36 w-full rounded object-cover"
+                          />
+                        </div>
+                      )}
                       <div className="flex items-center justify-between gap-3 mb-2">
                         <h4 className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</h4>
                         <span className="px-2 py-1 rounded-full text-xs font-semibold bg-forge-orange-main/10 text-forge-orange-main">
@@ -111,6 +156,16 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                       </div>
                       <p className="text-sm text-forge-blue-mid font-semibold">{project.sector || 'Sector no especificado'}</p>
                       <p className="text-forge-bg-dark/75 mt-2 text-sm">{project.summary || 'Sin resumen'}</p>
+                      {project.externalUrl && (
+                        <a
+                          href={project.externalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center mt-3 rounded-lg border border-forge-orange-main/30 px-3 py-1.5 text-xs font-semibold text-forge-orange-main hover:bg-forge-orange-main/10"
+                        >
+                          Ver proyecto
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -123,6 +178,27 @@ export default function WhoWeAreSection({ about, projects }: Props) {
       </div>
     </section>
   )
+}
+
+function normalizeText(value: string): string {
+  return String(value ?? '').trim().toLowerCase()
+}
+
+function isExperienceDuplicated(
+  experience: AboutContent['experience'],
+  finishedProjects: ProjectItem[],
+): boolean {
+  const expTitle = normalizeText(experience.title)
+  const expDescription = normalizeText(experience.description)
+
+  return finishedProjects.some((project) => {
+    const projectTitle = normalizeText(project.title)
+    const projectSummary = normalizeText(project.summary)
+
+    if (expTitle && projectTitle && expTitle === projectTitle) return true
+    if (expDescription && projectSummary && expDescription === projectSummary) return true
+    return false
+  })
 }
 
 function mergeDifferentiationItems(about: AboutContent): AboutContent['pillars'] {

@@ -19,14 +19,16 @@ export default function ProjectsSection({ projects }: Props) {
         <div className="grid md:grid-cols-2 gap-6">
           {projects.map((project) => (
             <article key={project.id} className="bg-white rounded-2xl border border-forge-blue-mid/15 overflow-hidden shadow-sm">
-              <div className="h-44 bg-forge-bg-dark/5 flex items-center justify-center p-4">
-                <img
-                  src={project.imageUrl}
-                  alt={project.title}
-                  loading="lazy"
-                  className="max-h-full w-auto object-contain"
-                />
-              </div>
+              {project.imageUrl && (
+                <div className="h-44 bg-forge-bg-dark/5 flex items-center justify-center p-4">
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
+                    loading="lazy"
+                    className="max-h-full w-auto object-contain"
+                  />
+                </div>
+              )}
               <div className="p-6">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <h3 className="font-semibold text-xl text-forge-bg-dark">{project.title}</h3>

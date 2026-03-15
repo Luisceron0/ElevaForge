@@ -37,6 +37,22 @@ export interface GuardResult {
 
 const JSON_TYPE = 'application/json'
 
+function shouldValidateJsonContentType(request: NextRequest): boolean {
+  const method = request.method.toUpperCase()
+  if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+    return true
+  }
+
+  if (method === 'DELETE') {
+    const contentLengthRaw = request.headers.get('content-length')
+    const contentLength = Number(contentLengthRaw ?? '0')
+    const hasChunkedBody = !!request.headers.get('transfer-encoding')
+    return (Number.isFinite(contentLength) && contentLength > 0) || hasChunkedBody
+  }
+
+  return false
+}
+
 /**
  * Extract client IP from standard headers.
  * Vercel / Cloudflare / Nginx all populate one of these.
@@ -64,7 +80,7 @@ export async function runApiGuard(
 
   // ── 1. Content-Type check (A02, A10) ───────────────────────────────
   const ct = request.headers.get('content-type') ?? ''
-  if (!ct.includes(JSON_TYPE)) {
+  if (shouldValidateJsonContentType(request) && !ct.includes(JSON_TYPE)) {
     logSecurityEvent({ type: 'INVALID_CONTENT_TYPE', ip, path, method: request.method, details: ct })
     return {
       blocked: true,

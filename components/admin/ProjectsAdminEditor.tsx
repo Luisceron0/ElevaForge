@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { ProjectItem } from '@/lib/site-content'
+import ImageUploadInput from './ImageUploadInput'
 
 interface Props {
   projects: ProjectItem[]
@@ -37,7 +38,7 @@ function toDraft(item: ProjectItem): ProjectDraft {
     title: item.title,
     sector: item.sector,
     summary: item.summary,
-    imageUrl: item.imageUrl,
+    imageUrl: item.imageUrl || '',
     externalUrl: item.externalUrl || '',
     status: item.status,
     resultsText: item.results.join('\n'),
@@ -53,7 +54,7 @@ function toProject(draft: ProjectDraft): ProjectItem {
     title: draft.title.trim(),
     sector: draft.sector.trim(),
     summary: draft.summary.trim(),
-    imageUrl: draft.imageUrl.trim(),
+    imageUrl: draft.imageUrl.trim() || undefined,
     externalUrl: draft.externalUrl.trim() || undefined,
     status: draft.status,
     results: draft.resultsText
@@ -189,7 +190,7 @@ export default function ProjectsAdminEditor({ projects, saving, onSave }: Props)
                   </span>
                 </div>
                 <div className="text-xs text-forge-bg-dark/60">
-                  <p>Imagen: {item.imageUrl}</p>
+                  <p>Imagen: {item.imageUrl || 'Sin imagen'}</p>
                   {item.externalUrl && <p>URL externa: {item.externalUrl}</p>}
                 </div>
                 <ul className="text-sm text-forge-bg-dark/75 list-disc pl-5">
@@ -244,10 +245,14 @@ function ProjectForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
         <input value={draft.sector} onChange={(e) => onChange({ ...draft, sector: e.target.value })} placeholder="Sector" className="border rounded-lg px-3 py-2 text-sm" />
       </div>
       <textarea value={draft.summary} onChange={(e) => onChange({ ...draft, summary: e.target.value })} placeholder="Resumen" className="w-full border rounded-lg px-3 py-2 text-sm min-h-[90px]" />
-      <div className="grid sm:grid-cols-2 gap-3">
-        <input value={draft.imageUrl} onChange={(e) => onChange({ ...draft, imageUrl: e.target.value })} placeholder="Ruta imagen (ej: /LogoEleva.svg)" className="border rounded-lg px-3 py-2 text-sm" />
-        <input value={draft.externalUrl} onChange={(e) => onChange({ ...draft, externalUrl: e.target.value })} placeholder="URL externa (opcional)" className="border rounded-lg px-3 py-2 text-sm" />
-      </div>
+      <ImageUploadInput
+        label="Imagen del proyecto"
+        value={draft.imageUrl}
+        folder="projects"
+        onChange={(next) => onChange({ ...draft, imageUrl: next })}
+        placeholder="URL imagen (opcional)"
+      />
+      <input value={draft.externalUrl} onChange={(e) => onChange({ ...draft, externalUrl: e.target.value })} placeholder="URL externa (opcional)" className="w-full border rounded-lg px-3 py-2 text-sm" />
       <textarea value={draft.resultsText} onChange={(e) => onChange({ ...draft, resultsText: e.target.value })} placeholder="Resultados, uno por línea" className="w-full border rounded-lg px-3 py-2 text-sm min-h-[90px]" />
       <div className="flex gap-2">
         <button onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm">Confirmar</button>

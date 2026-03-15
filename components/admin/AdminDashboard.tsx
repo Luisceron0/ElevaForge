@@ -209,6 +209,8 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
     try {
       const response = await fetch(`/api/admin/users/${user.id}`, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
       })
 
       const payload = await response.json().catch(() => ({}))

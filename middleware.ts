@@ -75,13 +75,28 @@ function reject(status: number, error: string, extraHeaders?: Record<string, str
   return NextResponse.json({ error }, { status, headers: extraHeaders })
 }
 
+function shouldRequireJsonContentType(req: NextRequest): boolean {
+  const method = req.method.toUpperCase()
+  if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+    return true
+  }
+
+  if (method === 'DELETE') {
+    const len = Number(req.headers.get('content-length') ?? '0')
+    const hasChunkedBody = !!req.headers.get('transfer-encoding')
+    return (Number.isFinite(len) && len > 0) || hasChunkedBody
+  }
+
+  return false
+}
+
 /** Build a strict nonce-based CSP per request (OWASP A05). */
 function buildCsp(nonce: string): string {
   return [
     "default-src 'self'",
     `script-src 'nonce-${nonce}' 'strict-dynamic'`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' data: blob:",
+    "img-src 'self' data: blob: https://*.supabase.co",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
     "frame-ancestors 'none'",
@@ -112,14 +127,26 @@ export function middleware(req: NextRequest) {
         return reject(403, 'Solicitud no autorizada')
       }
 
-      const ct = req.headers.get('content-type') ?? ''
-      if (!ct.includes('application/json')) {
-        return reject(415, 'Content-Type debe ser application/json')
-      }
+      if (path === '/api/admin/uploads/image' && method === 'POST') {
+        const ctUpload = req.headers.get('content-type') ?? ''
+        if (!ctUpload.includes('multipart/form-data')) {
+          return reject(415, 'Content-Type debe ser multipart/form-data')
+        }
 
-      const len = Number(req.headers.get('content-length') ?? '0')
-      if (Number.isFinite(len) && len > 128_000) {
-        return reject(413, 'Payload demasiado grande')
+        const uploadLen = Number(req.headers.get('content-length') ?? '0')
+        if (Number.isFinite(uploadLen) && uploadLen > 6_000_000) {
+          return reject(413, 'Payload demasiado grande')
+        }
+      } else {
+        const ct = req.headers.get('content-type') ?? ''
+        if (shouldRequireJsonContentType(req) && !ct.includes('application/json')) {
+          return reject(415, 'Content-Type debe ser application/json')
+        }
+
+        const len = Number(req.headers.get('content-length') ?? '0')
+        if (Number.isFinite(len) && len > 128_000) {
+          return reject(413, 'Payload demasiado grande')
+        }
       }
     }
 
