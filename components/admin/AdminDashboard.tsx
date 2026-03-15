@@ -7,7 +7,6 @@ import TeamAdminEditor from './TeamAdminEditor'
 import ProjectsAdminEditor from './ProjectsAdminEditor'
 import PackagesAdminEditor from './PackagesAdminEditor'
 import AboutAdminEditor from './AboutAdminEditor'
-import ProjectNarrativeAdminEditor from './ProjectNarrativeAdminEditor'
 
 interface Props {
   initialContent: SiteContent
@@ -357,17 +356,14 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
 
               <ProjectsAdminEditor
                 projects={content.projects}
-                saving={savingKey === 'projects'}
-                onSave={saveProjectsVisual}
-              />
-
-              <ProjectNarrativeAdminEditor
-                value={{
+                narrative={{
                   experience: content.about.experience,
                   projectsInProgress: content.about.projectsInProgress,
                 }}
-                saving={savingKey === 'about'}
-                onSave={saveProjectNarrativeVisual}
+                saving={savingKey === 'projects'}
+                narrativeSaving={savingKey === 'about'}
+                onSave={saveProjectsVisual}
+                onSaveNarrative={saveProjectNarrativeVisual}
               />
             </section>
 
