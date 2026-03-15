@@ -1,9 +1,25 @@
 import type { NextConfig } from 'next'
 
+const supabaseHost = (() => {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    return url ? new URL(url).hostname : undefined
+  } catch {
+    return undefined
+  }
+})()
+
 const config: NextConfig = {
   images: {
-    // Disable image optimization to reduce function invocations
-    unoptimized: true,
+    remotePatterns: supabaseHost
+      ? [
+        {
+          protocol: 'https',
+          hostname: supabaseHost,
+          pathname: '/storage/v1/object/**',
+        },
+      ]
+      : [],
   },
   compress: true,
   poweredByHeader: false,

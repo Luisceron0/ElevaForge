@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { AboutContent, ProjectItem } from '@/lib/site-content'
 import TeamSection from '@/components/sections/TeamSection'
 
@@ -46,11 +47,13 @@ export default function WhoWeAreSection({ about, projects }: Props) {
               <h3 className="text-2xl font-semibold text-forge-bg-dark mb-4">{about.experience.title}</h3>
               {about.experience.imageUrl && (
                 <div className="mb-4 overflow-hidden rounded-xl border border-forge-blue-mid/20 bg-white p-3">
-                  <img
+                  <Image
                     src={about.experience.imageUrl}
                     alt={about.experience.title || 'Caso de experiencia'}
-                    loading="lazy"
+                    width={1200}
+                    height={480}
                     className="h-44 w-full object-cover rounded-lg"
+                    unoptimized={about.experience.imageUrl.startsWith('http') && !about.experience.imageUrl.includes('/storage/v1/object/')}
                   />
                 </div>
               )}
@@ -81,11 +84,13 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                     <div key={project.id} className="bg-white rounded-xl border border-emerald-600/20 p-4">
                       {project.imageUrl && (
                         <div className="mb-3 overflow-hidden rounded-lg border border-emerald-600/20 bg-forge-bg-light/50 p-2">
-                          <img
+                          <Image
                             src={project.imageUrl}
                             alt={project.title || 'Proyecto'}
-                            loading="lazy"
+                            width={960}
+                            height={540}
                             className="h-36 w-full rounded object-cover"
+                            unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
                           />
                         </div>
                       )}
@@ -140,11 +145,13 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                     <div key={project.id} className="bg-white rounded-xl border border-forge-orange-main/20 p-4">
                       {project.imageUrl && (
                         <div className="mb-3 overflow-hidden rounded-lg border border-forge-orange-main/20 bg-forge-bg-light/50 p-2">
-                          <img
+                          <Image
                             src={project.imageUrl}
                             alt={project.title || 'Proyecto en curso'}
-                            loading="lazy"
+                            width={960}
+                            height={540}
                             className="h-36 w-full rounded object-cover"
+                            unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
                           />
                         </div>
                       )}

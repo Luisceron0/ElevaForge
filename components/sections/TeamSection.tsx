@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { TeamCapability } from '@/lib/site-content'
 
 interface TeamProfileCardProps {
@@ -71,11 +72,13 @@ function TeamProfileCard({ member, index }: TeamProfileCardProps) {
         <div className="flex items-center gap-4">
           {member.imageUrl ? (
             <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl shadow-lg">
-              <img
+              <Image
                 src={member.imageUrl}
                 alt={member.owner}
-                loading="lazy"
+                width={128}
+                height={128}
                 className="h-full w-full object-cover"
+                unoptimized={member.imageUrl.startsWith('http') && !member.imageUrl.includes('/storage/v1/object/')}
               />
               <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>

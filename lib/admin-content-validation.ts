@@ -1,9 +1,12 @@
 import { z } from 'zod'
 import type { SiteContent } from '@/lib/site-content'
+import { isAssetRef } from '@/lib/asset-refs'
 
 const text = (max: number) => z.string().trim().min(1).max(max)
 const optionalText = (max: number) => z.string().trim().max(max)
 const optionalUrl = z.string().trim().max(300).optional().or(z.literal(''))
+const optionalAssetRef = (message: string) =>
+  optionalText(300).refine((value) => !value || isAssetRef(value), message).optional()
 
 const aboutItemSchema = z.object({
   title: text(140),
@@ -14,10 +17,7 @@ const teamCapabilitySchema = z.object({
   area: text(120),
   owner: text(80),
   description: text(400),
-  imageUrl: optionalText(300).refine(
-    (value) => !value || /^\/?.*[\w./-]+$|^https?:\/\//i.test(value),
-    'team.imageUrl debe ser ruta relativa o URL http(s)',
-  ).optional(),
+  imageUrl: optionalAssetRef('team.imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
 })
 
 const aboutSchema = z.object({
@@ -30,10 +30,7 @@ const aboutSchema = z.object({
     title: text(180),
     description: text(1200),
     items: z.array(text(220)).max(20),
-    imageUrl: optionalText(300).refine(
-      (value) => !value || /^\/?.*[\w./-]+$|^https?:\/\//i.test(value),
-      'experience.imageUrl debe ser ruta relativa o URL http(s)',
-    ).optional(),
+    imageUrl: optionalAssetRef('experience.imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
   }),
   projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),
@@ -45,10 +42,7 @@ const projectSchema = z.object({
   sector: optionalText(100),
   summary: optionalText(1200),
   results: z.array(optionalText(220)).max(12),
-  imageUrl: optionalText(300).refine(
-    (value) => !value || /^\/?[\w./-]+$|^https?:\/\//i.test(value),
-    'imageUrl debe ser ruta relativa o URL http(s)',
-  ),
+  imageUrl: optionalAssetRef('imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
   externalUrl: optionalUrl,
   status: z.enum(['entregado', 'en-curso']),
 })

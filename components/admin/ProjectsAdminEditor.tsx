@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ProjectItem } from '@/lib/site-content'
 import ImageUploadInput from './ImageUploadInput'
+import { isAssetRef } from '@/lib/asset-refs'
 
 interface Props {
   projects: ProjectItem[]
@@ -68,8 +69,8 @@ function validate(draft: ProjectDraft, items: ProjectItem[], editingIndex: numbe
   const p = toProject(draft)
   if (!p.id || !/^[a-z0-9-]+$/i.test(p.id)) return 'No se pudo generar un ID válido para el proyecto'
 
-  if (p.imageUrl && !/^\/?[\w./-]+$|^https?:\/\//i.test(p.imageUrl)) {
-    return 'La imagen debe ser ruta relativa (ej: /img/proyecto.png) o URL http(s)'
+  if (p.imageUrl && !isAssetRef(p.imageUrl)) {
+    return 'La imagen debe ser ruta relativa, storage ref o URL http(s)'
   }
 
   const duplicate = items.findIndex((x, idx) => x.id.toLowerCase() === p.id.toLowerCase() && idx !== editingIndex)

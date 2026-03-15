@@ -4,6 +4,8 @@ import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import { validateOrigin } from '@/lib/security/csrf'
 import { checkRateLimit } from '@/lib/security/rate-limit'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toStorageAssetRef } from '@/lib/asset-refs'
+import { resolveAssetUrl } from '@/lib/storage-assets'
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024
 const ALLOWED_MIME = new Set([
@@ -111,11 +113,13 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path)
+  const assetRef = toStorageAssetRef(path)
+  const previewUrl = await resolveAssetUrl(assetRef)
 
   return NextResponse.json({
     path,
     bucket,
-    publicUrl: data.publicUrl,
+    assetRef,
+    previewUrl,
   })
 }

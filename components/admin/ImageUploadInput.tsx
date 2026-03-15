@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { extractStoragePath } from '@/lib/asset-refs'
 
 const MAX_DIMENSION = 1600
 const WEBP_QUALITY = 0.82
@@ -88,10 +89,14 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [uploadHint, setUploadHint] = useState('')
+  const [previewOverride, setPreviewOverride] = useState('')
+
+  const previewSrc = previewOverride || getPreviewSrc(value)
 
   async function handleUpload(file: File) {
     setError('')
     setUploadHint('')
+    setPreviewOverride('')
     setUploading(true)
 
     try {
@@ -111,9 +116,10 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
         throw new Error(payload?.error || 'No se pudo subir la imagen')
       }
 
-      const publicUrl = String(payload?.publicUrl ?? '')
-      if (!publicUrl) {
-        throw new Error('La API no devolvió URL de la imagen')
+      const assetRef = String(payload?.assetRef ?? '')
+      const previewUrl = String(payload?.previewUrl ?? '')
+      if (!assetRef) {
+        throw new Error('La API no devolvió referencia de la imagen')
       }
 
       if (optimizedFile !== file) {
@@ -124,7 +130,8 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
         setUploadHint('Imagen subida sin compresión adicional')
       }
 
-      onChange(publicUrl)
+      setPreviewOverride(previewUrl)
+      onChange(assetRef)
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : 'Error subiendo imagen')
     } finally {
@@ -161,12 +168,22 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
       {uploadHint && <p className="text-xs text-emerald-700">{uploadHint}</p>}
-      {value && (
+      {previewSrc && (
         <div className="rounded-lg border border-forge-blue-mid/20 bg-forge-bg-light/50 p-2">
-          <img src={value} alt="Vista previa" className="h-24 w-auto object-contain" />
+          <img src={previewSrc} alt="Vista previa" className="h-24 w-auto object-contain" />
         </div>
       )}
       <p className="text-xs text-forge-bg-dark/60">Opcional. Formatos: JPG, PNG, WEBP, GIF, AVIF (máx 5 MB). Las imágenes estáticas se optimizan automáticamente a WebP y máximo 1600 px.</p>
     </div>
   )
+}
+
+function getPreviewSrc(value: string): string {
+  const raw = value.trim()
+  if (!raw) return ''
+  if (extractStoragePath(raw)) {
+    return `/api/admin/uploads/preview?ref=${encodeURIComponent(raw)}`
+  }
+
+  return raw
 }

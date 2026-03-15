@@ -1,4 +1,11 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import {
+  collectAssetPathsForContent,
+  deleteStorageAssets,
+  normalizeContentAssets,
+  resolveSiteContentAssets,
+} from '@/lib/storage-assets'
+import { normalizeAssetRef } from '@/lib/asset-refs'
 
 export interface PackagePlan {
   id: string
@@ -363,18 +370,55 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
     : fallback.differentiators
 
   const mergedDifferentiationItems = mergeAboutItems(normalizedPillars, normalizedDifferentiators)
+  const normalizedTeam = Array.isArray(merged.team)
+    ? merged.team.filter(isRecord).map((member) => ({
+      area: String(member.area ?? ''),
+      owner: String(member.owner ?? ''),
+      description: String(member.description ?? ''),
+      imageUrl: normalizeAssetRef(String(member.imageUrl ?? '')) || undefined,
+    }))
+    : fallback.team
 
   return {
     ...fallback,
     ...merged,
+    team: normalizedTeam,
     pillars: mergedDifferentiationItems,
     differentiators: [],
-    experience: normalizedExperience,
+    experience: {
+      ...normalizedExperience,
+      imageUrl: normalizeAssetRef(String(normalizedExperience.imageUrl ?? '')) || undefined,
+    },
     projectsInProgress: dedupeTextList(
       normalizeTextList(merged.projectsInProgress, fallback.projectsInProgress),
     ),
     supportItems: dedupeTextList(normalizeTextList(merged.supportItems, fallback.supportItems)),
   }
+}
+
+function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): ProjectItem[] {
+  const merged = safeMerge(value, fallback)
+  if (!Array.isArray(merged)) return fallback
+
+  return merged.map((project, index) => {
+    const fallbackProject = fallback[index] ?? fallback[0]
+    return {
+      ...fallbackProject,
+      ...(isRecord(project) ? project : {}),
+      imageUrl: normalizeAssetRef(String((isRecord(project) ? project.imageUrl : '') ?? '')) || undefined,
+      externalUrl: String((isRecord(project) ? project.externalUrl : '') ?? '').trim() || undefined,
+      results: Array.isArray(isRecord(project) ? project.results : undefined)
+        ? (project.results as unknown[]).map((item) => String(item ?? '').trim()).filter(Boolean)
+        : fallbackProject?.results ?? [],
+      title: String((isRecord(project) ? project.title : '') ?? ''),
+      sector: String((isRecord(project) ? project.sector : '') ?? ''),
+      summary: String((isRecord(project) ? project.summary : '') ?? ''),
+      id: String((isRecord(project) ? project.id : '') ?? fallbackProject?.id ?? `project-${index + 1}`),
+      status: (String((isRecord(project) ? project.status : '') ?? fallbackProject?.status ?? 'entregado') === 'en-curso'
+        ? 'en-curso'
+        : 'entregado'),
+    }
+  })
 }
 
 export async function getSiteContent(): Promise<SiteContent> {
@@ -396,7 +440,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     return {
       about: normalizeAboutContent(byKey.get('about'), DEFAULT_SITE_CONTENT.about),
-      projects: safeMerge(byKey.get('projects'), DEFAULT_SITE_CONTENT.projects),
+      projects: normalizeProjectsContent(byKey.get('projects'), DEFAULT_SITE_CONTENT.projects),
       packages: safeMerge(byKey.get('packages'), DEFAULT_SITE_CONTENT.packages),
     }
   } catch {
@@ -404,19 +448,45 @@ export async function getSiteContent(): Promise<SiteContent> {
   }
 }
 
+export async function getResolvedSiteContent(): Promise<SiteContent> {
+  const content = await getSiteContent()
+  return resolveSiteContentAssets(content)
+}
+
 export async function saveSiteContent<K extends ContentKey>(
   key: K,
   value: SiteContent[K],
 ): Promise<void> {
+  const normalizedValue = normalizeContentAssets(key, value)
   const supabase = createServerSupabaseClient()
+  const { data: existingRow } = await supabase
+    .from('site_content')
+    .select('value')
+    .eq('key', key)
+    .maybeSingle()
+
+  const previousValue = (existingRow?.value ?? DEFAULT_SITE_CONTENT[key]) as SiteContent[K]
+  const previousPaths = collectAssetPathsForContent(key, previousValue)
+  const nextPaths = collectAssetPathsForContent(key, normalizedValue)
+
   const { error } = await supabase
     .from('site_content')
     .upsert(
-      [{ key, value, updated_at: new Date().toISOString() }],
+      [{ key, value: normalizedValue, updated_at: new Date().toISOString() }],
       { onConflict: 'key' },
     )
 
   if (error) {
     throw new Error(error.message || 'No se pudo guardar contenido')
   }
+
+  const nextPathSet = new Set(nextPaths)
+  const removedPaths = previousPaths.filter((path) => !nextPathSet.has(path))
+  const currentContent = await getSiteContent()
+  const globalReferencedPaths = new Set<string>([
+    ...collectAssetPathsForContent('about', currentContent.about),
+    ...collectAssetPathsForContent('projects', currentContent.projects),
+  ])
+
+  await deleteStorageAssets(removedPaths.filter((path) => !globalReferencedPaths.has(path)))
 }

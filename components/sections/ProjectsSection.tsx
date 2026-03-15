@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { ProjectItem } from '@/lib/site-content'
 
 interface Props {
@@ -21,11 +22,13 @@ export default function ProjectsSection({ projects }: Props) {
             <article key={project.id} className="bg-white rounded-2xl border border-forge-blue-mid/15 overflow-hidden shadow-sm">
               {project.imageUrl && (
                 <div className="h-44 bg-forge-bg-dark/5 flex items-center justify-center p-4">
-                  <img
+                  <Image
                     src={project.imageUrl}
                     alt={project.title}
-                    loading="lazy"
+                    width={720}
+                    height={360}
                     className="max-h-full w-auto object-contain"
+                    unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
                   />
                 </div>
               )}

@@ -3,7 +3,7 @@ import HeroSection from '@/components/sections/HeroSection'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import WhoWeAreSection from '@/components/sections/WhoWeAreSection'
-import { getSiteContent } from '@/lib/site-content'
+import { getResolvedSiteContent } from '@/lib/site-content'
 
 // Lazy load below-the-fold sections for better performance
 const ForgeStandards = nextDynamic(
@@ -38,7 +38,7 @@ function SectionSkeleton() {
 }
 
 export default function Home() {
-  const contentPromise = getSiteContent()
+  const contentPromise = getResolvedSiteContent()
 
   return <HomeContent contentPromise={contentPromise} />
 }
@@ -46,7 +46,7 @@ export default function Home() {
 async function HomeContent({
   contentPromise,
 }: {
-  contentPromise: ReturnType<typeof getSiteContent>
+  contentPromise: ReturnType<typeof getResolvedSiteContent>
 }) {
   const content = await contentPromise
 

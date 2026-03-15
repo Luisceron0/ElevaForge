@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { TeamCapability } from '@/lib/site-content'
 import ImageUploadInput from './ImageUploadInput'
+import { extractStoragePath } from '@/lib/asset-refs'
 
 /** Paleta de colores — debe coincidir con TeamSection.tsx */
 const AVATAR_PALETTES = [
@@ -15,10 +16,11 @@ const AVATAR_PALETTES = [
 function MiniPreview({ member, index }: { member: TeamCapability; index: number }) {
   const p = AVATAR_PALETTES[index % AVATAR_PALETTES.length]
   const initials = (member.owner || '??').slice(0, 2).toUpperCase()
+  const previewSrc = getAdminPreviewSrc(member.imageUrl)
   return (
     <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#1F1F3A] px-3 py-2">
-      {member.imageUrl ? (
-        <img src={member.imageUrl} alt={member.owner || 'Miembro del equipo'} className="h-9 w-9 flex-shrink-0 rounded-lg object-cover" />
+      {previewSrc ? (
+        <img src={previewSrc} alt={member.owner || 'Miembro del equipo'} className="h-9 w-9 flex-shrink-0 rounded-lg object-cover" />
       ) : (
         <div
           className="h-9 w-9 flex-shrink-0 rounded-lg flex items-center justify-center text-sm font-bold"
@@ -257,17 +259,22 @@ interface FormProps {
 function MemberForm({ draft, errors, index, onChange, onSave, onCancel }: FormProps) {
   const p = AVATAR_PALETTES[index % AVATAR_PALETTES.length]
   const initials = (draft.owner || '??').slice(0, 2).toUpperCase()
+  const previewSrc = getAdminPreviewSrc(draft.imageUrl)
 
   return (
     <div className="rounded-2xl border-2 border-forge-orange-main/30 bg-forge-bg-dark p-5 space-y-4">
       {/* Mini preview en tiempo real */}
       <div className="flex items-center gap-3">
-        <div
-          className="h-12 w-12 flex-shrink-0 rounded-xl flex items-center justify-center font-bold text-sm"
-          style={{ background: `linear-gradient(135deg,${p.from},${p.to})`, color: p.text }}
-        >
-          {initials}
-        </div>
+        {previewSrc ? (
+          <img src={previewSrc} alt={draft.owner || 'Miembro del equipo'} className="h-12 w-12 flex-shrink-0 rounded-xl object-cover" />
+        ) : (
+          <div
+            className="h-12 w-12 flex-shrink-0 rounded-xl flex items-center justify-center font-bold text-sm"
+            style={{ background: `linear-gradient(135deg,${p.from},${p.to})`, color: p.text }}
+          >
+            {initials}
+          </div>
+        )}
         <div>
           <p className="text-white font-semibold">{draft.owner || <span className="opacity-40">Nombre</span>}</p>
           <p className="text-xs text-white/50">{draft.area || <span className="opacity-40">Área</span>}</p>
@@ -339,4 +346,13 @@ function MemberForm({ draft, errors, index, onChange, onSave, onCancel }: FormPr
       </div>
     </div>
   )
+}
+
+function getAdminPreviewSrc(value: string | undefined): string {
+  const raw = String(value ?? '').trim()
+  if (!raw) return ''
+  if (extractStoragePath(raw)) {
+    return `/api/admin/uploads/preview?ref=${encodeURIComponent(raw)}`
+  }
+  return raw
 }
