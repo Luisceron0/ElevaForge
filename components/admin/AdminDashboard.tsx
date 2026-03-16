@@ -105,11 +105,10 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
     await saveContent('projects', projects)
   }
 
-  async function saveProjectNarrativeVisual(value: { experience: AboutContent['experience']; projectsInProgress: string[] }) {
+  async function saveProjectNarrativeVisual(value: AboutContent['experience']) {
     const updatedAbout = {
       ...content.about,
-      experience: value.experience,
-      projectsInProgress: value.projectsInProgress,
+      experience: value,
     }
     await saveContent('about', updatedAbout)
   }
@@ -356,10 +355,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
 
               <ProjectsAdminEditor
                 projects={content.projects}
-                narrative={{
-                  experience: content.about.experience,
-                  projectsInProgress: content.about.projectsInProgress,
-                }}
+                narrative={content.about.experience}
                 saving={savingKey === 'projects'}
                 narrativeSaving={savingKey === 'about'}
                 onSave={saveProjectsVisual}

@@ -9,9 +9,7 @@ interface Props {
 
 export default function WhoWeAreSection({ about, projects }: Props) {
   const differentiationItems = mergeDifferentiationItems(about)
-  const finishedProjects = projects.filter((project) => project.status === 'entregado')
-  const inProgressProjects = projects.filter((project) => project.status === 'en-curso')
-  const shouldShowExperience = !isExperienceDuplicated(about.experience, finishedProjects)
+  const shouldShowExperience = !isExperienceDuplicated(about.experience, projects)
 
   return (
     <section id="quienes" className="py-20 bg-white">
@@ -71,19 +69,20 @@ export default function WhoWeAreSection({ about, projects }: Props) {
           )}
 
           <div className="space-y-8">
-            <section aria-labelledby="proyectos-terminados">
+            <section aria-labelledby="proyectos-listado">
               <div className="flex items-center justify-between gap-3 mb-4">
-                <h3 id="proyectos-terminados" className="text-2xl font-semibold text-forge-bg-dark">Proyectos terminados</h3>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-600/10 text-emerald-700 border border-emerald-600/20">
-                  Entregados
+                <h3 id="proyectos-listado" className="text-2xl font-semibold text-forge-bg-dark">Proyectos</h3>
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-forge-blue-mid/10 text-forge-blue-mid border border-forge-blue-mid/20">
+                  {projects.length} publicados
                 </span>
               </div>
-              {finishedProjects.length > 0 ? (
+
+              {projects.length > 0 ? (
                 <div className="space-y-4">
-                  {finishedProjects.map((project) => (
-                    <div key={project.id} className="bg-white rounded-xl border border-emerald-600/20 p-4">
+                  {projects.map((project) => (
+                    <div key={project.id} className="bg-white rounded-xl border border-forge-blue-mid/15 p-4">
                       {project.imageUrl && (
-                        <div className="mb-3 overflow-hidden rounded-lg border border-emerald-600/20 bg-forge-bg-light/50 p-2">
+                        <div className="mb-3 overflow-hidden rounded-lg border border-forge-blue-mid/20 bg-forge-bg-light/50 p-2">
                           <Image
                             src={project.imageUrl}
                             alt={project.title || 'Proyecto'}
@@ -96,9 +95,7 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                       )}
                       <div className="flex items-center justify-between gap-3 mb-2">
                         <h4 className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</h4>
-                        <span className="px-2 py-1 rounded-full text-xs font-semibold bg-emerald-600/10 text-emerald-700">
-                          entregado
-                        </span>
+                        <span className={getProjectStatusBadgeClassName(project.status)}>{project.status}</span>
                       </div>
                       <p className="text-sm text-forge-blue-mid font-semibold">{project.sector || 'Sector no especificado'}</p>
                       <p className="text-forge-bg-dark/75 mt-2 text-sm">{project.summary || 'Sin resumen'}</p>
@@ -107,7 +104,7 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                           href={project.externalUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center mt-3 rounded-lg border border-emerald-600/30 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-600/10"
+                          className="inline-flex items-center mt-3 rounded-lg border border-forge-blue-mid/30 px-3 py-1.5 text-xs font-semibold text-forge-blue-mid hover:bg-forge-blue-mid/10"
                         >
                           Ver proyecto
                         </a>
@@ -116,68 +113,7 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="text-forge-bg-dark/70">Aún no hay proyectos entregados para mostrar.</p>
-              )}
-            </section>
-
-            <section aria-labelledby="proyectos-desarrollo" className="pt-6 border-t border-forge-blue-mid/20">
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <h3 id="proyectos-desarrollo" className="text-2xl font-semibold text-forge-bg-dark">Proyectos en desarrollo</h3>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-forge-orange-main/10 text-forge-orange-main border border-forge-orange-main/20">
-                  En curso
-                </span>
-              </div>
-
-              {about.projectsInProgress.length > 0 && (
-                <ul className="space-y-2 mb-5">
-                  {about.projectsInProgress.map((item, index) => (
-                    <li key={`${item}-${index}`} className="text-forge-bg-dark/75 flex items-start gap-2">
-                      <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-forge-orange-main" aria-hidden="true" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {inProgressProjects.length > 0 ? (
-                <div className="space-y-4">
-                  {inProgressProjects.map((project) => (
-                    <div key={project.id} className="bg-white rounded-xl border border-forge-orange-main/20 p-4">
-                      {project.imageUrl && (
-                        <div className="mb-3 overflow-hidden rounded-lg border border-forge-orange-main/20 bg-forge-bg-light/50 p-2">
-                          <Image
-                            src={project.imageUrl}
-                            alt={project.title || 'Proyecto en curso'}
-                            width={960}
-                            height={540}
-                            className="h-36 w-full rounded object-cover"
-                            unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
-                          />
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between gap-3 mb-2">
-                        <h4 className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</h4>
-                        <span className="px-2 py-1 rounded-full text-xs font-semibold bg-forge-orange-main/10 text-forge-orange-main">
-                          en-curso
-                        </span>
-                      </div>
-                      <p className="text-sm text-forge-blue-mid font-semibold">{project.sector || 'Sector no especificado'}</p>
-                      <p className="text-forge-bg-dark/75 mt-2 text-sm">{project.summary || 'Sin resumen'}</p>
-                      {project.externalUrl && (
-                        <a
-                          href={project.externalUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center mt-3 rounded-lg border border-forge-orange-main/30 px-3 py-1.5 text-xs font-semibold text-forge-orange-main hover:bg-forge-orange-main/10"
-                        >
-                          Ver proyecto
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-forge-bg-dark/70">En este momento no tenemos proyectos activos publicados.</p>
+                <p className="text-forge-bg-dark/70">Aún no hay proyectos publicados para mostrar.</p>
               )}
             </section>
           </div>
@@ -193,12 +129,12 @@ function normalizeText(value: string): string {
 
 function isExperienceDuplicated(
   experience: AboutContent['experience'],
-  finishedProjects: ProjectItem[],
+  projects: ProjectItem[],
 ): boolean {
   const expTitle = normalizeText(experience.title)
   const expDescription = normalizeText(experience.description)
 
-  return finishedProjects.some((project) => {
+  return projects.some((project) => {
     const projectTitle = normalizeText(project.title)
     const projectSummary = normalizeText(project.summary)
 
@@ -206,6 +142,12 @@ function isExperienceDuplicated(
     if (expDescription && projectSummary && expDescription === projectSummary) return true
     return false
   })
+}
+
+function getProjectStatusBadgeClassName(status: ProjectItem['status']): string {
+  return status === 'en-curso'
+    ? 'px-2 py-1 rounded-full text-xs font-semibold bg-forge-orange-main/10 text-forge-orange-main'
+    : 'px-2 py-1 rounded-full text-xs font-semibold bg-emerald-600/10 text-emerald-700'
 }
 
 function mergeDifferentiationItems(about: AboutContent): AboutContent['pillars'] {

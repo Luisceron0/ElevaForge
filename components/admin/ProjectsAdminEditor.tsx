@@ -7,14 +7,11 @@ import { isAssetRef } from '@/lib/asset-refs'
 
 interface Props {
   projects: ProjectItem[]
-  narrative: {
-    experience: AboutContent['experience']
-    projectsInProgress: string[]
-  }
+  narrative: AboutContent['experience']
   saving: boolean
   narrativeSaving: boolean
   onSave: (projects: ProjectItem[]) => void
-  onSaveNarrative: (value: { experience: AboutContent['experience']; projectsInProgress: string[] }) => void
+  onSaveNarrative: (value: AboutContent['experience']) => void
 }
 
 interface ProjectDraft {
@@ -72,31 +69,26 @@ function toProject(draft: ProjectDraft): ProjectItem {
 }
 
 function validate(draft: ProjectDraft, items: ProjectItem[], editingIndex: number | null): string {
-  const p = toProject(draft)
-  if (!p.id || !/^[a-z0-9-]+$/i.test(p.id)) return 'No se pudo generar un ID válido para el proyecto'
+  const project = toProject(draft)
+  if (!project.id || !/^[a-z0-9-]+$/i.test(project.id)) return 'No se pudo generar un ID válido para el proyecto'
 
-  if (p.imageUrl && !isAssetRef(p.imageUrl)) {
+  if (project.imageUrl && !isAssetRef(project.imageUrl)) {
     return 'La imagen debe ser ruta relativa, storage ref o URL http(s)'
   }
 
-  const duplicate = items.findIndex((x, idx) => x.id.toLowerCase() === p.id.toLowerCase() && idx !== editingIndex)
+  const duplicate = items.findIndex((item, index) => item.id.toLowerCase() === project.id.toLowerCase() && index !== editingIndex)
   if (duplicate >= 0) return 'El ID ya existe en otro proyecto'
 
   return ''
 }
 
 export default function ProjectsAdminEditor({ projects, narrative, saving, narrativeSaving, onSave, onSaveNarrative }: Props) {
-  const [narrativeDraft, setNarrativeDraft] = useState<{ experience: AboutContent['experience']; projectsInProgress: string[] }>(
-    {
-      experience: {
-        title: '',
-        description: '',
-        items: [],
-        imageUrl: '',
-      },
-      projectsInProgress: [],
-    },
-  )
+  const [narrativeDraft, setNarrativeDraft] = useState<AboutContent['experience']>({
+    title: '',
+    description: '',
+    items: [],
+    imageUrl: '',
+  })
   const [items, setItems] = useState<ProjectItem[]>(projects)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [openProjectIndex, setOpenProjectIndex] = useState<number | null>(null)
@@ -118,27 +110,19 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
 
   useEffect(() => {
     setNarrativeDraft({
-      experience: {
-        title: String(narrative.experience?.title ?? '').trim(),
-        description: String(narrative.experience?.description ?? '').trim(),
-        items: Array.isArray(narrative.experience?.items)
-          ? narrative.experience.items.map((item) => String(item ?? '').trim()).filter(Boolean)
-          : [],
-        imageUrl: String(narrative.experience?.imageUrl ?? '').trim(),
-      },
-      projectsInProgress: Array.isArray(narrative.projectsInProgress)
-        ? narrative.projectsInProgress.map((item) => String(item ?? '').trim()).filter(Boolean)
+      title: String(narrative?.title ?? '').trim(),
+      description: String(narrative?.description ?? '').trim(),
+      items: Array.isArray(narrative?.items)
+        ? narrative.items.map((item) => String(item ?? '').trim()).filter(Boolean)
         : [],
+      imageUrl: String(narrative?.imageUrl ?? '').trim(),
     })
   }, [narrative])
 
   function addExperienceItem() {
     setNarrativeDraft((prev) => ({
       ...prev,
-      experience: {
-        ...prev.experience,
-        items: [...prev.experience.items, ''],
-      },
+      items: [...prev.items, ''],
     }))
   }
 
@@ -146,38 +130,17 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
     if (!window.confirm('¿Eliminar este item de experiencia?')) return
     setNarrativeDraft((prev) => ({
       ...prev,
-      experience: {
-        ...prev.experience,
-        items: prev.experience.items.filter((_, idx) => idx !== index),
-      },
-    }))
-  }
-
-  function addInProgressItem() {
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      projectsInProgress: [...prev.projectsInProgress, ''],
-    }))
-  }
-
-  function removeInProgressItem(index: number) {
-    if (!window.confirm('¿Eliminar este item de proyectos en progreso?')) return
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      projectsInProgress: prev.projectsInProgress.filter((_, idx) => idx !== index),
+      items: prev.items.filter((_, currentIndex) => currentIndex !== index),
     }))
   }
 
   function saveNarrative() {
     onSaveNarrative({
-      experience: {
-        ...narrativeDraft.experience,
-        title: narrativeDraft.experience.title.trim(),
-        description: narrativeDraft.experience.description.trim(),
-        imageUrl: narrativeDraft.experience.imageUrl?.trim() || undefined,
-        items: narrativeDraft.experience.items.map((item) => item.trim()).filter(Boolean),
-      },
-      projectsInProgress: narrativeDraft.projectsInProgress.map((item) => item.trim()).filter(Boolean),
+      ...narrativeDraft,
+      title: narrativeDraft.title.trim(),
+      description: narrativeDraft.description.trim(),
+      imageUrl: narrativeDraft.imageUrl?.trim() || undefined,
+      items: narrativeDraft.items.map((item) => item.trim()).filter(Boolean),
     })
   }
 
@@ -224,7 +187,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
 
   function remove(index: number) {
     if (!window.confirm('¿Eliminar este proyecto?')) return
-    setItems((prev) => prev.filter((_, idx) => idx !== index))
+    setItems((prev) => prev.filter((_, currentIndex) => currentIndex !== index))
     if (editingIndex === index) cancelEdit()
     setOpenProjectIndex((prev) => {
       if (prev === null) return prev
@@ -237,7 +200,6 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
   function reorder(fromIndex: number, toIndex: number) {
     if (fromIndex === toIndex) return
     if (!items[fromIndex] || !items[toIndex]) return
-    if (items[fromIndex].status !== items[toIndex].status) return
 
     setItems((prev) => {
       const next = [...prev]
@@ -263,20 +225,12 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
 
   function canDropOn(targetIndex: number): boolean {
     if (draggedProjectIndex === null) return false
-    if (!items[draggedProjectIndex] || !items[targetIndex]) return false
-    return items[draggedProjectIndex].status === items[targetIndex].status
+    return !!items[draggedProjectIndex] && !!items[targetIndex]
   }
 
   function toggleProject(index: number) {
     setOpenProjectIndex((prev) => (prev === index ? null : index))
   }
-
-  const deliveredProjects = items
-    .map((project, index) => ({ project, index }))
-    .filter(({ project }) => project.status === 'entregado')
-  const inProgressProjects = items
-    .map((project, index) => ({ project, index }))
-    .filter(({ project }) => project.status === 'en-curso')
 
   return (
     <section className="bg-white rounded-2xl shadow p-5 space-y-4">
@@ -284,8 +238,8 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         <div>
           <h2 className="text-xl font-semibold text-forge-bg-dark">Proyectos y contexto</h2>
           <p className="text-sm text-forge-bg-dark/70">Gestiona en un solo panel el contexto narrativo y cada proyecto de forma individual.</p>
-          <p className="text-xs text-forge-bg-dark/60 mt-1">Estado del proyecto: <strong>entregado</strong> se muestra en "Proyectos terminados" y <strong>en-curso</strong> en "Proyectos en desarrollo".</p>
-          <p className="text-xs text-forge-bg-dark/60 mt-1">Ordena proyectos arrastrando dentro de su misma columna de estado.</p>
+          <p className="text-xs text-forge-bg-dark/60 mt-1">El estado del proyecto se usa solo como etiqueta visual.</p>
+          <p className="text-xs text-forge-bg-dark/60 mt-1">Ordena proyectos arrastrando libremente dentro de la lista.</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -311,7 +265,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="font-semibold text-forge-bg-dark">Contexto institucional de proyectos</h3>
-            <p className="text-xs text-forge-bg-dark/60">Este bloque alimenta el caso de experiencia y el resumen de proyectos en progreso.</p>
+            <p className="text-xs text-forge-bg-dark/60">Este bloque alimenta el caso de experiencia visible encima del listado de proyectos.</p>
           </div>
           <button
             onClick={saveNarrative}
@@ -325,13 +279,8 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-forge-bg-dark">Caso de experiencia - título</label>
           <input
-            value={narrativeDraft.experience.title}
-            onChange={(e) =>
-              setNarrativeDraft((prev) => ({
-                ...prev,
-                experience: { ...prev.experience, title: e.target.value },
-              }))
-            }
+            value={narrativeDraft.title}
+            onChange={(e) => setNarrativeDraft((prev) => ({ ...prev, title: e.target.value }))}
             className="w-full border rounded-lg px-3 py-2 text-sm"
           />
         </div>
@@ -339,27 +288,17 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-forge-bg-dark">Caso de experiencia - descripción</label>
           <textarea
-            value={narrativeDraft.experience.description}
-            onChange={(e) =>
-              setNarrativeDraft((prev) => ({
-                ...prev,
-                experience: { ...prev.experience, description: e.target.value },
-              }))
-            }
+            value={narrativeDraft.description}
+            onChange={(e) => setNarrativeDraft((prev) => ({ ...prev, description: e.target.value }))}
             className="w-full min-h-[90px] border rounded-lg px-3 py-2 text-sm"
           />
         </div>
 
         <ImageUploadInput
           label="Caso de experiencia - imagen"
-          value={narrativeDraft.experience.imageUrl || ''}
+          value={narrativeDraft.imageUrl || ''}
           folder="about"
-          onChange={(next) =>
-            setNarrativeDraft((prev) => ({
-              ...prev,
-              experience: { ...prev.experience, imageUrl: next },
-            }))
-          }
+          onChange={(next) => setNarrativeDraft((prev) => ({ ...prev, imageUrl: next }))}
           placeholder="URL imagen (opcional)"
         />
 
@@ -370,17 +309,14 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
           </div>
 
           <div className="space-y-2">
-            {narrativeDraft.experience.items.map((item, index) => (
+            {narrativeDraft.items.map((item, index) => (
               <div key={index} className="flex gap-2">
                 <input
                   value={item}
                   onChange={(e) => {
-                    const next = [...narrativeDraft.experience.items]
+                    const next = [...narrativeDraft.items]
                     next[index] = e.target.value
-                    setNarrativeDraft((prev) => ({
-                      ...prev,
-                      experience: { ...prev.experience, items: next },
-                    }))
+                    setNarrativeDraft((prev) => ({ ...prev, items: next }))
                   }}
                   className="flex-1 border rounded-lg px-3 py-2 text-sm"
                 />
@@ -389,243 +325,120 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
             ))}
           </div>
         </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-forge-bg-dark">Proyectos en progreso</h4>
-            <button onClick={addInProgressItem} className="border rounded px-3 py-1 text-sm">Agregar item</button>
-          </div>
-
-          <div className="space-y-2">
-            {narrativeDraft.projectsInProgress.map((item, index) => (
-              <div key={index} className="flex gap-2">
-                <input
-                  value={item}
-                  onChange={(e) => {
-                    const next = [...narrativeDraft.projectsInProgress]
-                    next[index] = e.target.value
-                    setNarrativeDraft((prev) => ({ ...prev, projectsInProgress: next }))
-                  }}
-                  className="flex-1 border rounded-lg px-3 py-2 text-sm"
-                />
-                <button onClick={() => removeInProgressItem(index)} className="border rounded px-3 py-2 text-sm text-red-600">Eliminar</button>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-lg border border-emerald-600/20 bg-emerald-50 px-3 py-2">
-            <h3 className="text-sm font-semibold text-emerald-800">Proyectos entregados</h3>
-            <span className="text-xs font-semibold text-emerald-700">{deliveredProjects.length}</span>
-          </div>
-
-          {deliveredProjects.map(({ project, index }) => {
-            const isEditing = editingIndex === index
-            const isOpen = isEditing || openProjectIndex === index
-            const isDropTarget = dragOverProjectIndex === index && canDropOn(index)
-
-            return (
-              <div
-                key={project.id}
-                className={`rounded-xl border bg-white transition ${isDropTarget ? 'border-emerald-500 ring-2 ring-emerald-200' : 'border-forge-bg-dark/10'}`}
-                onDragOver={(e) => {
-                  if (!canDropOn(index)) return
-                  e.preventDefault()
-                  setDragOverProjectIndex(index)
-                }}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  if (draggedProjectIndex === null || !canDropOn(index)) {
-                    resetDragState()
-                    return
-                  }
-
-                  reorder(draggedProjectIndex, index)
-                  resetDragState()
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => !isEditing && toggleProject(index)}
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
-                >
-                  <div>
-                    <p className="text-xs font-semibold text-forge-bg-dark/60">Proyecto #{index + 1}</p>
-                    <p className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</p>
-                    <p className="text-xs text-forge-bg-dark/60">ID: {project.id}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      draggable={editingIndex === null}
-                      onClick={(e) => e.stopPropagation()}
-                      onDragStart={(e) => {
-                        if (editingIndex !== null) {
-                          e.preventDefault()
-                          return
-                        }
-                        setDraggedProjectIndex(index)
-                        setDragOverProjectIndex(index)
-                        e.dataTransfer.effectAllowed = 'move'
-                      }}
-                      onDragEnd={resetDragState}
-                      className={`text-xs rounded px-2 py-1 border ${editingIndex === null ? 'cursor-grab active:cursor-grabbing border-forge-bg-dark/20 text-forge-bg-dark/60' : 'border-forge-bg-dark/10 text-forge-bg-dark/30 cursor-not-allowed'}`}
-                      title="Arrastra para reordenar"
-                    >
-                      Arrastrar
-                    </span>
-                    <span className="text-xs rounded-full px-2 py-1 bg-emerald-600/10 text-emerald-700 font-semibold">entregado</span>
-                    <span className="text-forge-bg-dark/50 text-sm">{isOpen ? '▲' : '▼'}</span>
-                  </div>
-                </button>
-
-                {isOpen && (
-                  <div className="px-4 pb-4 space-y-3 border-t border-forge-bg-dark/10">
-                    {isEditing ? (
-                      <ProjectForm draft={draft} onChange={setDraft} onConfirm={commitEdit} onCancel={cancelEdit} />
-                    ) : (
-                      <>
-                        <p className="text-sm text-forge-blue-mid font-semibold mt-2">{project.sector}</p>
-                        <p className="text-sm text-forge-bg-dark/70">{project.summary}</p>
-                        <div className="text-xs text-forge-bg-dark/60">
-                          <p>Imagen: {project.imageUrl || 'Sin imagen'}</p>
-                          {project.externalUrl && <p>URL externa: {project.externalUrl}</p>}
-                        </div>
-                        <ul className="text-sm text-forge-bg-dark/75 list-disc pl-5">
-                          {project.results.map((r) => (
-                            <li key={r}>{r}</li>
-                          ))}
-                        </ul>
-                        <div className="flex flex-wrap gap-2">
-                          <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm disabled:opacity-40">Editar</button>
-                          <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm text-red-600 disabled:opacity-40">Eliminar</button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-
-          {deliveredProjects.length === 0 && (
-            <p className="text-xs text-forge-bg-dark/60">No hay proyectos entregados.</p>
-          )}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between rounded-lg border border-forge-blue-mid/20 bg-forge-bg-light px-3 py-2">
+          <h3 className="text-sm font-semibold text-forge-bg-dark">Listado de proyectos</h3>
+          <span className="text-xs font-semibold text-forge-bg-dark/70">{items.length}</span>
         </div>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-lg border border-orange-500/20 bg-orange-50 px-3 py-2">
-            <h3 className="text-sm font-semibold text-orange-800">Proyectos en curso</h3>
-            <span className="text-xs font-semibold text-orange-700">{inProgressProjects.length}</span>
-          </div>
+        {items.map((project, index) => {
+          const isEditing = editingIndex === index
+          const isOpen = isEditing || openProjectIndex === index
+          const isDropTarget = dragOverProjectIndex === index && canDropOn(index)
 
-          {inProgressProjects.map(({ project, index }) => {
-            const isEditing = editingIndex === index
-            const isOpen = isEditing || openProjectIndex === index
-            const isDropTarget = dragOverProjectIndex === index && canDropOn(index)
-
-            return (
-              <div
-                key={project.id}
-                className={`rounded-xl border bg-white transition ${isDropTarget ? 'border-orange-500 ring-2 ring-orange-200' : 'border-forge-bg-dark/10'}`}
-                onDragOver={(e) => {
-                  if (!canDropOn(index)) return
-                  e.preventDefault()
-                  setDragOverProjectIndex(index)
-                }}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  if (draggedProjectIndex === null || !canDropOn(index)) {
-                    resetDragState()
-                    return
-                  }
-
-                  reorder(draggedProjectIndex, index)
+          return (
+            <div
+              key={project.id}
+              className={`rounded-xl border bg-white transition ${isDropTarget ? 'border-forge-blue-mid ring-2 ring-forge-blue-mid/20' : 'border-forge-bg-dark/10'}`}
+              onDragOver={(e) => {
+                if (!canDropOn(index)) return
+                e.preventDefault()
+                setDragOverProjectIndex(index)
+              }}
+              onDrop={(e) => {
+                e.preventDefault()
+                if (draggedProjectIndex === null || !canDropOn(index)) {
                   resetDragState()
-                }}
+                  return
+                }
+
+                reorder(draggedProjectIndex, index)
+                resetDragState()
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => !isEditing && toggleProject(index)}
+                className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
               >
-                <button
-                  type="button"
-                  onClick={() => !isEditing && toggleProject(index)}
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
-                >
-                  <div>
-                    <p className="text-xs font-semibold text-forge-bg-dark/60">Proyecto #{index + 1}</p>
-                    <p className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</p>
-                    <p className="text-xs text-forge-bg-dark/60">ID: {project.id}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      draggable={editingIndex === null}
-                      onClick={(e) => e.stopPropagation()}
-                      onDragStart={(e) => {
-                        if (editingIndex !== null) {
-                          e.preventDefault()
-                          return
-                        }
-                        setDraggedProjectIndex(index)
-                        setDragOverProjectIndex(index)
-                        e.dataTransfer.effectAllowed = 'move'
-                      }}
-                      onDragEnd={resetDragState}
-                      className={`text-xs rounded px-2 py-1 border ${editingIndex === null ? 'cursor-grab active:cursor-grabbing border-forge-bg-dark/20 text-forge-bg-dark/60' : 'border-forge-bg-dark/10 text-forge-bg-dark/30 cursor-not-allowed'}`}
-                      title="Arrastra para reordenar"
-                    >
-                      Arrastrar
-                    </span>
-                    <span className="text-xs rounded-full px-2 py-1 bg-orange-500/10 text-orange-700 font-semibold">en-curso</span>
-                    <span className="text-forge-bg-dark/50 text-sm">{isOpen ? '▲' : '▼'}</span>
-                  </div>
-                </button>
+                <div>
+                  <p className="text-xs font-semibold text-forge-bg-dark/60">Proyecto #{index + 1}</p>
+                  <p className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</p>
+                  <p className="text-xs text-forge-bg-dark/60">ID: {project.id}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    draggable={editingIndex === null}
+                    onClick={(e) => e.stopPropagation()}
+                    onDragStart={(e) => {
+                      if (editingIndex !== null) {
+                        e.preventDefault()
+                        return
+                      }
+                      setDraggedProjectIndex(index)
+                      setDragOverProjectIndex(index)
+                      e.dataTransfer.effectAllowed = 'move'
+                    }}
+                    onDragEnd={resetDragState}
+                    className={`text-xs rounded px-2 py-1 border ${editingIndex === null ? 'cursor-grab active:cursor-grabbing border-forge-bg-dark/20 text-forge-bg-dark/60' : 'border-forge-bg-dark/10 text-forge-bg-dark/30 cursor-not-allowed'}`}
+                    title="Arrastra para reordenar"
+                  >
+                    Arrastrar
+                  </span>
+                  <span className={getStatusBadgeClassName(project.status)}>{project.status}</span>
+                  <span className="text-forge-bg-dark/50 text-sm">{isOpen ? '▲' : '▼'}</span>
+                </div>
+              </button>
 
-                {isOpen && (
-                  <div className="px-4 pb-4 space-y-3 border-t border-forge-bg-dark/10">
-                    {isEditing ? (
-                      <ProjectForm draft={draft} onChange={setDraft} onConfirm={commitEdit} onCancel={cancelEdit} />
-                    ) : (
-                      <>
-                        <p className="text-sm text-forge-blue-mid font-semibold mt-2">{project.sector}</p>
-                        <p className="text-sm text-forge-bg-dark/70">{project.summary}</p>
-                        <div className="text-xs text-forge-bg-dark/60">
-                          <p>Imagen: {project.imageUrl || 'Sin imagen'}</p>
-                          {project.externalUrl && <p>URL externa: {project.externalUrl}</p>}
-                        </div>
-                        <ul className="text-sm text-forge-bg-dark/75 list-disc pl-5">
-                          {project.results.map((r) => (
-                            <li key={r}>{r}</li>
-                          ))}
-                        </ul>
-                        <div className="flex flex-wrap gap-2">
-                          <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm disabled:opacity-40">Editar</button>
-                          <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm text-red-600 disabled:opacity-40">Eliminar</button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-
-          {inProgressProjects.length === 0 && (
-            <p className="text-xs text-forge-bg-dark/60">No hay proyectos en curso.</p>
-          )}
-        </div>
+              {isOpen && (
+                <div className="px-4 pb-4 space-y-3 border-t border-forge-bg-dark/10">
+                  {isEditing ? (
+                    <ProjectForm draft={draft} onChange={setDraft} onConfirm={commitEdit} onCancel={cancelEdit} />
+                  ) : (
+                    <>
+                      <p className="text-sm text-forge-blue-mid font-semibold mt-2">{project.sector}</p>
+                      <p className="text-sm text-forge-bg-dark/70">{project.summary}</p>
+                      <div className="text-xs text-forge-bg-dark/60">
+                        <p>Imagen: {project.imageUrl || 'Sin imagen'}</p>
+                        {project.externalUrl && <p>URL externa: {project.externalUrl}</p>}
+                      </div>
+                      <ul className="text-sm text-forge-bg-dark/75 list-disc pl-5">
+                        {project.results.map((result) => (
+                          <li key={result}>{result}</li>
+                        ))}
+                      </ul>
+                      <div className="flex flex-wrap gap-2">
+                        <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm disabled:opacity-40">Editar</button>
+                        <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm text-red-600 disabled:opacity-40">Eliminar</button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
 
-        {editingIndex === items.length && (
-          <div className="rounded-xl border border-forge-bg-dark/10 p-4">
-            <ProjectForm draft={draft} onChange={setDraft} onConfirm={commitEdit} onCancel={cancelEdit} />
-          </div>
-        )}
+      {editingIndex === items.length && (
+        <div className="rounded-xl border border-forge-bg-dark/10 p-4">
+          <ProjectForm draft={draft} onChange={setDraft} onConfirm={commitEdit} onCancel={cancelEdit} />
+        </div>
+      )}
 
-        {items.length === 0 && editingIndex === null && (
-          <p className="text-sm text-forge-bg-dark/60 text-center py-4">No hay proyectos. Usa Agregar proyecto para crear el primero.</p>
-        )}
+      {items.length === 0 && editingIndex === null && (
+        <p className="text-sm text-forge-bg-dark/60 text-center py-4">No hay proyectos. Usa Agregar proyecto para crear el primero.</p>
+      )}
     </section>
   )
+}
+
+function getStatusBadgeClassName(status: ProjectItem['status']): string {
+  return status === 'en-curso'
+    ? 'text-xs rounded-full px-2 py-1 bg-orange-500/10 text-orange-700 font-semibold'
+    : 'text-xs rounded-full px-2 py-1 bg-emerald-600/10 text-emerald-700 font-semibold'
 }
 
 interface FormProps {
