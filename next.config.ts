@@ -1,15 +1,34 @@
 import type { NextConfig } from 'next'
 
+const supabaseHost = (() => {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    return url ? new URL(url).hostname : undefined
+  } catch {
+    return undefined
+  }
+})()
+
 const config: NextConfig = {
   images: {
-    // Disable image optimization to reduce function invocations
-    unoptimized: true,
+    remotePatterns: supabaseHost
+      ? [
+        {
+          protocol: 'https',
+          hostname: supabaseHost,
+          pathname: '/storage/v1/object/**',
+        },
+      ]
+      : [],
   },
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
 
   // Scanner/probe blocking — static redirects, no middleware needed
+  // NOTE: '/admin' is intentionally NOT blocked here because the app has its
+  // own admin UI at /admin. External scanner probes are blocked by auth +
+  // rate-limiting in the API layer. Common CMS/PHP probe paths are still 404'd.
   redirects: async () => [
     ...['.git', '.env', '.svn', 'wp-admin', 'wp-login', 'phpmyadmin', 'wp-content', 'node_modules'].map((seg) => ({
       source: `/${seg}/:path*`,
@@ -18,7 +37,6 @@ const config: NextConfig = {
     })),
     { source: '/xmlrpc.php', destination: '/404', permanent: false },
     { source: '/.htaccess', destination: '/404', permanent: false },
-    { source: '/admin/:path*', destination: '/404', permanent: false },
   ],
 
   // Security headers in config (static) instead of middleware (dynamic)
@@ -38,23 +56,6 @@ const config: NextConfig = {
         { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
         { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
         { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
-        {
-          key: 'Content-Security-Policy',
-          value: [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "img-src 'self' data: blob:",
-            "font-src 'self' https://fonts.gstatic.com",
-            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.railway.app https://*.onrender.com https://*.fly.dev",
-            "frame-ancestors 'none'",
-            "form-action 'self'",
-            "base-uri 'self'",
-            "object-src 'none'",
-            "worker-src 'self' blob:",
-            'upgrade-insecure-requests',
-          ].join('; '),
-        },
       ],
     },
     {

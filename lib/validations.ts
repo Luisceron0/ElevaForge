@@ -1,18 +1,5 @@
 import { z } from 'zod'
 
-/**
- * Shared input-validation schemas.
- *
- * OWASP A05:2025 — Injection prevention via strict allowlists.
- * OWASP A10:2025 — Fail-closed on invalid input.
- *
- * Every field uses:
- *  • Type coercion + trimming to normalise input
- *  • Regex allowlists (not blocklists) where possible
- *  • Length caps to prevent oversized payloads
- */
-
-/** Strip ASCII control characters (0x00-0x1F, 0x7F) — never legitimate in user text. */
 function stripControlChars(v: string): string {
   return v.replace(/[\u0000-\u001F\u007F]/g, '')
 }

@@ -1,46 +1,12 @@
 import CTAButton from '@/components/ui/CTAButton'
 import { buildWhatsAppURL } from '@/lib/whatsapp'
+import { PackagePlan } from '@/lib/site-content'
 
-export default function PricingSection() {
-  // Prices in USD with COP equivalents (1 USD = 3800 COP)
-  const plans = [
-    {
-      id: 'web',
-      title: 'Sitio Web / Landing',
-      priceUsd: 125,
-      priceCop: 125 * 3800,
-      bullets: [
-        'Landing + gestor de contenido (CMS) y panel de administración',
-        'Diseño responsivo y optimización',
-        'SEO y optimización de rendimiento',
-        'Entrega en 2-4 semanas',
-      ],
-    },
-    {
-      id: 'pos',
-      title: 'PoS + Gestor de Inventario',
-      priceUsd: 80,
-      priceCop: 80 * 3800,
-      bullets: [
-        'Punto de venta funcional',
-        'Gestión de inventario',
-        'Capacitación incluida',
-        'Entrega en 1-3 semanas',
-      ],
-    },
-    {
-      id: 'custom',
-      title: 'Software Personalizado',
-      priceUsd: 80,
-      priceCop: 80 * 3800,
-      bullets: [
-        'Soluciones a medida (desde opciones sencillas hasta sistemas complejos)',
-        'Arquitectura escalable',
-        'Soporte y roadmap definido',
-        'Entrega según alcance acordado',
-      ],
-    },
-  ]
+interface PricingSectionProps {
+  plans: PackagePlan[]
+}
+
+export default function PricingSection({ plans }: PricingSectionProps) {
 
   return (
     <section id="precios" className="py-16 bg-white">

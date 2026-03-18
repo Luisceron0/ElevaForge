@@ -54,11 +54,11 @@ export default function RoadmapSection() {
         {/* Encabezado */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-forge-bg-dark mb-4">
-            Roadmap de{' '}
+            Metodología y{' '}
             <span className="text-forge-orange-main">Transparencia</span>
           </h2>
           <p className="text-lg text-forge-bg-dark/70 max-w-2xl mx-auto">
-            Sabes exactamente en qué etapa estamos en todo momento.
+            Nuestro proceso de trabajo, paso a paso, para que sepas exactamente en qué etapa estamos en todo momento.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function RoadmapSection() {
             {/* Process Timeline - patrón AVC SellSection */}
             <div>
               <h3 className="text-xl font-semibold text-forge-bg-dark mb-6">
-                Nuestro Proceso
+                Metodología de trabajo
               </h3>
               <div className="relative">
                 <div

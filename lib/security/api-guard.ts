@@ -37,6 +37,22 @@ export interface GuardResult {
 
 const JSON_TYPE = 'application/json'
 
+function shouldValidateJsonContentType(request: NextRequest): boolean {
+  const method = request.method.toUpperCase()
+  if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+    return true
+  }
+
+  if (method === 'DELETE') {
+    const contentLengthRaw = request.headers.get('content-length')
+    const contentLength = Number(contentLengthRaw ?? '0')
+    const hasChunkedBody = !!request.headers.get('transfer-encoding')
+    return (Number.isFinite(contentLength) && contentLength > 0) || hasChunkedBody
+  }
+
+  return false
+}
+
 /**
  * Extract client IP from standard headers.
  * Vercel / Cloudflare / Nginx all populate one of these.
@@ -64,7 +80,7 @@ export async function runApiGuard(
 
   // ── 1. Content-Type check (A02, A10) ───────────────────────────────
   const ct = request.headers.get('content-type') ?? ''
-  if (!ct.includes(JSON_TYPE)) {
+  if (shouldValidateJsonContentType(request) && !ct.includes(JSON_TYPE)) {
     logSecurityEvent({ type: 'INVALID_CONTENT_TYPE', ip, path, method: request.method, details: ct })
     return {
       blocked: true,
@@ -77,8 +93,9 @@ export async function runApiGuard(
   }
 
   // ── 2. Payload size check (A05, A10) ───────────────────────────────
-  const contentLength = Number(request.headers.get('content-length') ?? '0')
-  if (contentLength > maxBodyBytes) {
+  const contentLengthRaw = request.headers.get('content-length')
+  const contentLength = Number(contentLengthRaw ?? '0')
+  if (Number.isFinite(contentLength) && contentLength > maxBodyBytes) {
     logSecurityEvent({ type: 'OVERSIZED_PAYLOAD', ip, path, method: request.method, details: `${contentLength} bytes` })
     return {
       blocked: true,
@@ -87,6 +104,35 @@ export async function runApiGuard(
         { status: 413 },
       ),
       ip,
+    }
+  }
+
+  // Fallback for chunked requests or missing/invalid Content-Length.
+  if (!contentLengthRaw || !Number.isFinite(contentLength) || contentLength <= 0) {
+    try {
+      const preview = await request.clone().text()
+      const bytes = Buffer.byteLength(preview, 'utf8')
+      if (bytes > maxBodyBytes) {
+        logSecurityEvent({ type: 'OVERSIZED_PAYLOAD', ip, path, method: request.method, details: `${bytes} bytes (measured)` })
+        return {
+          blocked: true,
+          response: NextResponse.json(
+            { error: 'Payload demasiado grande' },
+            { status: 413 },
+          ),
+          ip,
+        }
+      }
+    } catch {
+      logSecurityEvent({ type: 'MALFORMED_BODY', ip, path, method: request.method, details: 'Body preview failed in guard' })
+      return {
+        blocked: true,
+        response: NextResponse.json(
+          { error: 'Cuerpo de solicitud inválido' },
+          { status: 400 },
+        ),
+        ip,
+      }
     }
   }
 
