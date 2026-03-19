@@ -23,6 +23,8 @@ export type SecurityEventType =
   | 'SCANNER_PROBE'
   | 'BLOCKED_PATH'
   | 'UNHANDLED_ERROR'
+  | 'LOGIN_FAILED'
+  | 'LOGIN_SUCCESS'
 
 export interface SecurityEvent {
   type: SecurityEventType
