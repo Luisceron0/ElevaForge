@@ -43,10 +43,12 @@ export async function POST(request: NextRequest) {
       nombre: record.nombre,
       email: record.email,
       telefono: record.telefono,
-      telefono: record.telefono,
       empresa: record.empresa,
       mensaje: record.mensaje,
       servicio: record.servicio,
+      presupuesto: record.presupuesto,
+      contacto_pref: record.contacto_pref,
+      consent: record.consent === true,
     })
 
     if (!parsed.success) {
@@ -69,9 +71,9 @@ export async function POST(request: NextRequest) {
       empresa: parsed.data.empresa || null,
       mensaje: parsed.data.mensaje || null,
       servicio: parsed.data.servicio || null,
-      contacto_pref,
-      presupuesto,
-      consent: record.consent === true,
+      contacto_pref: parsed.data.contacto_pref || null,
+      presupuesto: parsed.data.presupuesto || null,
+      consent: parsed.data.consent === true,
       origen: 'web-contact-form',
       status: 'pending',
       attempts: 0,

@@ -48,6 +48,19 @@ export const leadSchema = z.object({
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
+  presupuesto: z
+    .string()
+    .max(64, 'El presupuesto no puede exceder 64 caracteres')
+    .transform((v) => stripControlChars(v).trim())
+    .optional()
+    .or(z.literal('')),
+  contacto_pref: z
+    .string()
+    .max(16, 'La preferencia no puede exceder 16 caracteres')
+    .transform((v) => stripControlChars(v).trim())
+    .optional()
+    .or(z.literal('')),
+  consent: z.boolean().optional(),
 })
 
 export type LeadInput = z.infer<typeof leadSchema>

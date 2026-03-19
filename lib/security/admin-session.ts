@@ -86,10 +86,9 @@ function verifyAgainstLegacyEnv(username: string, password: string): boolean {
 
   const normalizedInputUser = normalizeAdminUsername(username)
   const normalizedLegacyUser = normalizeAdminUsername(legacyUser)
-  return (
-    timingSafeStringMatch(normalizedInputUser, normalizedLegacyUser) &&
-    timingSafeStringMatch(password, legacyPass)
-  )
+  const userMatch = timingSafeStringMatch(normalizedInputUser, normalizedLegacyUser)
+  const passMatch = timingSafeStringMatch(password, legacyPass)
+  return userMatch && passMatch
 }
 
 async function verifyAgainstSupabase(username: string, password: string): Promise<boolean> {

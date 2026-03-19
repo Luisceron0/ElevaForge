@@ -7,6 +7,7 @@ import TeamAdminEditor from './TeamAdminEditor'
 import ProjectsAdminEditor from './ProjectsAdminEditor'
 import PackagesAdminEditor from './PackagesAdminEditor'
 import AboutAdminEditor from './AboutAdminEditor'
+import AdminNavbar from '@/components/admin/AdminNavbar'
 
 interface Props {
   initialContent: SiteContent
@@ -286,326 +287,309 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
   }
 
   return (
-    <main className="min-h-screen bg-forge-bg-light py-8">
-      <div className="container mx-auto px-4 space-y-8">
-        <header className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-forge-bg-dark">Panel de Administración</h1>
-            <p className="text-forge-bg-dark/70">Gestiona contenido, administradores y leads desde un solo panel.</p>
-          </div>
-          <button
-            onClick={logout}
-            className="bg-forge-bg-dark text-white px-4 py-2 rounded-lg hover:bg-forge-blue-deep transition-colors"
-          >
-            Cerrar sesión
-          </button>
-        </header>
+    <>
+      <AdminNavbar onLogout={logout} onNavigate={(k) => setPanelView(k)} />
+      <main className="pt-20 bg-forge-bg-dark min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Mensajes de estado */}
+          {errorMsg && (
+            <div className="mb-6 rounded-xl border border-red-500 bg-red-950 text-red-200 px-4 py-3 text-sm animate-in">{errorMsg}</div>
+          )}
+          {okMsg && (
+            <div className="mb-6 rounded-xl border border-green-500 bg-green-950 text-green-200 px-4 py-3 text-sm animate-in">{okMsg}</div>
+          )}
 
-        {errorMsg && (
-          <div className="rounded-lg border border-red-300 bg-red-50 text-red-700 px-4 py-3">{errorMsg}</div>
-        )}
-        {okMsg && (
-          <div className="rounded-lg border border-green-300 bg-green-50 text-green-700 px-4 py-3">{okMsg}</div>
-        )}
-
-        <nav className="bg-white rounded-2xl shadow p-3">
-          <div className="grid gap-2 sm:grid-cols-3">
-            <button
-              onClick={() => setPanelView('content')}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
-                panelView === 'content'
-                  ? 'bg-forge-blue-mid text-white'
-                  : 'border border-forge-bg-dark/15 text-forge-bg-dark hover:bg-forge-bg-light'
-              }`}
-            >
-              Contenido del sitio
-            </button>
-            <button
-              onClick={() => setPanelView('admins')}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
-                panelView === 'admins'
-                  ? 'bg-forge-blue-mid text-white'
-                  : 'border border-forge-bg-dark/15 text-forge-bg-dark hover:bg-forge-bg-light'
-              }`}
-            >
-              Administradores
-            </button>
-            <button
-              onClick={() => setPanelView('leads')}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
-                panelView === 'leads'
-                  ? 'bg-forge-blue-mid text-white'
-                  : 'border border-forge-bg-dark/15 text-forge-bg-dark hover:bg-forge-bg-light'
-              }`}
-            >
-              Leads
-            </button>
-          </div>
-        </nav>
-
-        {panelView === 'content' && (
-          <>
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-2xl font-semibold text-forge-bg-dark">Gestión de proyectos</h2>
-                <p className="text-sm text-forge-bg-dark/70">
-                  Cards de proyectos y narrativa institucional en un único bloque para evitar edición separada.
-                </p>
+          {/* CONTENT TAB */}
+          {panelView === 'content' && (
+            <div className="space-y-6">
+              {/* Proyectos - Full width */}
+              <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-semibold text-white">Proyectos</h2>
+                  <p className="text-sm text-white/60 mt-1">Gestiona proyectos y narrativa institucional</p>
+                </div>
+                <ProjectsAdminEditor
+                  projects={content.projects}
+                  narrative={content.about.experience}
+                  saving={savingKey === 'projects'}
+                  narrativeSaving={savingKey === 'about'}
+                  onSave={saveProjectsVisual}
+                  onSaveNarrative={saveProjectNarrativeVisual}
+                />
               </div>
 
-              <ProjectsAdminEditor
-                projects={content.projects}
-                narrative={content.about.experience}
-                saving={savingKey === 'projects'}
-                narrativeSaving={savingKey === 'about'}
-                onSave={saveProjectsVisual}
-                onSaveNarrative={saveProjectNarrativeVisual}
-              />
-            </section>
+              {/* About & Team - 2 Columns */}
+              <div className="grid lg:grid-cols-2 gap-6">
+                <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-semibold text-white">Quiénes Somos</h2>
+                    <p className="text-sm text-white/60 mt-1">Sección institucional</p>
+                  </div>
+                  <AboutAdminEditor
+                    about={content.about}
+                    saving={savingKey === 'about'}
+                    onSave={saveAboutVisual}
+                  />
+                </div>
 
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-2xl font-semibold text-forge-bg-dark">Gestión institucional</h2>
-                <p className="text-sm text-forge-bg-dark/70">Contenido de quiénes somos, equipo y soporte.</p>
+                <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-semibold text-white">Equipo</h2>
+                    <p className="text-sm text-white/60 mt-1">Miembros y especialidades</p>
+                  </div>
+                  <TeamAdminEditor
+                    team={content.about.team}
+                    saving={savingKey === 'about' || savingKey === 'team'}
+                    onSave={saveTeam}
+                  />
+                </div>
               </div>
 
-              <AboutAdminEditor
-                about={content.about}
-                saving={savingKey === 'about'}
-                onSave={saveAboutVisual}
-              />
-
-              <TeamAdminEditor
-                team={content.about.team}
-                saving={savingKey === 'about' || savingKey === 'team'}
-                onSave={saveTeam}
-              />
-            </section>
-
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-2xl font-semibold text-forge-bg-dark">Gestión comercial</h2>
-                <p className="text-sm text-forge-bg-dark/70">Planes y estructura de precios visibles en la landing.</p>
+              {/* Packages - Full width */}
+              <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-semibold text-white">Paquetes de Precios</h2>
+                  <p className="text-sm text-white/60 mt-1">Planes y estructura comercial</p>
+                </div>
+                <PackagesAdminEditor
+                  plans={content.packages}
+                  saving={savingKey === 'packages'}
+                  onSave={savePackagesVisual}
+                />
               </div>
-
-              <PackagesAdminEditor
-                plans={content.packages}
-                saving={savingKey === 'packages'}
-                onSave={savePackagesVisual}
-              />
-            </section>
-          </>
-        )}
-
-        {panelView === 'admins' && (
-          <section className="bg-white rounded-2xl shadow p-5 space-y-4">
-            <div>
-              <h2 className="text-xl font-semibold text-forge-bg-dark">Administradores</h2>
-              <p className="text-sm text-forge-bg-dark/70">CRUD completo de usuarios admin almacenados en Supabase.</p>
             </div>
+          )}
 
-            <div className="grid md:grid-cols-3 gap-3">
-              <input
-                type="text"
-                value={newAdminUsername}
-                onChange={(e) => setNewAdminUsername(e.target.value)}
-                placeholder="username"
-                className="border rounded-lg px-3 py-2"
-              />
-              <input
-                type="password"
-                value={newAdminPassword}
-                onChange={(e) => setNewAdminPassword(e.target.value)}
-                placeholder="password (min 10)"
-                className="border rounded-lg px-3 py-2"
-              />
-              <button
-                onClick={createAdminUser}
-                disabled={adminsSaving}
-                className="bg-forge-blue-mid text-white rounded-lg px-4 py-2 disabled:opacity-50"
-              >
-                {adminsSaving ? 'Creando...' : 'Agregar admin'}
-              </button>
+          {/* ADMINS TAB */}
+          {panelView === 'admins' && (
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Lista de admins - 2 columns */}
+              <div className="lg:col-span-2 bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
+                <h2 className="text-xl font-semibold text-white mb-6">Usuarios Activos</h2>
+                <div className="overflow-auto rounded-xl border border-white/10">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-white/5 border-b border-white/10">
+                        <th className="py-3 px-4 text-left font-semibold text-white">Usuario</th>
+                        <th className="py-3 px-4 text-left font-semibold text-white">Estado</th>
+                        <th className="py-3 px-4 text-right font-semibold text-white">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {adminsLoading ? (
+                        <tr>
+                          <td colSpan={3} className="py-12 text-center text-white/40">Cargando...</td>
+                        </tr>
+                      ) : adminUsers.length === 0 ? (
+                        <tr>
+                          <td colSpan={3} className="py-12 text-center text-white/40">Sin administradores registrados</td>
+                        </tr>
+                      ) : (
+                        adminUsers.map((user) => {
+                          const isEditing = editingAdminId === user.id
+                          return (
+                            <tr key={user.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                              <td className="py-4 px-4">
+                                {isEditing ? (
+                                  <input
+                                    type="text"
+                                    value={editingAdminUsername}
+                                    onChange={(e) => setEditingAdminUsername(e.target.value)}
+                                    className="w-full border border-white/20 rounded-lg px-2 py-1.5 text-sm bg-white/10 text-white"
+                                  />
+                                ) : (
+                                  <span className="font-medium text-white">{user.username}</span>
+                                )}
+                              </td>
+                              <td className="py-4 px-4">
+                                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+                                  user.is_active
+                                    ? 'bg-green-900/50 text-green-300 border border-green-500/50'
+                                    : 'bg-gray-900/50 text-gray-400 border border-gray-600/50'
+                                }`}>
+                                  {user.is_active ? '🟢 Activo' : '⚫ Inactivo'}
+                                </span>
+                              </td>
+                              <td className="py-4 px-4 text-right">
+                                <div className="flex gap-1 justify-end">
+                                  {isEditing ? (
+                                    <>
+                                      <button
+                                        onClick={() => updateAdminUser(user.id)}
+                                        disabled={adminsUpdating}
+                                        className="text-xs px-3 py-1.5 rounded-lg border border-green-500/50 text-green-300 hover:bg-green-900/20 disabled:opacity-50"
+                                      >
+                                        Guardar
+                                      </button>
+                                      <button
+                                        onClick={cancelEditAdmin}
+                                        className="text-xs px-3 py-1.5 rounded-lg border border-white/20 text-white/70 hover:bg-white/10"
+                                      >
+                                        Cancelar
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button
+                                        onClick={() => startEditAdmin(user)}
+                                        className="text-xs px-3 py-1.5 rounded-lg border border-white/20 text-white hover:bg-white/10 transition-colors"
+                                      >
+                                        ✏️ Editar
+                                      </button>
+                                      <button
+                                        onClick={() => toggleAdminUser(user)}
+                                        className="text-xs px-3 py-1.5 rounded-lg border border-white/20 text-white hover:bg-white/10 transition-colors"
+                                      >
+                                        {user.is_active ? '⊘ Desactivar' : '✓ Activar'}
+                                      </button>
+                                      <button
+                                        onClick={() => deleteAdminUser(user)}
+                                        disabled={adminsDeleting}
+                                        className="text-xs px-3 py-1.5 rounded-lg border border-red-500/50 text-red-300 hover:bg-red-900/20 disabled:opacity-50 transition-colors"
+                                      >
+                                        🗑 Eliminar
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Crear nuevo - Sidebar */}
+              <div className="lg:col-span-1 bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg h-fit">
+                <h3 className="text-lg font-semibold text-white mb-6">Nuevo Admin</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-white/70 mb-2">Usuario</label>
+                    <input
+                      type="text"
+                      value={newAdminUsername}
+                      onChange={(e) => setNewAdminUsername(e.target.value)}
+                      placeholder="username"
+                      className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:ring-2 focus:ring-forge-blue-mid/30 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-white/70 mb-2">Contraseña</label>
+                    <input
+                      type="password"
+                      value={newAdminPassword}
+                      onChange={(e) => setNewAdminPassword(e.target.value)}
+                      placeholder="Mín. 10 caracteres"
+                      className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:ring-2 focus:ring-forge-blue-mid/30 focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    onClick={createAdminUser}
+                    disabled={adminsSaving}
+                    className="w-full bg-forge-blue-mid text-white font-medium py-2 rounded-lg hover:bg-forge-blue-mid/90 disabled:opacity-50 transition-colors"
+                  >
+                    {adminsSaving ? 'Creando...' : '+ Crear Admin'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setNewAdminUsername('')
+                      setNewAdminPassword('')
+                    }}
+                    className="w-full border border-white/20 text-white py-2 rounded-lg hover:bg-white/10 transition-colors"
+                  >
+                    Limpiar
+                  </button>
+                </div>
+              </div>
             </div>
+          )}
 
-            <div className="overflow-auto">
-              <table className="w-full min-w-[760px] text-sm">
-                <thead>
-                  <tr className="text-left border-b">
-                    <th className="py-2 pr-2">Usuario</th>
-                    <th className="py-2 pr-2">Estado</th>
-                    <th className="py-2 pr-2">Creado</th>
-                    <th className="py-2 pr-2">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {adminsLoading ? (
-                    <tr>
-                      <td colSpan={4} className="py-6 text-center text-forge-bg-dark/60">
-                        Cargando administradores...
-                      </td>
+          {/* LEADS TAB */}
+          {panelView === 'leads' && (
+            <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+                <div>
+                  <h2 className="text-2xl font-semibold text-white">Leads Recibidos</h2>
+                  <p className="text-sm text-white/60 mt-1">{filteredLeads.length} leads encontrados</p>
+                </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as 'all' | 'pending' | 'sent' | 'failed')}
+                  className="border border-white/20 rounded-lg px-4 py-2.5 bg-white/10 text-sm font-medium text-white"
+                  style={{ colorScheme: 'dark' }}
+                >
+                  <option value="all">📊 Todos</option>
+                  <option value="pending">⏳ Pendientes</option>
+                  <option value="sent">✅ Enviados</option>
+                  <option value="failed">❌ Fallidos</option>
+                </select>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[1000px]">
+                  <thead>
+                    <tr className="bg-white/5 border-b border-white/10">
+                      <th className="py-3 px-4 text-left text-xs font-semibold text-white">Fecha</th>
+                      <th className="py-3 px-4 text-left text-xs font-semibold text-white">Nombre</th>
+                      <th className="py-3 px-4 text-left text-xs font-semibold text-white">Email</th>
+                      <th className="py-3 px-4 text-left text-xs font-semibold text-white">Empresa</th>
+                      <th className="py-3 px-4 text-left text-xs font-semibold text-white">Teléfono</th>
+                      <th className="py-3 px-4 text-left text-xs font-semibold text-white">Estado</th>
+                      <th className="py-3 px-4 text-right text-xs font-semibold text-white">Actualizar</th>
                     </tr>
-                  ) : (
-                    adminUsers.map((user) => {
-                      const isEditing = editingAdminId === user.id
-                      return (
-                        <tr key={user.id} className="border-b align-top">
-                          <td className="py-2 pr-2">
-                            {isEditing ? (
-                              <div className="space-y-2">
-                                <input
-                                  type="text"
-                                  value={editingAdminUsername}
-                                  onChange={(e) => setEditingAdminUsername(e.target.value)}
-                                  className="w-full border rounded-lg px-3 py-2"
-                                  placeholder="username"
-                                />
-                                <input
-                                  type="password"
-                                  value={editingAdminPassword}
-                                  onChange={(e) => setEditingAdminPassword(e.target.value)}
-                                  className="w-full border rounded-lg px-3 py-2"
-                                  placeholder="nueva contraseña (opcional)"
-                                />
-                              </div>
-                            ) : (
-                              user.username
-                            )}
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {filteredLeads.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="py-12 text-center text-white/40 text-sm">
+                          No hay leads para este filtro
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredLeads.map((lead) => (
+                        <tr key={lead.id} className="hover:bg-white/5 transition-colors">
+                          <td className="py-4 px-4 text-sm text-white/70">
+                            {lead.created_at ? new Date(lead.created_at).toLocaleDateString('es-CO') : '-'}
                           </td>
-                          <td className="py-2 pr-2">{user.is_active ? 'Activo' : 'Inactivo'}</td>
-                          <td className="py-2 pr-2 text-forge-bg-dark/70">
-                            {user.created_at ? new Date(user.created_at).toLocaleString('es-CO') : '-'}
+                          <td className="py-4 px-4 text-sm font-medium text-white">{lead.nombre}</td>
+                          <td className="py-4 px-4 text-sm text-white/70 truncate">{lead.email}</td>
+                          <td className="py-4 px-4 text-sm text-white/70">{lead.empresa || '-'}</td>
+                          <td className="py-4 px-4 text-sm text-white/70">{lead.telefono || '-'}</td>
+                          <td className="py-4 px-4">
+                            <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${
+                              lead.status === 'sent'
+                                ? 'bg-green-900/50 text-green-300 border border-green-500/50'
+                                : lead.status === 'failed'
+                                ? 'bg-red-900/50 text-red-300 border border-red-500/50'
+                                : 'bg-amber-900/50 text-amber-300 border border-amber-500/50'
+                            }`}>
+                              {lead.status === 'sent' ? '✅' : lead.status === 'failed' ? '❌' : '⏳'} {lead.status || 'pending'}
+                            </span>
                           </td>
-                          <td className="py-2 pr-2">
-                            <div className="flex flex-wrap gap-2">
-                              {isEditing ? (
-                                <>
-                                  <button
-                                    onClick={() => updateAdminUser(user.id)}
-                                    disabled={adminsUpdating}
-                                    className="border rounded px-3 py-1 hover:bg-forge-bg-light disabled:opacity-50"
-                                  >
-                                    {adminsUpdating ? 'Guardando...' : 'Guardar'}
-                                  </button>
-                                  <button
-                                    onClick={cancelEditAdmin}
-                                    className="border rounded px-3 py-1 hover:bg-forge-bg-light"
-                                  >
-                                    Cancelar
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  <button
-                                    onClick={() => startEditAdmin(user)}
-                                    className="border rounded px-3 py-1 hover:bg-forge-bg-light"
-                                  >
-                                    Editar
-                                  </button>
-                                  <button
-                                    onClick={() => toggleAdminUser(user)}
-                                    className="border rounded px-3 py-1 hover:bg-forge-bg-light"
-                                  >
-                                    {user.is_active ? 'Desactivar' : 'Activar'}
-                                  </button>
-                                  <button
-                                    onClick={() => deleteAdminUser(user)}
-                                    disabled={adminsDeleting}
-                                    className="border rounded px-3 py-1 text-red-600 hover:bg-red-50 disabled:opacity-50"
-                                  >
-                                    Eliminar
-                                  </button>
-                                </>
-                              )}
-                            </div>
+                          <td className="py-4 px-4 text-right">
+                            <select
+                              value={(lead.status || 'pending') as 'pending' | 'sent' | 'failed'}
+                              onChange={(e) => updateLeadStatus(lead.id || '', e.target.value as 'pending' | 'sent' | 'failed')}
+                              className="border border-white/20 rounded-lg px-2 py-1.5 text-xs font-medium bg-white/10 text-white cursor-pointer hover:border-white/40"
+                            >
+                              <option value="pending">⏳ Pendiente</option>
+                              <option value="sent">✅ Enviado</option>
+                              <option value="failed">❌ Fallido</option>
+                            </select>
                           </td>
                         </tr>
-                      )
-                    })
-                  )}
-                  {!adminsLoading && adminUsers.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="py-6 text-center text-forge-bg-dark/60">
-                        No hay administradores en la tabla.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </section>
-        )}
-
-        {panelView === 'leads' && (
-          <section className="bg-white rounded-2xl shadow p-5 space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-            <h2 className="text-xl font-semibold text-forge-bg-dark">Leads recibidos</h2>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as 'all' | 'pending' | 'sent' | 'failed')}
-              className="border rounded-lg px-3 py-2"
-            >
-              <option value="all">Todos</option>
-              <option value="pending">Pendientes</option>
-              <option value="sent">Enviados</option>
-              <option value="failed">Fallidos</option>
-            </select>
-          </div>
-
-          <div className="overflow-auto">
-            <table className="w-full min-w-[980px] text-sm">
-              <thead>
-                <tr className="text-left border-b">
-                  <th className="py-2 pr-2">Fecha</th>
-                  <th className="py-2 pr-2">Nombre</th>
-                  <th className="py-2 pr-2">Email</th>
-                  <th className="py-2 pr-2">Teléfono</th>
-                  <th className="py-2 pr-2">Empresa</th>
-                  <th className="py-2 pr-2">Servicio</th>
-                  <th className="py-2 pr-2">Presupuesto</th>
-                  <th className="py-2 pr-2">Mensaje</th>
-                  <th className="py-2 pr-2">Estado</th>
-                  <th className="py-2 pr-2">Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredLeads.map((lead) => (
-                  <tr key={lead.id} className="border-b align-top">
-                    <td className="py-2 pr-2 text-forge-bg-dark/70">{lead.created_at ? new Date(lead.created_at).toLocaleString('es-CO') : '-'}</td>
-                    <td className="py-2 pr-2">{lead.nombre}</td>
-                    <td className="py-2 pr-2">{lead.email}</td>
-                    <td className="py-2 pr-2">{lead.telefono || '-'}</td>
-                    <td className="py-2 pr-2">{lead.empresa || '-'}</td>
-                    <td className="py-2 pr-2">{lead.servicio || '-'}</td>
-                    <td className="py-2 pr-2">{lead.presupuesto || '-'}</td>
-                    <td className="py-2 pr-2 max-w-[320px]">{lead.mensaje || '-'}</td>
-                    <td className="py-2 pr-2">{lead.status || 'pending'}</td>
-                    <td className="py-2 pr-2">
-                      <select
-                        value={(lead.status || 'pending') as 'pending' | 'sent' | 'failed'}
-                        onChange={(e) => updateLeadStatus(lead.id || '', e.target.value as 'pending' | 'sent' | 'failed')}
-                        className="border rounded px-2 py-1"
-                      >
-                        <option value="pending">pending</option>
-                        <option value="sent">sent</option>
-                        <option value="failed">failed</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-                {filteredLeads.length === 0 && (
-                  <tr>
-                    <td colSpan={10} className="py-6 text-center text-forge-bg-dark/60">
-                      No hay leads para este filtro.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          </section>
-        )}
-      </div>
-    </main>
+          )}
+        </div>
+      </main>
+    </>
   )
 }
