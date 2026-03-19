@@ -131,54 +131,54 @@ export default function PackagesAdminEditor({ plans, saving, onSave }: Props) {
   }
 
   return (
-    <section className="bg-white rounded-2xl shadow p-5 space-y-4">
+    <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-forge-bg-dark">Paquetes</h2>
-          <p className="text-sm text-forge-bg-dark/70">Editor visual: estructura de precios y bullets sin tocar JSON.</p>
+          <h3 className="text-xl font-semibold text-white">Paquetes y precios</h3>
+          <p className="text-sm text-white/60 mt-0.5">Editor visual de planes, precios y características</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={startAdd}
             disabled={editingIndex !== null}
-            className="border rounded-lg px-3 py-2 text-sm hover:bg-forge-bg-light disabled:opacity-40"
+            className="border border-white/20 rounded-lg px-4 py-2 text-sm font-medium hover:bg-white/10 disabled:opacity-40 transition-colors text-white"
           >
-            Agregar paquete
+            + Paquete
           </button>
           <button
             onClick={() => onSave(items)}
             disabled={saving || editingIndex !== null}
-            className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+            className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
           >
-            {saving ? 'Guardando...' : 'Guardar cambios'}
+            {saving ? 'Guardando...' : 'Guardar'}
           </button>
         </div>
       </div>
 
-      {error && <div className="rounded-lg border border-red-300 bg-red-50 text-red-700 px-3 py-2 text-sm">{error}</div>}
+      {error && <div className="rounded-lg border border-red-500 bg-red-950 text-red-200 px-4 py-3 text-sm">{error}</div>}
 
-      <div className="space-y-3">
+      <div className="border border-white/10 rounded-xl p-4 space-y-3 bg-white/5">
         {items.map((item, index) => (
-          <div key={item.id} className="rounded-xl border border-forge-bg-dark/10 p-4 space-y-3">
+          <div key={item.id} className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3 group hover:border-white/20 transition-colors">
             {editingIndex === index ? (
               <PackageForm draft={draft} onChange={setDraft} onConfirm={commitEdit} onCancel={cancelEdit} />
             ) : (
               <>
                 <div>
-                  <p className="font-semibold text-forge-bg-dark">{item.title}</p>
-                  <p className="text-xs text-forge-bg-dark/60">ID: {item.id}</p>
+                  <p className="font-semibold text-white">{item.title}</p>
+                  <p className="text-xs text-white/60">ID: {item.id}</p>
                   <p className="text-sm text-forge-orange-main font-semibold mt-1">USD ${item.priceUsd} | COP ${item.priceCop.toLocaleString()}</p>
                 </div>
-                <ul className="text-sm text-forge-bg-dark/75 list-disc pl-5">
+                <ul className="text-sm text-white/75 list-disc pl-5">
                   {item.bullets.map((b) => (
                     <li key={b}>{b}</li>
                   ))}
                 </ul>
                 <div className="flex gap-2">
-                  <button onClick={() => move(index, -1)} disabled={index === 0 || editingIndex !== null} className="border rounded px-2 py-1 text-sm disabled:opacity-40">Subir</button>
-                  <button onClick={() => move(index, 1)} disabled={index === items.length - 1 || editingIndex !== null} className="border rounded px-2 py-1 text-sm disabled:opacity-40">Bajar</button>
-                  <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm disabled:opacity-40">Editar</button>
-                  <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border rounded px-2 py-1 text-sm text-red-600 disabled:opacity-40">Eliminar</button>
+                  <button onClick={() => move(index, -1)} disabled={index === 0 || editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Subir</button>
+                  <button onClick={() => move(index, 1)} disabled={index === items.length - 1 || editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Bajar</button>
+                  <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Editar</button>
+                  <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border border-red-500/50 rounded px-2 py-1 text-sm text-red-300 hover:bg-red-900/20 disabled:opacity-40 transition-colors">Eliminar</button>
                 </div>
               </>
             )}
@@ -186,16 +186,16 @@ export default function PackagesAdminEditor({ plans, saving, onSave }: Props) {
         ))}
 
         {editingIndex === items.length && (
-          <div className="rounded-xl border border-forge-bg-dark/10 p-4">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <PackageForm draft={draft} onChange={setDraft} onConfirm={commitEdit} onCancel={cancelEdit} />
           </div>
         )}
 
         {items.length === 0 && editingIndex === null && (
-          <p className="text-sm text-forge-bg-dark/60 text-center py-4">No hay paquetes. Usa Agregar paquete para crear el primero.</p>
+          <p className="text-sm text-white/60 text-center py-6">No hay paquetes. Usa Agregar paquete para crear el primero.</p>
         )}
       </div>
-    </section>
+    </div>
   )
 }
 

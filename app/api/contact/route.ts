@@ -45,11 +45,10 @@ export async function POST(request: NextRequest) {
       telefono: record.telefono,
       empresa: record.empresa,
       mensaje: record.mensaje,
-      contacto_pref: record.contacto_pref,
-      presupuesto: record.presupuesto,
       servicio: record.servicio,
+      presupuesto: record.presupuesto,
+      contacto_pref: record.contacto_pref,
       consent: record.consent === true,
-      origen: record.origen,
     })
 
     if (!parsed.success) {
@@ -68,14 +67,14 @@ export async function POST(request: NextRequest) {
     const insertData = {
       nombre: parsed.data.nombre,
       email: parsed.data.email,
+      telefono: parsed.data.telefono || null,
       empresa: parsed.data.empresa || null,
       mensaje: parsed.data.mensaje || null,
-      telefono: parsed.data.telefono || null,
-      contacto_pref: parsed.data.contacto_pref || 'email',
-      presupuesto: parsed.data.presupuesto || null,
       servicio: parsed.data.servicio || null,
+      contacto_pref: parsed.data.contacto_pref || null,
+      presupuesto: parsed.data.presupuesto || null,
       consent: parsed.data.consent === true,
-      origen: parsed.data.origen || 'web-contact-form',
+      origen: 'web-contact-form',
       status: 'pending',
       attempts: 0,
     }

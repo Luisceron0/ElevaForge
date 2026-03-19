@@ -141,15 +141,15 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-semibold text-forge-bg-dark">{label}</label>
+      <label className="block text-sm font-semibold text-white">{label}</label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder || 'URL de imagen (opcional)'}
-          className="flex-1 border rounded-lg px-3 py-2 text-sm"
+          className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
         />
-        <label className="inline-flex items-center justify-center border rounded-lg px-3 py-2 text-sm cursor-pointer hover:bg-forge-bg-light">
+        <label className="inline-flex items-center justify-center border border-white/20 rounded-lg px-3 py-2 text-sm cursor-pointer hover:bg-white/10 text-white transition-colors">
           <input
             type="file"
             accept="image/*"
@@ -166,14 +166,14 @@ export default function ImageUploadInput({ label, value, folder, onChange, place
           {uploading ? 'Subiendo...' : 'Subir imagen'}
         </label>
       </div>
-      {error && <p className="text-xs text-red-600">{error}</p>}
-      {uploadHint && <p className="text-xs text-emerald-700">{uploadHint}</p>}
+      {error && <p className="text-xs text-red-300">{error}</p>}
+      {uploadHint && <p className="text-xs text-emerald-300">{uploadHint}</p>}
       {previewSrc && (
-        <div className="rounded-lg border border-forge-blue-mid/20 bg-forge-bg-light/50 p-2">
+        <div className="rounded-lg border border-white/10 bg-white/5 p-2">
           <img src={previewSrc} alt="Vista previa" className="h-24 w-auto object-contain" />
         </div>
       )}
-      <p className="text-xs text-forge-bg-dark/60">Opcional. Formatos: JPG, PNG, WEBP, GIF, AVIF (máx 5 MB). Las imágenes estáticas se optimizan automáticamente a WebP y máximo 1600 px.</p>
+      <p className="text-xs text-white/60">Opcional. Formatos: JPG, PNG, WEBP, GIF, AVIF (máx 5 MB). Las imágenes estáticas se optimizan automáticamente a WebP y máximo 1600 px.</p>
     </div>
   )
 }

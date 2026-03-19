@@ -120,20 +120,18 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
   const isAdding = editingIndex === members.length
 
   return (
-    <section className="bg-white rounded-2xl shadow p-5 space-y-5">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-forge-bg-dark">Equipo</h2>
-          <p className="text-sm text-forge-bg-dark/60 mt-0.5">
-            Gestiona las tarjetas de miembros que aparecen en la sección &quot;Quiénes somos&quot;.
-          </p>
+          <h3 className="text-xl font-semibold text-white">Equipo</h3>
+          <p className="text-sm text-white/60 mt-0.5">Gestiona los miembros de la sección &quot;Quiénes somos&quot;</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={startAdd}
             disabled={editingIndex !== null}
-            className="flex items-center gap-2 border border-forge-blue-mid/40 text-forge-bg-dark px-3 py-2 rounded-lg text-sm disabled:opacity-40 hover:border-forge-blue-mid transition-colors"
+            className="flex items-center gap-2 border border-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-white/10 transition-colors"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -143,31 +141,32 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
           <button
             onClick={() => onSave(members)}
             disabled={saving || editingIndex !== null}
-            className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50 hover:bg-forge-orange-gold transition-colors"
+            className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
           >
-            {saving ? 'Guardando…' : 'Guardar cambios'}
+            {saving ? 'Guardando…' : 'Guardar'}
           </button>
         </div>
       </div>
 
       {/* Lista de miembros */}
-      {members.length === 0 && editingIndex === null && (
-        <p className="text-sm text-forge-bg-dark/50 py-4 text-center">
-          No hay miembros. Haz clic en &quot;Agregar miembro&quot; para comenzar.
-        </p>
-      )}
+      <div className="border border-white/10 rounded-xl p-4 bg-white/5">
+        {members.length === 0 && editingIndex === null && (
+          <p className="text-sm text-white/50 py-6 text-center">
+            No hay miembros. Haz clic en &quot;Agregar miembro&quot; para comenzar.
+          </p>
+        )}
 
-      <div className="space-y-3">
+        <div className="space-y-3">
         {members.map((m, i) => (
           <div key={i}>
             {/* Fila de miembro (no en edición) */}
             {editingIndex !== i && (
-              <div className="flex items-center gap-3 rounded-xl border border-forge-bg-dark/10 bg-forge-bg-light px-4 py-3">
+              <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 group hover:border-white/20 transition-colors">
                 {/* Mini preview */}
                 <div className="flex-1 min-w-0">
                   <MiniPreview member={m} index={i} />
                 </div>
-                <p className="hidden sm:block text-sm text-forge-bg-dark/60 line-clamp-1 flex-1 min-w-0">
+                <p className="hidden sm:block text-sm text-white/60 line-clamp-1 flex-1 min-w-0">
                   {m.description}
                 </p>
                 {/* Acciones */}
@@ -176,9 +175,9 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                     onClick={() => moveUp(i)}
                     disabled={i === 0 || editingIndex !== null}
                     aria-label="Subir"
-                    className="p-1.5 rounded-lg hover:bg-forge-bg-dark/10 disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-30 transition-colors"
                   >
-                    <svg className="h-4 w-4 text-forge-bg-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                     </svg>
                   </button>
@@ -186,9 +185,9 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                     onClick={() => moveDown(i)}
                     disabled={i === members.length - 1 || editingIndex !== null}
                     aria-label="Bajar"
-                    className="p-1.5 rounded-lg hover:bg-forge-bg-dark/10 disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-30 transition-colors"
                   >
-                    <svg className="h-4 w-4 text-forge-bg-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
@@ -196,7 +195,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                     onClick={() => startEdit(i)}
                     disabled={editingIndex !== null}
                     aria-label="Editar"
-                    className="p-1.5 rounded-lg hover:bg-forge-blue-mid/10 disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-30 transition-colors"
                   >
                     <svg className="h-4 w-4 text-forge-blue-mid" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -206,9 +205,9 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                     onClick={() => remove(i)}
                     disabled={editingIndex !== null}
                     aria-label="Eliminar"
-                    className="p-1.5 rounded-lg hover:bg-red-50 disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-red-900/20 disabled:opacity-30 transition-colors"
                   >
-                    <svg className="h-4 w-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <svg className="h-4 w-4 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
@@ -241,8 +240,9 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
             onCancel={cancelEdit}
           />
         )}
+        </div>
       </div>
-    </section>
+    </div>
   )
 }
 

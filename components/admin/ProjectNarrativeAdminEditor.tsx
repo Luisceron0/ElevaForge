@@ -63,25 +63,25 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
   }
 
   return (
-    <section className="bg-white rounded-2xl shadow p-5 space-y-5">
+    <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-forge-bg-dark">Contexto de proyectos</h3>
-          <p className="text-sm text-forge-bg-dark/70">
+          <h3 className="text-lg font-semibold text-white">Contexto de proyectos</h3>
+          <p className="text-sm text-white/60">
             Gestiona el texto institucional que acompaña proyectos terminados y en desarrollo.
           </p>
         </div>
         <button
           onClick={() => onSave(normalizeDraft(draft))}
           disabled={saving}
-          className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+          className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
         >
           {saving ? 'Guardando...' : 'Guardar contexto'}
         </button>
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-forge-bg-dark">Caso de experiencia - título</label>
+        <label className="block text-sm font-semibold text-white">Caso de experiencia - título</label>
         <input
           value={draft.experience.title}
           onChange={(e) =>
@@ -90,12 +90,12 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
               experience: { ...prev.experience, title: e.target.value },
             }))
           }
-          className="w-full border rounded-lg px-3 py-2 text-sm"
+          className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-forge-bg-dark">Caso de experiencia - descripción</label>
+        <label className="block text-sm font-semibold text-white">Caso de experiencia - descripción</label>
         <textarea
           value={draft.experience.description}
           onChange={(e) =>
@@ -104,7 +104,7 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
               experience: { ...prev.experience, description: e.target.value },
             }))
           }
-          className="w-full min-h-[90px] border rounded-lg px-3 py-2 text-sm"
+          className="w-full min-h-[90px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
         />
       </div>
 
@@ -123,13 +123,13 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-forge-bg-dark">Caso de experiencia - items</h4>
-          <button onClick={addExperienceItem} className="border rounded px-3 py-1 text-sm">Agregar item</button>
+          <h4 className="font-semibold text-white">Caso de experiencia - items</h4>
+          <button onClick={addExperienceItem} className="border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white hover:bg-white/10 transition-colors">+ Agregar item</button>
         </div>
 
         <div className="space-y-2">
           {draft.experience.items.map((item, index) => (
-            <div key={index} className="flex gap-2">
+            <div key={index} className="flex gap-2 group">
               <input
                 value={item}
                 onChange={(e) => {
@@ -140,9 +140,9 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
                     experience: { ...prev.experience, items: next },
                   }))
                 }}
-                className="flex-1 border rounded-lg px-3 py-2 text-sm"
+                className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
               />
-              <button onClick={() => removeExperienceItem(index)} className="border rounded px-3 py-2 text-sm text-red-600">Eliminar</button>
+              <button onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded-lg px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
             </div>
           ))}
         </div>
@@ -150,13 +150,13 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-forge-bg-dark">Proyectos en progreso</h4>
-          <button onClick={addProjectInProgressItem} className="border rounded px-3 py-1 text-sm">Agregar item</button>
+          <h4 className="font-semibold text-white">Proyectos en progreso</h4>
+          <button onClick={addProjectInProgressItem} className="border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white hover:bg-white/10 transition-colors">+ Agregar item</button>
         </div>
 
         <div className="space-y-2">
           {draft.projectsInProgress.map((item, index) => (
-            <div key={index} className="flex gap-2">
+            <div key={index} className="flex gap-2 group">
               <input
                 value={item}
                 onChange={(e) => {
@@ -164,14 +164,14 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
                   next[index] = e.target.value
                   setDraft((prev) => ({ ...prev, projectsInProgress: next }))
                 }}
-                className="flex-1 border rounded-lg px-3 py-2 text-sm"
+                className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
               />
-              <button onClick={() => removeProjectInProgressItem(index)} className="border rounded px-3 py-2 text-sm text-red-600">Eliminar</button>
+              <button onClick={() => removeProjectInProgressItem(index)} className="border border-red-500/50 rounded-lg px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
             </div>
           ))}
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 

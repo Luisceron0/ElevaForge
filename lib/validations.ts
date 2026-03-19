@@ -18,7 +18,12 @@ export const leadSchema = z.object({
   email: z
     .string()
     .transform((v) => stripControlChars(v).toLowerCase().trim())
-    .pipe(z.string().email('Email inválido').max(254, 'El email es demasiado largo')),
+    .pipe(
+      z
+        .string()
+        .email('Email inválido')
+        .max(254, 'El email es demasiado largo'),
+    ),
   telefono: z
     .string()
     .max(32, 'El teléfono no puede exceder 32 caracteres')
@@ -37,26 +42,25 @@ export const leadSchema = z.object({
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
-  contacto_pref: z.enum(['email', 'telefono']).default('email'),
-  presupuesto: z
-    .string()
-    .max(64, 'El presupuesto no puede exceder 64 caracteres')
-    .transform((v) => stripControlChars(v).trim())
-    .optional()
-    .or(z.literal('')),
   servicio: z
     .string()
     .max(64, 'El servicio no puede exceder 64 caracteres')
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
-  consent: z.boolean().default(false),
-  origen: z
+  presupuesto: z
     .string()
-    .max(64, 'El origen no puede exceder 64 caracteres')
+    .max(64, 'El presupuesto no puede exceder 64 caracteres')
     .transform((v) => stripControlChars(v).trim())
     .optional()
     .or(z.literal('')),
+  contacto_pref: z
+    .string()
+    .max(16, 'La preferencia no puede exceder 16 caracteres')
+    .transform((v) => stripControlChars(v).trim())
+    .optional()
+    .or(z.literal('')),
+  consent: z.boolean().optional(),
 })
 
 export type LeadInput = z.infer<typeof leadSchema>

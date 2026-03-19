@@ -111,14 +111,13 @@ export default function RoadmapSection() {
                 ¿Listo para empezar?
               </h3>
               <p className="text-forge-bg-dark/70 mb-6 leading-relaxed">
-                El paso 01 es tuyo. Cuéntanos tu idea por WhatsApp y te
-                respondemos en menos de 24 horas.
+                Acabas de realizar el primer paso al contactarnos. En breve nos pondremos en contacto para entender tu proyecto y mostrarte cómo podemos ayudarte a llevarlo a cabo.
               </p>
               <CTAButton
                 href={buildWhatsAppURL(
                   'Hola ElevaForge, quiero iniciar mi proyecto digital'
                 )}
-                label="Iniciar proyecto por WhatsApp"
+                label="Solicitar asesoría gratuita"
                 className="w-full justify-center"
               />
             </div>
