@@ -14,7 +14,7 @@ export default function CTAButton({
   className = '',
 }: CTAButtonProps) {
   const baseClasses =
-    'inline-flex items-center gap-3 font-bold px-6 py-3 md:px-8 md:py-4 rounded-xl transition-colors duration-200 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark'
+    'inline-flex items-center justify-center gap-3 font-bold px-6 py-3 md:px-8 md:py-4 rounded-xl transition-colors duration-200 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark'
 
   const variantClasses =
     variant === 'primary'

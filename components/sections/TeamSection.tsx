@@ -145,7 +145,7 @@ export default function TeamSection({ team }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-end justify-between gap-4">
-        <h3 className="text-2xl font-semibold text-forge-bg-dark">Capacidades del equipo</h3>
+        <h3 className="text-2xl font-semibold !text-forge-bg-dark">Capacidades del equipo</h3>
         <span className="text-sm text-forge-bg-dark/50 hidden sm:block">
           {team.length} especialistas · Ingenieros graduados
         </span>
