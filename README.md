@@ -44,33 +44,52 @@ cp .env.local.example .env.local
 # Editar .env.local con tus credenciales de Supabase y número de WhatsApp
 ```
 
-6. **Crear tabla en Supabase:**
+6. **Crear/actualizar tablas en Supabase:**
 
 Ejecutar en el SQL Editor de Supabase:
 
 ```sql
-create table public.leads (
-  id          uuid default gen_random_uuid() primary key,
-  nombre      text not null,
-  email       text not null,
-  empresa     text,
-  mensaje     text,
-  origen      text default 'landing_elevaforge',
-  created_at  timestamptz default now()
-);
-
-alter table public.leads enable row level security;
-
-create policy "Solo service role puede insertar"
-  on public.leads for insert
-  with check (false);
+-- Ejecuta el script completo incluido en el repositorio:
+-- supabase-migrations.sql
 ```
+
+Este script agrega:
+- Campos completos de leads (telefono, servicio, estado, etc.)
+- Tabla site_content para contenido editable del panel admin
+- Tabla admin_users para múltiples administradores
 
 7. **Iniciar servidor de desarrollo:**
 
 ```bash
 npm run dev
 ```
+
+## Panel de administración
+
+- URL: /admin/login
+- Variables requeridas:
+  - ADMIN_SESSION_SEED (requerido en producción)
+- Variables opcionales de migración (legacy):
+  - ADMIN_USERNAME
+  - ADMIN_PASSWORD
+
+El login valida credenciales contra la tabla `admin_users` en Supabase.
+
+### Migración a múltiples admins (Supabase)
+
+1. Ejecuta `supabase-migrations.sql` en SQL Editor.
+2. Define `ADMIN_SESSION_SEED` en local y producción.
+3. Inicia sesión con admin legacy (si aún lo usas).
+4. En el panel admin, sección **Administradores**, crea los nuevos usuarios.
+5. Verifica que el nuevo usuario pueda entrar en `/admin/login`.
+6. Elimina `ADMIN_USERNAME` y `ADMIN_PASSWORD` de tus variables cuando ya no sean necesarios.
+
+Desde el panel puedes:
+- Revisar leads completos y actualizar estado
+- Crear administradores y activar/desactivar cuentas
+- Editar sección Quiénes somos
+- Editar paquetes
+- Editar proyectos (incluyendo imageUrl)
 
 ## Estructura del Proyecto
 

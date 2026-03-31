@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 /** Health check — only GET allowed (A01: deny by default) */
 export async function GET() {

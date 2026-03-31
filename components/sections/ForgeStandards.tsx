@@ -79,11 +79,11 @@ export default function ForgeStandards() {
         {/* Encabezado */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-forge-bg-dark mb-4">
-            El Estándar{' '}
+            Pilares obligatorios del{' '}
             <span className="text-forge-orange-main">Forge</span>
           </h2>
           <p className="text-lg text-forge-bg-dark/70 max-w-2xl mx-auto">
-            Cada proyecto entregado cumple estos tres pilares sin excepción.
+            Este estándar se aplica en cada proyecto sin excepción.
           </p>
         </div>
 

@@ -3,6 +3,10 @@ import localFont from 'next/font/local'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
+// Force per-request server rendering so middleware-provided headers
+// (x-nonce) are available during server render and match the CSP.
+export const dynamic = 'force-dynamic'
+
 const humanst = localFont({
   src: '../public/fonts/Humanist531BT-BlackA.woff2',
   variable: '--font-humanst',
@@ -89,7 +93,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode

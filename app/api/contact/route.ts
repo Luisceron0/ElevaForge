@@ -1,45 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-
-function sanitizeInput(value: any): string {
-  if (!value) return ''
-  return String(value).replace(/[\u0000-\u001F\u007F]/g, '').trim()
-}
+import { leadSchema } from '@/lib/validations'
+import { runApiGuard } from '@/lib/security/api-guard'
+import { logSecurityEvent } from '@/lib/security/logger'
 
 /**
  * Insert lead as 'pending' in Supabase outbox table (leads) and return quickly.
  * A separate worker will process pending leads and notify Discord.
  */
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
+  const guard = await runApiGuard(request, {
+    maxBodyBytes: 4_096,
+    rateLimitMax: 5,
+    rateLimitWindowMs: 60_000,
+  })
+  if (guard.blocked) return guard.response
 
-    // Honeypot check
-    if (body._hp && String(body._hp).length > 0) {
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    logSecurityEvent({
+      type: 'MALFORMED_BODY',
+      ip: guard.ip,
+      path: '/api/contact',
+      method: 'POST',
+    })
+    return NextResponse.json({ error: 'Cuerpo de solicitud inválido' }, { status: 400 })
+  }
+
+  try {
+    const record = body as Record<string, unknown>
+
+    // Honeypot — silently accept if triggered
+    if (record._hp && String(record._hp).length > 0) {
+      logSecurityEvent({ type: 'HONEYPOT_TRIGGERED', ip: guard.ip, path: '/api/contact', method: 'POST' })
       return NextResponse.json({ success: true, message: 'Mensaje recibido' })
     }
 
-    const nombre = sanitizeInput(body.nombre)
-    const email = sanitizeInput(body.email)
-    const presupuesto = sanitizeInput(body.presupuesto)
-    const contacto_pref = sanitizeInput(body.contacto_pref) || 'email'
+    // Validate incoming payload
+    const parsed = leadSchema.safeParse({
+      nombre: record.nombre,
+      email: record.email,
+      telefono: record.telefono,
+      empresa: record.empresa,
+      mensaje: record.mensaje,
+      servicio: record.servicio,
+      presupuesto: record.presupuesto,
+      contacto_pref: record.contacto_pref,
+      consent: record.consent === true,
+    })
 
-    if (!nombre || nombre.length < 2) {
-      return NextResponse.json({ error: 'El nombre es requerido' }, { status: 400 })
-    }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json({ error: 'Email inválido' }, { status: 400 })
+    if (!parsed.success) {
+      logSecurityEvent({
+        type: 'VALIDATION_FAILURE',
+        ip: guard.ip,
+        path: '/api/contact',
+        method: 'POST',
+        details: parsed.error.issues.map((i) => i.message).join('; '),
+      })
+      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos' }, { status: 400 })
     }
 
     const supabase = createServerSupabaseClient()
 
-    // Store a lightweight record only
     const insertData = {
-      nombre,
-      email,
-      contacto_pref,
-      presupuesto,
-      consent: body.consent === true,
+      nombre: parsed.data.nombre,
+      email: parsed.data.email,
+      telefono: parsed.data.telefono || null,
+      empresa: parsed.data.empresa || null,
+      mensaje: parsed.data.mensaje || null,
+      servicio: parsed.data.servicio || null,
+      contacto_pref: parsed.data.contacto_pref || null,
+      presupuesto: parsed.data.presupuesto || null,
+      consent: parsed.data.consent === true,
       origen: 'web-contact-form',
       status: 'pending',
       attempts: 0,
@@ -53,7 +87,24 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Lead recibido', id: data?.id }, { status: 202 })
   } catch (err) {
+    logSecurityEvent({
+      type: 'UNHANDLED_ERROR',
+      ip: guard.ip,
+      path: '/api/contact',
+      method: 'POST',
+      details: err instanceof Error ? err.message : 'unknown',
+    })
     console.error('Contact API error:', err)
-    return NextResponse.json({ error: 'Error interno al procesar lead' }, { status: 500 })
+    return NextResponse.json({ error: 'Error interno al procesar solicitud' }, { status: 500 })
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
+}
+export async function PUT() {
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
+}
+export async function DELETE() {
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
 }
