@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
       presupuesto: record.presupuesto,
       servicio: record.servicio,
       consent: record.consent === true,
-      origen: record.origen,
     })
 
     if (!parsed.success) {
@@ -79,7 +78,7 @@ export async function POST(request: NextRequest) {
         presupuesto: parsed.data.presupuesto || null,
         servicio: parsed.data.servicio || null,
         consent: parsed.data.consent,
-        origen: parsed.data.origen || 'web-leads-form',
+        origen: 'web-leads-form',
         status: 'pending',
         attempts: 0,
       }])
