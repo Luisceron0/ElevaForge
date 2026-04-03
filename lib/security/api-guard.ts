@@ -111,7 +111,7 @@ export async function runApiGuard(
   if (!contentLengthRaw || !Number.isFinite(contentLength) || contentLength <= 0) {
     try {
       const preview = await request.clone().text()
-      const bytes = Buffer.byteLength(preview, 'utf8')
+      const bytes = new TextEncoder().encode(preview).length
       if (bytes > maxBodyBytes) {
         logSecurityEvent({ type: 'OVERSIZED_PAYLOAD', ip, path, method: request.method, details: `${bytes} bytes (measured)` })
         return {

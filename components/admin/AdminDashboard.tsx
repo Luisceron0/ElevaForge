@@ -415,6 +415,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
                                   {isEditing ? (
                                     <>
                                       <button
+                                        type="button"
                                         onClick={() => updateAdminUser(user.id)}
                                         disabled={adminsUpdating}
                                         className="text-xs px-3 py-1.5 rounded-lg border border-green-500/50 text-green-300 hover:bg-green-900/20 disabled:opacity-50"
@@ -422,6 +423,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
                                         Guardar
                                       </button>
                                       <button
+                                        type="button"
                                         onClick={cancelEditAdmin}
                                         className="text-xs px-3 py-1.5 rounded-lg border border-white/20 text-white/70 hover:bg-white/10"
                                       >
@@ -431,18 +433,21 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
                                   ) : (
                                     <>
                                       <button
+                                        type="button"
                                         onClick={() => startEditAdmin(user)}
                                         className="text-xs px-3 py-1.5 rounded-lg border border-white/20 text-white hover:bg-white/10 transition-colors"
                                       >
                                         ✏️ Editar
                                       </button>
                                       <button
+                                        type="button"
                                         onClick={() => toggleAdminUser(user)}
                                         className="text-xs px-3 py-1.5 rounded-lg border border-white/20 text-white hover:bg-white/10 transition-colors"
                                       >
                                         {user.is_active ? '⊘ Desactivar' : '✓ Activar'}
                                       </button>
                                       <button
+                                        type="button"
                                         onClick={() => deleteAdminUser(user)}
                                         disabled={adminsDeleting}
                                         className="text-xs px-3 py-1.5 rounded-lg border border-red-500/50 text-red-300 hover:bg-red-900/20 disabled:opacity-50 transition-colors"
@@ -487,6 +492,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
                     />
                   </div>
                   <button
+                    type="button"
                     onClick={createAdminUser}
                     disabled={adminsSaving}
                     className="w-full bg-forge-blue-mid text-white font-medium py-2 rounded-lg hover:bg-forge-blue-mid/90 disabled:opacity-50 transition-colors"
@@ -494,6 +500,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
                     {adminsSaving ? 'Creando...' : '+ Crear Admin'}
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       setNewAdminUsername('')
                       setNewAdminPassword('')

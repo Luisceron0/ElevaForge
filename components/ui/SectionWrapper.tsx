@@ -15,8 +15,8 @@ export default function SectionWrapper({
     variant === 'dark' ? 'bg-forge-bg-dark' : 'bg-forge-bg-light'
 
   return (
-    <section id={id} className={`py-24 ${bgClass} ${className}`}>
-      <div className="max-w-6xl mx-auto px-6">{children}</div>
+    <section id={id} className={`py-24 md:py-32 ${bgClass} ${className}`}>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">{children}</div>
     </section>
   )
 }

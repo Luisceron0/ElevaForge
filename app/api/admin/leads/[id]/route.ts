@@ -3,11 +3,13 @@ import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { runApiGuard } from '@/lib/security/api-guard'
 
+const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+
 const ALLOWED_STATUS = new Set(['pending', 'sent', 'failed'])
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function unauthorized() {
-  return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  return NextResponse.json({ error: 'No autorizado' }, { status: 401, headers: NO_STORE })
 }
 
 export async function PATCH(
@@ -27,19 +29,19 @@ export async function PATCH(
 
   const { id } = await context.params
   if (!UUID_RE.test(id)) {
-    return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+    return NextResponse.json({ error: 'ID inválido' }, { status: 400, headers: NO_STORE })
   }
 
   let body: unknown
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'JSON inválido' }, { status: 400 })
+    return NextResponse.json({ error: 'JSON inválido' }, { status: 400, headers: NO_STORE })
   }
 
   const status = String((body as Record<string, unknown>).status ?? '')
   if (!ALLOWED_STATUS.has(status)) {
-    return NextResponse.json({ error: 'Estado inválido' }, { status: 400 })
+    return NextResponse.json({ error: 'Estado inválido' }, { status: 400, headers: NO_STORE })
   }
 
   const supabase = createServerSupabaseClient()
@@ -49,8 +51,8 @@ export async function PATCH(
     .eq('id', id)
 
   if (error) {
-    return NextResponse.json({ error: 'No se pudo actualizar el lead' }, { status: 500 })
+    return NextResponse.json({ error: 'No se pudo actualizar el lead' }, { status: 500, headers: NO_STORE })
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true }, { headers: NO_STORE })
 }

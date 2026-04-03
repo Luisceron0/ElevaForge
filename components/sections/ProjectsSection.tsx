@@ -1,68 +1,50 @@
-import Image from 'next/image'
-import { ProjectItem } from '@/lib/site-content'
+'use client'
 
-interface Props {
-  projects: ProjectItem[]
-}
+import ProjectCard from '@/components/ui/ProjectCard'
 
-export default function ProjectsSection({ projects }: Props) {
+const projects = [
+  {
+    nombre: 'AVC Inmobiliaria y Constructora',
+    estado: 'Entregado' as const,
+    sector: 'Finca raíz',
+    descripcion:
+      'Sitio institucional para el sector inmobiliario en Colombia, diseñado para posicionamiento orgánico y tiempos de carga mínimos.',
+    url: 'https://www.avcinmobiliariayconstructora.com/',
+    scores: { performance: 100, seo: 100, practices: 100, accessibility: 86 },
+  },
+  {
+    nombre: 'Made In Heaven',
+    estado: 'En curso' as const,
+    sector: 'Moda',
+    descripcion: 'Catálogo virtual para marca de moda colombiana.',
+    url: null,
+    scores: null,
+  },
+]
+
+export default function ProjectsSection() {
   return (
-    <section id="proyectos" className="py-20 bg-forge-bg-light">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <p className="text-sm uppercase tracking-[0.2em] text-forge-orange-main font-semibold">Proyectos, experiencia y resultados</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-forge-bg-dark mt-3">Trabajos que respaldan nuestro estándar</h2>
-          <p className="text-forge-bg-dark/70 mt-4 text-lg">
-            Aquí consolidamos experiencia aplicada y resultados medibles en proyectos entregados y casos en curso. Todo este contenido es editable desde el panel de administración.
+    <section id="proyectos" aria-label="Proyectos" className="py-24 md:py-32 bg-forge-bg-light">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
+        <div className="max-w-3xl mb-10">
+          <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+            Proyectos y resultados
+          </p>
+          <h2
+            className="font-humanst text-forge-bg-dark leading-tight mb-4"
+            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
+          >
+            Casos reales que respaldan nuestro estándar
+          </h2>
+          <p className="text-forge-blue-deep text-lg leading-relaxed">
+            Experiencia aplicada en productos digitales con foco en velocidad,
+            SEO y claridad operativa.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
           {projects.map((project) => (
-            <article key={project.id} className="bg-white rounded-2xl border border-forge-blue-mid/15 overflow-hidden shadow-sm">
-              {project.imageUrl && (
-                <div className="h-44 bg-forge-bg-dark/5 flex items-center justify-center p-4">
-                  <Image
-                    src={project.imageUrl}
-                    alt={project.title}
-                    width={720}
-                    height={360}
-                    className="max-h-full w-auto object-contain"
-                    unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
-                  />
-                </div>
-              )}
-              <div className="p-6">
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <h3 className="font-semibold text-xl text-forge-bg-dark">{project.title}</h3>
-                  <span className="px-2 py-1 rounded-full text-xs font-semibold bg-forge-orange-main/10 text-forge-orange-main">
-                    {project.status}
-                  </span>
-                </div>
-                <p className="text-sm text-forge-blue-mid font-semibold">{project.sector}</p>
-                <p className="text-forge-bg-dark/75 mt-3">{project.summary}</p>
-
-                <ul className="mt-4 space-y-2 text-sm text-forge-bg-dark/75">
-                  {project.results.map((result) => (
-                    <li key={result} className="flex items-start gap-2">
-                      <span className="text-forge-orange-main mt-1">●</span>
-                      <span>{result}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {project.externalUrl && (
-                  <a
-                    href={project.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-5 text-forge-orange-main font-semibold hover:underline"
-                  >
-                    Ver proyecto
-                  </a>
-                )}
-              </div>
-            </article>
+            <ProjectCard key={project.nombre} project={project} />
           ))}
         </div>
       </div>

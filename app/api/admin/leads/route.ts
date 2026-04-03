@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
+const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+
 function unauthorized() {
-  return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  return NextResponse.json({ error: 'No autorizado' }, { status: 401, headers: NO_STORE })
 }
 
 export async function GET(request: NextRequest) {
@@ -30,8 +32,8 @@ export async function GET(request: NextRequest) {
   const { data, error } = await query
 
   if (error) {
-    return NextResponse.json({ error: 'No se pudieron cargar los leads' }, { status: 500 })
+    return NextResponse.json({ error: 'No se pudieron cargar los leads' }, { status: 500, headers: NO_STORE })
   }
 
-  return NextResponse.json({ rows: data ?? [] })
+  return NextResponse.json({ rows: data ?? [] }, { headers: NO_STORE })
 }

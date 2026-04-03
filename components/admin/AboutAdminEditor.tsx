@@ -77,6 +77,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
           <p className="text-sm text-white/60 mt-0.5">Editor de la sección institucional</p>
         </div>
         <button
+          type="button"
           onClick={() => onSave(normalizeAboutDraft(draft))}
           disabled={saving}
           className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forge-orange-main/90 disabled:opacity-50 transition-colors"
@@ -90,6 +91,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            type="button"
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
               activeTab === tab.id
@@ -131,6 +133,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
                   <p className="text-xs text-white/60 mt-1">Define las fases o etapas de tu proceso</p>
                 </div>
                 <button
+                  type="button"
                   onClick={addPhase}
                   className="text-xs border border-white/20 rounded-lg px-3 py-2 hover:bg-white/10 transition-colors font-medium text-white"
                 >
@@ -159,6 +162,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
                   <p className="text-xs text-white/60 mt-1">Lo que te hace diferente en el mercado</p>
                 </div>
                 <button
+                  type="button"
                   onClick={addDifferentiationItem}
                   className="text-xs border border-white/20 rounded-lg px-3 py-2 hover:bg-white/10 transition-colors font-medium text-white"
                 >
@@ -187,6 +191,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
                   <p className="text-xs text-white/60 mt-1">Servicios adicionales o garantías</p>
                 </div>
                 <button
+                  type="button"
                   onClick={addSupportItem}
                   className="text-xs border border-white/20 rounded-lg px-3 py-2 hover:bg-white/10 transition-colors font-medium text-white"
                 >
@@ -211,6 +216,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
                         className="flex-1 border border-white/20 rounded-lg px-4 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
                       />
                       <button
+                        type="button"
                         onClick={() => removeSupportItem(index)}
                         className="border border-red-500/50 text-red-300 rounded-lg px-3 py-2 text-xs hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
                       >
@@ -312,7 +318,7 @@ function EntityListEditor({ title, items, onAdd, onRemove, onChange, showTitle =
       {showTitle && (
         <div className="flex items-center justify-between">
           <h4 className="font-semibold text-sm text-white">{title}</h4>
-          <button onClick={onAdd} className="text-xs border border-white/20 rounded-lg px-3 py-1.5 hover:bg-white/10 transition-colors text-white">+ Agregar</button>
+          <button type="button" onClick={onAdd} className="text-xs border border-white/20 rounded-lg px-3 py-1.5 hover:bg-white/10 transition-colors text-white">+ Agregar</button>
         </div>
       )}
 
@@ -350,6 +356,7 @@ function EntityListEditor({ title, items, onAdd, onRemove, onChange, showTitle =
               </div>
               <div className="flex justify-end">
                 <button
+                  type="button"
                   onClick={() => onRemove(index)}
                   className="text-xs border border-red-500/50 text-red-300 rounded-lg px-3 py-1.5 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
                 >

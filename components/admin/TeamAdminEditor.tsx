@@ -129,6 +129,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={startAdd}
             disabled={editingIndex !== null}
             className="flex items-center gap-2 border border-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-white/10 transition-colors"
@@ -139,6 +140,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
             Agregar miembro
           </button>
           <button
+            type="button"
             onClick={() => onSave(members)}
             disabled={saving || editingIndex !== null}
             className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
@@ -172,6 +174,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                 {/* Acciones */}
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button
+                    type="button"
                     onClick={() => moveUp(i)}
                     disabled={i === 0 || editingIndex !== null}
                     aria-label="Subir"
@@ -182,6 +185,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                     </svg>
                   </button>
                   <button
+                    type="button"
                     onClick={() => moveDown(i)}
                     disabled={i === members.length - 1 || editingIndex !== null}
                     aria-label="Bajar"
@@ -192,6 +196,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                     </svg>
                   </button>
                   <button
+                    type="button"
                     onClick={() => startEdit(i)}
                     disabled={editingIndex !== null}
                     aria-label="Editar"
@@ -202,6 +207,7 @@ export default function TeamAdminEditor({ team, saving, onSave }: Props) {
                     </svg>
                   </button>
                   <button
+                    type="button"
                     onClick={() => remove(i)}
                     disabled={editingIndex !== null}
                     aria-label="Eliminar"
@@ -332,12 +338,14 @@ function MemberForm({ draft, errors, index, onChange, onSave, onCancel }: FormPr
       {/* Botones */}
       <div className="flex gap-2 pt-1">
         <button
+          type="button"
           onClick={onSave}
           className="flex-1 bg-forge-orange-main text-white py-2 rounded-lg text-sm font-semibold hover:bg-forge-orange-gold transition-colors"
         >
           Confirmar
         </button>
         <button
+          type="button"
           onClick={onCancel}
           className="flex-1 border border-white/20 text-white/70 py-2 rounded-lg text-sm hover:bg-white/5 transition-colors"
         >

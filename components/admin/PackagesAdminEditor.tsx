@@ -139,6 +139,7 @@ export default function PackagesAdminEditor({ plans, saving, onSave }: Props) {
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={startAdd}
             disabled={editingIndex !== null}
             className="border border-white/20 rounded-lg px-4 py-2 text-sm font-medium hover:bg-white/10 disabled:opacity-40 transition-colors text-white"
@@ -146,6 +147,7 @@ export default function PackagesAdminEditor({ plans, saving, onSave }: Props) {
             + Paquete
           </button>
           <button
+            type="button"
             onClick={() => onSave(items)}
             disabled={saving || editingIndex !== null}
             className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
@@ -175,10 +177,10 @@ export default function PackagesAdminEditor({ plans, saving, onSave }: Props) {
                   ))}
                 </ul>
                 <div className="flex gap-2">
-                  <button onClick={() => move(index, -1)} disabled={index === 0 || editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Subir</button>
-                  <button onClick={() => move(index, 1)} disabled={index === items.length - 1 || editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Bajar</button>
-                  <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Editar</button>
-                  <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border border-red-500/50 rounded px-2 py-1 text-sm text-red-300 hover:bg-red-900/20 disabled:opacity-40 transition-colors">Eliminar</button>
+                  <button type="button" onClick={() => move(index, -1)} disabled={index === 0 || editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Subir</button>
+                  <button type="button" onClick={() => move(index, 1)} disabled={index === items.length - 1 || editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Bajar</button>
+                  <button type="button" onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Editar</button>
+                  <button type="button" onClick={() => remove(index)} disabled={editingIndex !== null} className="border border-red-500/50 rounded px-2 py-1 text-sm text-red-300 hover:bg-red-900/20 disabled:opacity-40 transition-colors">Eliminar</button>
                 </div>
               </>
             )}
@@ -219,8 +221,8 @@ function PackageForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
       </div>
       <textarea value={draft.bulletsText} onChange={(e) => onChange({ ...draft, bulletsText: e.target.value })} placeholder="Bullets, uno por línea" className="w-full border rounded-lg px-3 py-2 text-sm min-h-[100px]" />
       <div className="flex gap-2">
-        <button onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm">Confirmar</button>
-        <button onClick={onCancel} className="border px-4 py-2 rounded-lg text-sm">Cancelar</button>
+        <button type="button" onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm">Confirmar</button>
+        <button type="button" onClick={onCancel} className="border px-4 py-2 rounded-lg text-sm">Cancelar</button>
       </div>
     </div>
   )

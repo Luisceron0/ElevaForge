@@ -241,6 +241,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={startAdd}
             disabled={editingIndex !== null}
             className="border border-white/20 rounded-lg px-4 py-2 text-sm font-medium hover:bg-white/10 disabled:opacity-40 transition-colors text-white"
@@ -248,6 +249,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
             + Proyecto
           </button>
           <button
+            type="button"
             onClick={() => onSave(items)}
             disabled={saving || editingIndex !== null}
             className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
@@ -266,6 +268,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
             <p className="text-xs text-white/60">Este bloque alimenta el caso de experiencia visible encima del listado de proyectos.</p>
           </div>
           <button
+            type="button"
             onClick={saveNarrative}
             disabled={narrativeSaving}
             className="bg-forge-blue-mid text-white px-3 py-2 rounded-lg text-sm disabled:opacity-50"
@@ -303,7 +306,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-white">Caso de experiencia - items</h4>
-            <button onClick={addExperienceItem} className="border border-white/20 rounded px-3 py-1 text-sm text-white hover:bg-white/10 transition-colors">Agregar item</button>
+            <button type="button" onClick={addExperienceItem} className="border border-white/20 rounded px-3 py-1 text-sm text-white hover:bg-white/10 transition-colors">Agregar item</button>
           </div>
 
           <div className="space-y-2">
@@ -318,7 +321,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
                   }}
                   className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
                 />
-                <button onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
+                <button type="button" onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
               </div>
             ))}
           </div>
@@ -408,8 +411,8 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
                         ))}
                       </ul>
                       <div className="flex flex-wrap gap-2">
-                        <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Editar</button>
-                        <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border border-red-500/50 rounded px-2 py-1 text-sm text-red-300 hover:bg-red-900/20 disabled:opacity-40 transition-colors">Eliminar</button>
+                        <button type="button" onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Editar</button>
+                        <button type="button" onClick={() => remove(index)} disabled={editingIndex !== null} className="border border-red-500/50 rounded px-2 py-1 text-sm text-red-300 hover:bg-red-900/20 disabled:opacity-40 transition-colors">Eliminar</button>
                       </div>
                     </>
                   )}
@@ -471,8 +474,8 @@ function ProjectForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
       <input value={draft.externalUrl} onChange={(e) => onChange({ ...draft, externalUrl: e.target.value })} placeholder="URL externa (opcional)" className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50" />
       <textarea value={draft.resultsText} onChange={(e) => onChange({ ...draft, resultsText: e.target.value })} placeholder="Resultados, uno por línea" className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[90px]" />
       <div className="flex gap-2">
-        <button onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forge-orange-main/90 transition-colors">Confirmar</button>
-        <button onClick={onCancel} className="border border-white/20 text-white px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition-colors">Cancelar</button>
+        <button type="button" onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forge-orange-main/90 transition-colors">Confirmar</button>
+        <button type="button" onClick={onCancel} className="border border-white/20 text-white px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition-colors">Cancelar</button>
       </div>
     </div>
   )
