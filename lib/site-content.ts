@@ -490,7 +490,7 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
 
   return merged.map((project, index) => {
     const fallbackProject = fallback[index] ?? fallback[0]
-    const projectRecord = isRecord(project) ? project : {}
+    const projectRecord: Record<string, unknown> = isRecord(project) ? project : {}
     const lighthouseData = isRecord(projectRecord.lighthouse) ? projectRecord.lighthouse : fallbackProject?.lighthouse
     
     const normalizedLighthouse = lighthouseData
