@@ -137,7 +137,6 @@ export const DEFAULT_PROJECTS: ProjectItem[] = [
       'Experiencia responsive optimizada para móviles',
     ],
     imageUrl: '/ElevaIcon.png',
-    externalUrl: 'https://www.avcinmobiliariayconstructora.com/',
     status: 'entregado',
   },
   {
@@ -403,9 +402,9 @@ function normalizeProjectStatus(value: unknown, fallback: ProjectItem['status'])
   return 'entregado'
 }
 
-function normalizeExternalUrl(value: unknown, fallback?: string): string | undefined {
+function normalizeExternalUrl(value: unknown): string | undefined {
   const raw = String(value ?? '').trim()
-  if (!raw) return fallback
+  if (!raw) return undefined
   if (/^https?:\/\//i.test(raw)) return raw
   if (/^www\./i.test(raw)) return `https://${raw}`
   return raw
@@ -551,10 +550,7 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
       ...fallbackProject,
       ...projectRecord,
       imageUrl: normalizeAssetRef(String((isRecord(project) ? project.imageUrl : '') ?? '')) || undefined,
-      externalUrl: normalizeExternalUrl(
-        isRecord(project) ? project.externalUrl : undefined,
-        fallbackProject?.externalUrl,
-      ),
+      externalUrl: normalizeExternalUrl(isRecord(project) ? project.externalUrl : undefined),
       results: Array.isArray(isRecord(project) ? project.results : undefined)
         ? (project.results as unknown[]).map((item) => String(item ?? '').trim()).filter(Boolean)
         : fallbackProject?.results ?? [],

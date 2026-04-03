@@ -1,22 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AboutContent, ProjectItem } from '@/lib/site-content'
+import { ProjectItem } from '@/lib/site-content'
 import ImageUploadInput from './ImageUploadInput'
 import { isAssetRef } from '@/lib/asset-refs'
 
 interface Props {
   projects: ProjectItem[]
-  narrative: Pick<AboutContent, 'experience' | 'projectsInProgress'>
   saving: boolean
-  narrativeSaving: boolean
   onSave: (projects: ProjectItem[]) => void
-  onSaveNarrative: (value: Pick<AboutContent, 'experience' | 'projectsInProgress'>) => void
-}
-
-interface NarrativeDraft {
-  experience: AboutContent['experience']
-  projectsInProgress: string[]
 }
 
 interface ProjectDraft {
@@ -158,16 +150,7 @@ function validate(draft: ProjectDraft, items: ProjectItem[], editingIndex: numbe
   return ''
 }
 
-export default function ProjectsAdminEditor({ projects, narrative, saving, narrativeSaving, onSave, onSaveNarrative }: Props) {
-  const [narrativeDraft, setNarrativeDraft] = useState<NarrativeDraft>({
-    experience: {
-      title: '',
-      description: '',
-      items: [],
-      imageUrl: '',
-    },
-    projectsInProgress: [],
-  })
+export default function ProjectsAdminEditor({ projects, saving, onSave }: Props) {
   const [items, setItems] = useState<ProjectItem[]>(projects)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [openProjectIndex, setOpenProjectIndex] = useState<number | null>(null)
@@ -186,73 +169,6 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
       setOpenProjectIndex(items.length > 0 ? items.length - 1 : null)
     }
   }, [items, openProjectIndex])
-
-  useEffect(() => {
-    setNarrativeDraft({
-      experience: {
-        title: String(narrative?.experience?.title ?? '').trim(),
-        description: String(narrative?.experience?.description ?? '').trim(),
-        items: Array.isArray(narrative?.experience?.items)
-          ? narrative.experience.items.map((item) => String(item ?? '').trim()).filter(Boolean)
-          : [],
-        imageUrl: String(narrative?.experience?.imageUrl ?? '').trim(),
-      },
-      projectsInProgress: Array.isArray(narrative?.projectsInProgress)
-        ? narrative.projectsInProgress.map((item) => String(item ?? '').trim()).filter(Boolean)
-        : [],
-    })
-  }, [narrative])
-
-  function addExperienceItem() {
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      experience: {
-        ...prev.experience,
-        items: [...prev.experience.items, ''],
-      },
-    }))
-  }
-
-  function removeExperienceItem(index: number) {
-    if (!window.confirm('¿Eliminar este item de experiencia?')) return
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      experience: {
-        ...prev.experience,
-        items: prev.experience.items.filter((_, currentIndex) => currentIndex !== index),
-      },
-    }))
-  }
-
-  function addProjectInProgressItem() {
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      projectsInProgress: [...prev.projectsInProgress, ''],
-    }))
-  }
-
-  function removeProjectInProgressItem(index: number) {
-    if (!window.confirm('¿Eliminar este item de proyectos en curso?')) return
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      projectsInProgress: prev.projectsInProgress.filter((_, currentIndex) => currentIndex !== index),
-    }))
-  }
-
-  function saveNarrative() {
-    onSaveNarrative({
-      experience: {
-        ...narrativeDraft.experience,
-        title: narrativeDraft.experience.title.trim(),
-        description: narrativeDraft.experience.description.trim(),
-        imageUrl: narrativeDraft.experience.imageUrl?.trim() || undefined,
-        items: narrativeDraft.experience.items.map((item) => item.trim()).filter(Boolean),
-      },
-      projectsInProgress: narrativeDraft.projectsInProgress
-        .map((item) => item.trim())
-        .filter(Boolean),
-    })
-  }
 
   function startAdd() {
     setEditingIndex(items.length)
@@ -346,8 +262,8 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-xl font-semibold text-white">Proyectos y contexto</h3>
-          <p className="text-sm text-white/60 mt-0.5">Gestiona narrativa y proyectos de forma individual</p>
+          <h3 className="text-xl font-semibold text-white">Proyectos</h3>
+          <p className="text-sm text-white/60 mt-0.5">Gestiona proyectos de forma individual</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -370,115 +286,6 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
       </div>
 
       {error && <div className="rounded-lg border border-red-500 bg-red-950 text-red-200 px-4 py-3 text-sm">{error}</div>}
-
-      <div className="rounded-xl border border-white/10 p-6 space-y-4 bg-white/5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h3 className="font-semibold text-white">Contexto institucional de proyectos</h3>
-            <p className="text-xs text-white/60">Este bloque alimenta el caso de experiencia visible encima del listado de proyectos.</p>
-          </div>
-          <button
-            type="button"
-            onClick={saveNarrative}
-            disabled={narrativeSaving}
-            className="bg-forge-blue-mid text-white px-3 py-2 rounded-lg text-sm disabled:opacity-50"
-          >
-            {narrativeSaving ? 'Guardando...' : 'Guardar contexto'}
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-white">Caso de experiencia - título</label>
-          <input
-            value={narrativeDraft.experience.title}
-            onChange={(e) =>
-              setNarrativeDraft((prev) => ({
-                ...prev,
-                experience: { ...prev.experience, title: e.target.value },
-              }))
-            }
-            className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-white">Caso de experiencia - descripción</label>
-          <textarea
-            value={narrativeDraft.experience.description}
-            onChange={(e) =>
-              setNarrativeDraft((prev) => ({
-                ...prev,
-                experience: { ...prev.experience, description: e.target.value },
-              }))
-            }
-            className="w-full min-h-[90px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
-          />
-        </div>
-
-        <ImageUploadInput
-          label="Caso de experiencia - imagen"
-          value={narrativeDraft.experience.imageUrl || ''}
-          folder="about"
-          onChange={(next) =>
-            setNarrativeDraft((prev) => ({
-              ...prev,
-              experience: { ...prev.experience, imageUrl: next },
-            }))
-          }
-          placeholder="URL imagen (opcional)"
-        />
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-white">Caso de experiencia - items</h4>
-            <button type="button" onClick={addExperienceItem} className="border border-white/20 rounded px-3 py-1 text-sm text-white hover:bg-white/10 transition-colors">Agregar item</button>
-          </div>
-
-          <div className="space-y-2">
-            {narrativeDraft.experience.items.map((item, index) => (
-              <div key={index} className="flex gap-2 group">
-                <input
-                  value={item}
-                  onChange={(e) => {
-                    const next = [...narrativeDraft.experience.items]
-                    next[index] = e.target.value
-                    setNarrativeDraft((prev) => ({
-                      ...prev,
-                      experience: { ...prev.experience, items: next },
-                    }))
-                  }}
-                  className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-                />
-                <button type="button" onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-white">Proyectos en curso - items</h4>
-            <button type="button" onClick={addProjectInProgressItem} className="border border-white/20 rounded px-3 py-1 text-sm text-white hover:bg-white/10 transition-colors">Agregar item</button>
-          </div>
-
-          <div className="space-y-2">
-            {narrativeDraft.projectsInProgress.map((item, index) => (
-              <div key={index} className="flex gap-2 group">
-                <input
-                  value={item}
-                  onChange={(e) => {
-                    const next = [...narrativeDraft.projectsInProgress]
-                    next[index] = e.target.value
-                    setNarrativeDraft((prev) => ({ ...prev, projectsInProgress: next }))
-                  }}
-                  className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-                />
-                <button type="button" onClick={() => removeProjectInProgressItem(index)} className="border border-red-500/50 rounded px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between rounded-lg border border-white/20 bg-white/5 px-3 py-2">
