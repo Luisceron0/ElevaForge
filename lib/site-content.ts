@@ -555,24 +555,6 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     const byKey = new Map<string, unknown>()
     for (const row of data) {
-      lighthouse: {
-        performance: {
-          score: 100,
-          description: 'Carga optimizada en menos de 1.5 segundos en móvil 3G.'
-        },
-        accessibility: {
-          score: 86,
-          description: 'Interfaz navegable con teclado, WCAG AA cumplido.'
-        },
-        bestPractices: {
-          score: 100,
-          description: 'Código moderno sin deprecaciones, HTTPS y CSP headers activos.'
-        },
-        seo: {
-          score: 100,
-          description: 'Estructura semántica completa, sitemap y robots.txt optimizados.'
-        }
-      }
       byKey.set(String(row.key), row.value)
     }
 
