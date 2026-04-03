@@ -9,9 +9,11 @@ import type { LighthouseScores } from '@/lib/site-content'
 
 interface HeroSectionProps {
   lighthouse: LighthouseScores
+  deliveredProjects: number
+  inProgressProjects: number
 }
 
-export default function HeroSection({ lighthouse }: HeroSectionProps) {
+export default function HeroSection({ lighthouse, deliveredProjects, inProgressProjects }: HeroSectionProps) {
   const containerRef = useRef<HTMLElement>(null)
 
   useLayoutEffect(() => {
@@ -92,11 +94,9 @@ export default function HeroSection({ lighthouse }: HeroSectionProps) {
           <div className="flex flex-wrap gap-x-4 md:gap-x-8 gap-y-2 text-base text-forge-text-muted">
             <span>4 ingenieros graduados</span>
             <span className="text-forge-blue-mid/50">·</span>
-            <span>2 proyectos entregados</span>
+            <span>{deliveredProjects} proyectos entregados</span>
             <span className="text-forge-blue-mid/50">·</span>
-            <span>
-              Lighthouse {lighthouse.performance.score}/{lighthouse.accessibility.score}/{lighthouse.bestPractices.score}/{lighthouse.seo.score}
-            </span>
+            <span>{inProgressProjects} en curso</span>
           </div>
         </div>
 

@@ -4,36 +4,19 @@ import { useLayoutEffect, useRef } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
 import { gsap } from '@/lib/gsap'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import type { AboutPhase } from '@/lib/site-content'
 
-const steps = [
-  {
-    number: '01',
-    title: 'Exploración',
-    description:
-      'Cuéntanos tu necesidad en pocas palabras. Respondemos con opciones claras y sin tecnicismos.',
-  },
-  {
-    number: '02',
-    title: 'Planificación',
-    description:
-      'Transformamos tu idea en un plan claro con entregables, tiempos y costos definidos.',
-  },
-  {
-    number: '03',
-    title: 'Presupuesto claro',
-    description:
-      'Recibes una propuesta con costos desglosados en lenguaje simple y opciones según tu presupuesto.',
-  },
-  {
-    number: '04',
-    title: 'Construir y entregar',
-    description:
-      'Desarrollo iterativo con entregas periódicas y soporte para que uses la herramienta desde el primer día.',
-  },
-]
+interface RoadmapSectionProps {
+  phases: AboutPhase[]
+}
 
-export default function RoadmapSection() {
+export default function RoadmapSection({ phases }: RoadmapSectionProps) {
   const containerRef = useRef<HTMLElement>(null)
+  const steps = phases.slice(0, 4).map((phase, index) => ({
+    number: String(index + 1).padStart(2, '0'),
+    title: phase.title,
+    description: phase.description,
+  }))
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {

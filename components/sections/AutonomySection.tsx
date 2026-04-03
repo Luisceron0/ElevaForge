@@ -1,3 +1,7 @@
+interface AutonomySectionProps {
+  supportItems: string[]
+}
+
 const items = [
   {
     badge: '100% tuya',
@@ -45,7 +49,12 @@ const items = [
   },
 ]
 
-export default function AutonomySection() {
+export default function AutonomySection({ supportItems }: AutonomySectionProps) {
+  const hydratedItems = items.map((item, index) => ({
+    ...item,
+    description: supportItems[index] || item.description,
+  }))
+
   return (
     <section id="autonomia" aria-label="Autonomía y formación" className="py-24 md:py-32 bg-forge-bg-light">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
@@ -62,7 +71,7 @@ export default function AutonomySection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {items.map((item) => (
+          {hydratedItems.map((item) => (
             <article
               key={item.badge}
               className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-forge-blue-mid/15 shadow-forge-card"

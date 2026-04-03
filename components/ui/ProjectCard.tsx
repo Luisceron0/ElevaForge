@@ -1,4 +1,5 @@
 import type { ProjectItem } from '@/lib/site-content'
+import Image from 'next/image'
 
 interface ProjectCardProps {
   project: ProjectItem
@@ -14,6 +15,19 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     >
       <div className="p-8 h-full flex flex-col justify-between">
         <div>
+          {project.imageUrl && (
+            <div className="mb-4 overflow-hidden rounded-xl border border-forge-blue-mid/20 bg-forge-bg-dark/35 p-2">
+              <Image
+                src={project.imageUrl}
+                alt={project.title || 'Proyecto'}
+                width={960}
+                height={540}
+                className="h-36 w-full rounded-lg object-cover"
+                unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
+              />
+            </div>
+          )}
+
           <div className="mb-4 flex items-center justify-between gap-3">
             <span className="inline-flex items-center rounded-full border border-forge-blue-mid/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-forge-blue-light">
               {project.sector}
@@ -34,6 +48,17 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </h3>
 
           <p className="text-sm leading-relaxed text-forge-text-body">{project.summary}</p>
+
+          {project.externalUrl && (
+            <a
+              href={project.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center justify-center rounded-lg border border-forge-orange-main/45 px-4 py-2 text-sm font-semibold text-forge-orange-main transition-colors duration-200 hover:bg-forge-orange-main hover:text-white"
+            >
+              Visitar sitio
+            </a>
+          )}
         </div>
 
         {project.lighthouse && (

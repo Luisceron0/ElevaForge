@@ -12,17 +12,25 @@ import { getResolvedSiteContent } from '@/lib/site-content'
 export default async function Home() {
   const content = await getResolvedSiteContent()
   const lighthouse = content.about.lighthouse
+  const phases = content.about.phases
+  const deliveredProjects = content.projects.filter((project) => project.status === 'entregado').length
+  const inProgressProjects = content.projects.filter((project) => project.status === 'en-curso').length
+  const supportItems = content.about.supportItems
 
   return (
     <>
       <Navbar />
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
-        <HeroSection lighthouse={lighthouse} />
+        <HeroSection
+          lighthouse={lighthouse}
+          deliveredProjects={deliveredProjects}
+          inProgressProjects={inProgressProjects}
+        />
         <ForgeStandards lighthouse={lighthouse} />
         <ProjectsSection />
         <PricingSection />
-        <RoadmapSection />
-        <AutonomySection />
+        <RoadmapSection phases={phases} />
+        <AutonomySection supportItems={supportItems} />
         <ContactSection />
       </main>
       <Footer />

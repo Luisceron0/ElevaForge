@@ -137,6 +137,7 @@ export const DEFAULT_PROJECTS: ProjectItem[] = [
       'Experiencia responsive optimizada para móviles',
     ],
     imageUrl: '/ElevaIcon.png',
+    externalUrl: 'https://www.avcinmobiliariayconstructora.com/',
     status: 'entregado',
   },
   {
@@ -385,6 +386,31 @@ function normalizeScore(value: unknown, fallback: number): number {
   return bounded
 }
 
+function normalizeProjectStatus(value: unknown, fallback: ProjectItem['status']): ProjectItem['status'] {
+  const normalized = String(value ?? '').trim().toLowerCase().replace(/[_\s]+/g, '-')
+  if (!normalized) return fallback
+
+  if (
+    normalized === 'en-curso' ||
+    normalized === 'encurso' ||
+    normalized === 'enproceso' ||
+    normalized === 'in-progress' ||
+    normalized === 'inprogress'
+  ) {
+    return 'en-curso'
+  }
+
+  return 'entregado'
+}
+
+function normalizeExternalUrl(value: unknown, fallback?: string): string | undefined {
+  const raw = String(value ?? '').trim()
+  if (!raw) return fallback
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (/^www\./i.test(raw)) return `https://${raw}`
+  return raw
+}
+
 function normalizeLighthouseMetric(
   value: unknown,
   fallbackScore: number,
@@ -525,7 +551,10 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
       ...fallbackProject,
       ...projectRecord,
       imageUrl: normalizeAssetRef(String((isRecord(project) ? project.imageUrl : '') ?? '')) || undefined,
-      externalUrl: String((isRecord(project) ? project.externalUrl : '') ?? '').trim() || undefined,
+      externalUrl: normalizeExternalUrl(
+        isRecord(project) ? project.externalUrl : undefined,
+        fallbackProject?.externalUrl,
+      ),
       results: Array.isArray(isRecord(project) ? project.results : undefined)
         ? (project.results as unknown[]).map((item) => String(item ?? '').trim()).filter(Boolean)
         : fallbackProject?.results ?? [],
@@ -533,9 +562,10 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
       sector: String((isRecord(project) ? project.sector : '') ?? ''),
       summary: String((isRecord(project) ? project.summary : '') ?? ''),
       id: String((isRecord(project) ? project.id : '') ?? fallbackProject?.id ?? `project-${index + 1}`),
-      status: (String((isRecord(project) ? project.status : '') ?? fallbackProject?.status ?? 'entregado') === 'en-curso'
-        ? 'en-curso'
-        : 'entregado'),
+      status: normalizeProjectStatus(
+        isRecord(project) ? project.status : undefined,
+        fallbackProject?.status ?? 'entregado',
+      ),
       lighthouse: normalizedLighthouse,
     }
   })

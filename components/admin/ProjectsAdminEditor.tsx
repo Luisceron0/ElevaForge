@@ -7,11 +7,16 @@ import { isAssetRef } from '@/lib/asset-refs'
 
 interface Props {
   projects: ProjectItem[]
-  narrative: AboutContent['experience']
+  narrative: Pick<AboutContent, 'experience' | 'projectsInProgress'>
   saving: boolean
   narrativeSaving: boolean
   onSave: (projects: ProjectItem[]) => void
-  onSaveNarrative: (value: AboutContent['experience']) => void
+  onSaveNarrative: (value: Pick<AboutContent, 'experience' | 'projectsInProgress'>) => void
+}
+
+interface NarrativeDraft {
+  experience: AboutContent['experience']
+  projectsInProgress: string[]
 }
 
 interface ProjectDraft {
@@ -90,7 +95,7 @@ function toProject(draft: ProjectDraft): ProjectItem {
     sector: draft.sector.trim(),
     summary: draft.summary.trim(),
     imageUrl: draft.imageUrl.trim() || undefined,
-    externalUrl: draft.externalUrl.trim() || undefined,
+    externalUrl: normalizeExternalUrl(draft.externalUrl),
     status: draft.status,
     results: draft.resultsText
       .split('\n')
@@ -131,6 +136,14 @@ function toProject(draft: ProjectDraft): ProjectItem {
   }
 }
 
+function normalizeExternalUrl(value: string): string | undefined {
+  const raw = value.trim()
+  if (!raw) return undefined
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (/^www\./i.test(raw)) return `https://${raw}`
+  return raw
+}
+
 function validate(draft: ProjectDraft, items: ProjectItem[], editingIndex: number | null): string {
   const project = toProject(draft)
   if (!project.id || !/^[a-z0-9-]+$/i.test(project.id)) return 'No se pudo generar un ID válido para el proyecto'
@@ -146,11 +159,14 @@ function validate(draft: ProjectDraft, items: ProjectItem[], editingIndex: numbe
 }
 
 export default function ProjectsAdminEditor({ projects, narrative, saving, narrativeSaving, onSave, onSaveNarrative }: Props) {
-  const [narrativeDraft, setNarrativeDraft] = useState<AboutContent['experience']>({
-    title: '',
-    description: '',
-    items: [],
-    imageUrl: '',
+  const [narrativeDraft, setNarrativeDraft] = useState<NarrativeDraft>({
+    experience: {
+      title: '',
+      description: '',
+      items: [],
+      imageUrl: '',
+    },
+    projectsInProgress: [],
   })
   const [items, setItems] = useState<ProjectItem[]>(projects)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -173,19 +189,27 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
 
   useEffect(() => {
     setNarrativeDraft({
-      title: String(narrative?.title ?? '').trim(),
-      description: String(narrative?.description ?? '').trim(),
-      items: Array.isArray(narrative?.items)
-        ? narrative.items.map((item) => String(item ?? '').trim()).filter(Boolean)
+      experience: {
+        title: String(narrative?.experience?.title ?? '').trim(),
+        description: String(narrative?.experience?.description ?? '').trim(),
+        items: Array.isArray(narrative?.experience?.items)
+          ? narrative.experience.items.map((item) => String(item ?? '').trim()).filter(Boolean)
+          : [],
+        imageUrl: String(narrative?.experience?.imageUrl ?? '').trim(),
+      },
+      projectsInProgress: Array.isArray(narrative?.projectsInProgress)
+        ? narrative.projectsInProgress.map((item) => String(item ?? '').trim()).filter(Boolean)
         : [],
-      imageUrl: String(narrative?.imageUrl ?? '').trim(),
     })
   }, [narrative])
 
   function addExperienceItem() {
     setNarrativeDraft((prev) => ({
       ...prev,
-      items: [...prev.items, ''],
+      experience: {
+        ...prev.experience,
+        items: [...prev.experience.items, ''],
+      },
     }))
   }
 
@@ -193,17 +217,40 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
     if (!window.confirm('¿Eliminar este item de experiencia?')) return
     setNarrativeDraft((prev) => ({
       ...prev,
-      items: prev.items.filter((_, currentIndex) => currentIndex !== index),
+      experience: {
+        ...prev.experience,
+        items: prev.experience.items.filter((_, currentIndex) => currentIndex !== index),
+      },
+    }))
+  }
+
+  function addProjectInProgressItem() {
+    setNarrativeDraft((prev) => ({
+      ...prev,
+      projectsInProgress: [...prev.projectsInProgress, ''],
+    }))
+  }
+
+  function removeProjectInProgressItem(index: number) {
+    if (!window.confirm('¿Eliminar este item de proyectos en curso?')) return
+    setNarrativeDraft((prev) => ({
+      ...prev,
+      projectsInProgress: prev.projectsInProgress.filter((_, currentIndex) => currentIndex !== index),
     }))
   }
 
   function saveNarrative() {
     onSaveNarrative({
-      ...narrativeDraft,
-      title: narrativeDraft.title.trim(),
-      description: narrativeDraft.description.trim(),
-      imageUrl: narrativeDraft.imageUrl?.trim() || undefined,
-      items: narrativeDraft.items.map((item) => item.trim()).filter(Boolean),
+      experience: {
+        ...narrativeDraft.experience,
+        title: narrativeDraft.experience.title.trim(),
+        description: narrativeDraft.experience.description.trim(),
+        imageUrl: narrativeDraft.experience.imageUrl?.trim() || undefined,
+        items: narrativeDraft.experience.items.map((item) => item.trim()).filter(Boolean),
+      },
+      projectsInProgress: narrativeDraft.projectsInProgress
+        .map((item) => item.trim())
+        .filter(Boolean),
     })
   }
 
@@ -343,8 +390,13 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-white">Caso de experiencia - título</label>
           <input
-            value={narrativeDraft.title}
-            onChange={(e) => setNarrativeDraft((prev) => ({ ...prev, title: e.target.value }))}
+            value={narrativeDraft.experience.title}
+            onChange={(e) =>
+              setNarrativeDraft((prev) => ({
+                ...prev,
+                experience: { ...prev.experience, title: e.target.value },
+              }))
+            }
             className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
           />
         </div>
@@ -352,17 +404,27 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-white">Caso de experiencia - descripción</label>
           <textarea
-            value={narrativeDraft.description}
-            onChange={(e) => setNarrativeDraft((prev) => ({ ...prev, description: e.target.value }))}
+            value={narrativeDraft.experience.description}
+            onChange={(e) =>
+              setNarrativeDraft((prev) => ({
+                ...prev,
+                experience: { ...prev.experience, description: e.target.value },
+              }))
+            }
             className="w-full min-h-[90px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
           />
         </div>
 
         <ImageUploadInput
           label="Caso de experiencia - imagen"
-          value={narrativeDraft.imageUrl || ''}
+          value={narrativeDraft.experience.imageUrl || ''}
           folder="about"
-          onChange={(next) => setNarrativeDraft((prev) => ({ ...prev, imageUrl: next }))}
+          onChange={(next) =>
+            setNarrativeDraft((prev) => ({
+              ...prev,
+              experience: { ...prev.experience, imageUrl: next },
+            }))
+          }
           placeholder="URL imagen (opcional)"
         />
 
@@ -373,18 +435,45 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
           </div>
 
           <div className="space-y-2">
-            {narrativeDraft.items.map((item, index) => (
+            {narrativeDraft.experience.items.map((item, index) => (
               <div key={index} className="flex gap-2 group">
                 <input
                   value={item}
                   onChange={(e) => {
-                    const next = [...narrativeDraft.items]
+                    const next = [...narrativeDraft.experience.items]
                     next[index] = e.target.value
-                    setNarrativeDraft((prev) => ({ ...prev, items: next }))
+                    setNarrativeDraft((prev) => ({
+                      ...prev,
+                      experience: { ...prev.experience, items: next },
+                    }))
                   }}
                   className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
                 />
                 <button type="button" onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold text-white">Proyectos en curso - items</h4>
+            <button type="button" onClick={addProjectInProgressItem} className="border border-white/20 rounded px-3 py-1 text-sm text-white hover:bg-white/10 transition-colors">Agregar item</button>
+          </div>
+
+          <div className="space-y-2">
+            {narrativeDraft.projectsInProgress.map((item, index) => (
+              <div key={index} className="flex gap-2 group">
+                <input
+                  value={item}
+                  onChange={(e) => {
+                    const next = [...narrativeDraft.projectsInProgress]
+                    next[index] = e.target.value
+                    setNarrativeDraft((prev) => ({ ...prev, projectsInProgress: next }))
+                  }}
+                  className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+                />
+                <button type="button" onClick={() => removeProjectInProgressItem(index)} className="border border-red-500/50 rounded px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
               </div>
             ))}
           </div>
@@ -612,7 +701,18 @@ function ProjectForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
         onChange={(next) => onChange({ ...draft, imageUrl: next })}
         placeholder="URL imagen (opcional)"
       />
-      <input value={draft.externalUrl} onChange={(e) => onChange({ ...draft, externalUrl: e.target.value })} placeholder="URL externa (opcional)" className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50" />
+      <div className="space-y-2">
+        <label className="block text-sm font-semibold text-white">Enlace del proyecto (redirección)</label>
+        <input
+          value={draft.externalUrl}
+          onChange={(e) => onChange({ ...draft, externalUrl: e.target.value })}
+          placeholder="https://tu-sitio.com"
+          className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+        />
+        <p className="text-xs text-white/60">
+          Si escribes `www...`, el sistema lo convertirá automáticamente a `https://...` al guardar.
+        </p>
+      </div>
       <textarea value={draft.resultsText} onChange={(e) => onChange({ ...draft, resultsText: e.target.value })} placeholder="Resultados, uno por línea" className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[90px]" />
       <div className="flex gap-2">
         <button type="button" onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forge-orange-main/90 transition-colors">Confirmar</button>

@@ -1,51 +1,22 @@
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import { getResolvedSiteContent } from '@/lib/site-content'
 
-const plans = [
-  {
-    id: 'web',
-    name: 'Sitio Web / Landing',
-    usd: 125,
-    cop: 475000,
-    badge: 'Negocios locales',
-    cta: WHATSAPP_URLS.pricingWeb,
-    bullets: [
-      'Landing de alto impacto con estructura SEO técnica',
-      'Contenido editable y despliegue productivo',
-      'Performance optimizada para Core Web Vitals',
-      'Entrega de 2 a 4 semanas',
-    ],
-  },
-  {
-    id: 'pos',
-    name: 'PoS + Gestor de Inventario',
-    usd: 80,
-    cop: 304000,
-    badge: 'Comercio',
-    cta: WHATSAPP_URLS.pricingPos,
-    bullets: [
-      'Punto de venta funcional con control de inventario',
-      'Flujo simple para operación diaria',
-      'Capacitación para autonomía del equipo',
-      'Entrega de 1 a 3 semanas',
-    ],
-  },
-  {
-    id: 'custom',
-    name: 'Software Personalizado',
-    usd: 80,
-    cop: 304000,
-    badge: 'Operaciones',
-    cta: WHATSAPP_URLS.pricingCustom,
-    bullets: [
-      'Arquitectura alineada a procesos de tu empresa',
-      'Integraciones y automatizaciones a medida',
-      'Roadmap por fases con alcance claro',
-      'Soporte y transferencia de conocimiento',
-    ],
-  },
-]
+const ctaByPlanId: Record<string, string> = {
+  web: WHATSAPP_URLS.pricingWeb,
+  pos: WHATSAPP_URLS.pricingPos,
+  custom: WHATSAPP_URLS.pricingCustom,
+}
 
-export default function PricingSection() {
+const badgeByPlanId: Record<string, string> = {
+  web: 'Negocios locales',
+  pos: 'Comercio',
+  custom: 'Operaciones',
+}
+
+export default async function PricingSection() {
+  const content = await getResolvedSiteContent()
+  const plans = content.packages
+
   return (
     <section id="precios" aria-label="Paquetes" className="py-24 md:py-32 bg-forge-bg-light">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
@@ -75,20 +46,20 @@ export default function PricingSection() {
                 <div className="flex items-start justify-between mb-6 gap-4">
                   <div>
                     <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-2">
-                      {plan.name}
+                      {plan.title}
                     </p>
                     <p
                       className="font-humanst text-forge-bg-dark leading-none"
                       style={{ fontSize: '2rem' }}
                     >
-                      ${plan.usd}
+                      ${plan.priceUsd}
                     </p>
                     <p className="text-base text-forge-blue-deep/70 mt-1">
-                      (≈ {plan.cop.toLocaleString()} COP)
+                      (≈ {plan.priceCop.toLocaleString()} COP)
                     </p>
                   </div>
                   <span className="inline-flex items-center rounded-full border border-forge-blue-mid/30 px-3 py-1.5 text-xs font-semibold tracking-widest uppercase text-forge-blue-mid">
-                    {plan.badge}
+                    {badgeByPlanId[plan.id] ?? 'Paquete'}
                   </span>
                 </div>
 
@@ -114,7 +85,7 @@ export default function PricingSection() {
               </div>
 
               <a
-                href={plan.cta}
+                href={ctaByPlanId[plan.id] ?? WHATSAPP_URLS.hero}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-8 w-full text-center inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold border border-forge-blue-mid text-forge-blue-deep hover:bg-forge-blue-deep hover:text-white transition-colors duration-200"
