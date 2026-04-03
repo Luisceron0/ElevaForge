@@ -59,6 +59,12 @@ const projectSchema = z.object({
   imageUrl: optionalAssetRef('imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
   externalUrl: optionalUrl,
   status: z.enum(['entregado', 'en-curso']),
+  lighthouse: z.object({
+    performance: lighthouseMetricSchema.optional(),
+    accessibility: lighthouseMetricSchema.optional(),
+    bestPractices: lighthouseMetricSchema.optional(),
+    seo: lighthouseMetricSchema.optional(),
+  }).optional(),
 })
 
 const packageSchema = z.object({

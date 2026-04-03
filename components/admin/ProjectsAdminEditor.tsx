@@ -23,6 +23,14 @@ interface ProjectDraft {
   externalUrl: string
   status: 'entregado' | 'en-curso'
   resultsText: string
+  lighthousePerformanceScore: number
+  lighthousePerformanceDesc: string
+  lighthouseAccessibilityScore: number
+  lighthouseAccessibilityDesc: string
+  lighthousBestPracticesScore: number
+  lighthousBestPracticesDesc: string
+  lighthouseSeoScore: number
+  lighthousSeoDesc: string
 }
 
 const EMPTY_DRAFT: ProjectDraft = {
@@ -34,6 +42,14 @@ const EMPTY_DRAFT: ProjectDraft = {
   externalUrl: '',
   status: 'entregado',
   resultsText: '',
+  lighthousePerformanceScore: 0,
+  lighthousePerformanceDesc: '',
+  lighthouseAccessibilityScore: 0,
+  lighthouseAccessibilityDesc: '',
+  lighthousBestPracticesScore: 0,
+  lighthousBestPracticesDesc: '',
+  lighthouseSeoScore: 0,
+  lighthousSeoDesc: '',
 }
 
 function toDraft(item: ProjectItem): ProjectDraft {
@@ -46,12 +62,27 @@ function toDraft(item: ProjectItem): ProjectDraft {
     externalUrl: item.externalUrl || '',
     status: item.status,
     resultsText: item.results.join('\n'),
+    lighthousePerformanceScore: item.lighthouse?.performance?.score ?? 0,
+    lighthousePerformanceDesc: item.lighthouse?.performance?.description ?? '',
+    lighthouseAccessibilityScore: item.lighthouse?.accessibility?.score ?? 0,
+    lighthouseAccessibilityDesc: item.lighthouse?.accessibility?.description ?? '',
+    lighthousBestPracticesScore: item.lighthouse?.bestPractices?.score ?? 0,
+    lighthousBestPracticesDesc: item.lighthouse?.bestPractices?.description ?? '',
+    lighthouseSeoScore: item.lighthouse?.seo?.score ?? 0,
+    lighthousSeoDesc: item.lighthouse?.seo?.description ?? '',
   }
 }
 
 function toProject(draft: ProjectDraft): ProjectItem {
   const slugBase = draft.id.trim() || draft.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
   const fallbackId = slugBase || `project-${Date.now()}`
+
+  const hasLighthouse = [
+    draft.lighthousePerformanceScore,
+    draft.lighthouseAccessibilityScore,
+    draft.lighthousBestPracticesScore,
+    draft.lighthouseSeoScore,
+  ].some((s) => s > 0)
 
   return {
     id: fallbackId,
@@ -65,6 +96,38 @@ function toProject(draft: ProjectDraft): ProjectItem {
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean),
+    lighthouse: hasLighthouse
+      ? {
+          performance:
+            draft.lighthousePerformanceScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthousePerformanceScore))),
+                  description: draft.lighthousePerformanceDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+          accessibility:
+            draft.lighthouseAccessibilityScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthouseAccessibilityScore))),
+                  description: draft.lighthouseAccessibilityDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+          bestPractices:
+            draft.lighthousBestPracticesScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthousBestPracticesScore))),
+                  description: draft.lighthousBestPracticesDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+          seo:
+            draft.lighthouseSeoScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthouseSeoScore))),
+                  description: draft.lighthousSeoDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+        }
+      : undefined,
   }
 }
 
@@ -452,6 +515,84 @@ interface FormProps {
 function ProjectForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
   return (
     <div className="space-y-3">
+      <fieldset className="border border-forge-blue-mid/30 rounded-lg p-4">
+        <legend className="text-xs font-semibold text-white uppercase px-2">Lighthouse Scores (Opcional)</legend>
+        <div className="grid sm:grid-cols-2 gap-4 mt-4">
+          {/* Performance */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">Performance</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthousePerformanceScore}
+              onChange={(e) => onChange({ ...draft, lighthousePerformanceScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthousePerformanceDesc}
+              onChange={(e) => onChange({ ...draft, lighthousePerformanceDesc: e.target.value })}
+              placeholder="Descripción de performance (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+          {/* Accessibility */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">Accessibility</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthouseAccessibilityScore}
+              onChange={(e) => onChange({ ...draft, lighthouseAccessibilityScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthouseAccessibilityDesc}
+              onChange={(e) => onChange({ ...draft, lighthouseAccessibilityDesc: e.target.value })}
+              placeholder="Descripción de accesibilidad (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+          {/* Best Practices */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">Best Practices</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthousBestPracticesScore}
+              onChange={(e) => onChange({ ...draft, lighthousBestPracticesScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthousBestPracticesDesc}
+              onChange={(e) => onChange({ ...draft, lighthousBestPracticesDesc: e.target.value })}
+              placeholder="Descripción de best practices (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+          {/* SEO */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">SEO</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthouseSeoScore}
+              onChange={(e) => onChange({ ...draft, lighthouseSeoScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthousSeoDesc}
+              onChange={(e) => onChange({ ...draft, lighthousSeoDesc: e.target.value })}
+              placeholder="Descripción de SEO (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+        </div>
+      </fieldset>
+
       <div className="grid sm:grid-cols-2 gap-3">
         <input value={draft.id} onChange={(e) => onChange({ ...draft, id: e.target.value })} placeholder="id (ej: avc)" className="border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50" />
         <select value={draft.status} onChange={(e) => onChange({ ...draft, status: e.target.value as 'entregado' | 'en-curso' })} className="border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50">

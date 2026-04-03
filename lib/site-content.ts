@@ -24,6 +24,12 @@ export interface ProjectItem {
   imageUrl?: string
   externalUrl?: string
   status: 'entregado' | 'en-curso'
+  lighthouse?: {
+    performance?: LighthouseMetric
+    accessibility?: LighthouseMetric
+    bestPractices?: LighthouseMetric
+    seo?: LighthouseMetric
+  }
 }
 
 export interface AboutPhase {
@@ -484,9 +490,40 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
 
   return merged.map((project, index) => {
     const fallbackProject = fallback[index] ?? fallback[0]
+    const projectRecord = isRecord(project) ? project : {}
+    const lighthouseData = isRecord(projectRecord.lighthouse) ? projectRecord.lighthouse : fallbackProject?.lighthouse
+    
+    const normalizedLighthouse = lighthouseData
+      ? {
+          performance: isRecord((lighthouseData as any).performance)
+            ? {
+                score: normalizeScore((lighthouseData as any).performance.score, 0),
+                description: String((lighthouseData as any).performance.description ?? '').slice(0, 300)
+              }
+            : undefined,
+          accessibility: isRecord((lighthouseData as any).accessibility)
+            ? {
+                score: normalizeScore((lighthouseData as any).accessibility.score, 0),
+                description: String((lighthouseData as any).accessibility.description ?? '').slice(0, 300)
+              }
+            : undefined,
+          bestPractices: isRecord((lighthouseData as any).bestPractices)
+            ? {
+                score: normalizeScore((lighthouseData as any).bestPractices.score, 0),
+                description: String((lighthouseData as any).bestPractices.description ?? '').slice(0, 300)
+              }
+            : undefined,
+          seo: isRecord((lighthouseData as any).seo)
+            ? {
+                score: normalizeScore((lighthouseData as any).seo.score, 0),
+                description: String((lighthouseData as any).seo.description ?? '').slice(0, 300)
+              }
+            : undefined,
+        }
+      : undefined
     return {
       ...fallbackProject,
-      ...(isRecord(project) ? project : {}),
+      ...projectRecord,
       imageUrl: normalizeAssetRef(String((isRecord(project) ? project.imageUrl : '') ?? '')) || undefined,
       externalUrl: String((isRecord(project) ? project.externalUrl : '') ?? '').trim() || undefined,
       results: Array.isArray(isRecord(project) ? project.results : undefined)
@@ -499,6 +536,7 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
       status: (String((isRecord(project) ? project.status : '') ?? fallbackProject?.status ?? 'entregado') === 'en-curso'
         ? 'en-curso'
         : 'entregado'),
+      lighthouse: normalizedLighthouse,
     }
   })
 }
@@ -517,6 +555,24 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     const byKey = new Map<string, unknown>()
     for (const row of data) {
+      lighthouse: {
+        performance: {
+          score: 100,
+          description: 'Carga optimizada en menos de 1.5 segundos en móvil 3G.'
+        },
+        accessibility: {
+          score: 86,
+          description: 'Interfaz navegable con teclado, WCAG AA cumplido.'
+        },
+        bestPractices: {
+          score: 100,
+          description: 'Código moderno sin deprecaciones, HTTPS y CSP headers activos.'
+        },
+        seo: {
+          score: 100,
+          description: 'Estructura semántica completa, sitemap y robots.txt optimizados.'
+        }
+      }
       byKey.set(String(row.key), row.value)
     }
 
