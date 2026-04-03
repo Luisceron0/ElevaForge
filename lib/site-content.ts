@@ -43,6 +43,19 @@ export interface TeamCapability {
   imageUrl?: string
 }
 
+export interface LighthouseMetric {
+  score: number
+  description: string
+}
+
+export interface LighthouseScores {
+  performance: LighthouseMetric
+  accessibility: LighthouseMetric
+  bestPractices: LighthouseMetric
+  seo: LighthouseMetric
+  auditedProject: string
+}
+
 export interface AboutContent {
   intro: string
   phases: AboutPhase[]
@@ -55,6 +68,7 @@ export interface AboutContent {
     items: string[]
     imageUrl?: string
   }
+  lighthouse: LighthouseScores
   projectsInProgress: string[]
   supportItems: string[]
 }
@@ -254,6 +268,25 @@ export const DEFAULT_ABOUT: AboutContent = {
     ],
     imageUrl: '',
   },
+  lighthouse: {
+    performance: {
+      score: 99,
+      description: 'El sitio carga en menos de 2 segundos. Imágenes optimizadas, CSS minimizado y JavaScript lazy-loaded.',
+    },
+    accessibility: {
+      score: 97,
+      description: 'Interfaz completamente navegable con teclado, legible para desórdenes visuales. WCAG AA cumplido.',
+    },
+    bestPractices: {
+      score: 100,
+      description: 'Código moderno, sin librerías deprecadas. HTTPS, CSP headers y manejo seguro de datos aplicado.',
+    },
+    seo: {
+      score: 100,
+      description: 'Metaetiquetas, estructura semántica y Robot.txt optimizados. Indexable en Google desde el primer día.',
+    },
+    auditedProject: 'AVC Inmobiliaria y Constructora',
+  },
   projectsInProgress: [
     'Actualmente tenemos varios proyectos en desarrollo en distintos sectores.',
     'El trabajo continuo mantiene al equipo en práctica constante.',
@@ -339,6 +372,29 @@ function mergeAboutItems(primary: AboutItem[], secondary: AboutItem[]): AboutIte
   return result
 }
 
+function normalizeScore(value: unknown, fallback: number): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return fallback
+  const bounded = Math.max(0, Math.min(100, Math.round(parsed)))
+  return bounded
+}
+
+function normalizeLighthouseMetric(
+  value: unknown,
+  fallbackScore: number,
+  fallbackDescription: string,
+): LighthouseMetric {
+  if (isRecord(value)) {
+    const score = normalizeScore(value.score, fallbackScore)
+    const description = String(value.description ?? fallbackDescription).trim().slice(0, 300)
+    return { score, description: description || fallbackDescription }
+  }
+  return {
+    score: fallbackScore,
+    description: fallbackDescription,
+  }
+}
+
 function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutContent {
   const merged = safeMerge(value, fallback)
 
@@ -379,6 +435,8 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
     }))
     : fallback.team
 
+  const lighthouseRecord = isRecord(merged.lighthouse) ? merged.lighthouse : fallback.lighthouse
+
   return {
     ...fallback,
     ...merged,
@@ -388,6 +446,30 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
     experience: {
       ...normalizedExperience,
       imageUrl: normalizeAssetRef(String(normalizedExperience.imageUrl ?? '')) || undefined,
+    },
+    lighthouse: {
+      performance: normalizeLighthouseMetric(
+        lighthouseRecord.performance,
+        fallback.lighthouse.performance.score,
+        fallback.lighthouse.performance.description,
+      ),
+      accessibility: normalizeLighthouseMetric(
+        lighthouseRecord.accessibility,
+        fallback.lighthouse.accessibility.score,
+        fallback.lighthouse.accessibility.description,
+      ),
+      bestPractices: normalizeLighthouseMetric(
+        lighthouseRecord.bestPractices,
+        fallback.lighthouse.bestPractices.score,
+        fallback.lighthouse.bestPractices.description,
+      ),
+      seo: normalizeLighthouseMetric(
+        lighthouseRecord.seo,
+        fallback.lighthouse.seo.score,
+        fallback.lighthouse.seo.description,
+      ),
+      auditedProject:
+        String(lighthouseRecord.auditedProject ?? '').trim() || fallback.lighthouse.auditedProject,
     },
     projectsInProgress: dedupeTextList(
       normalizeTextList(merged.projectsInProgress, fallback.projectsInProgress),

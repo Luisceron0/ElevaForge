@@ -30,8 +30,7 @@ export default function CTAButton({
   disabled = false,
 }: CTAButtonProps) {
   const baseClasses =
-    'inline-flex items-center gap-2.5 font-semibold px-6 py-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark text-base leading-none cursor-pointer'
-
+    'inline-flex items-center justify-center text-center gap-2.5 font-semibold px-6 py-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark text-base leading-none cursor-pointer'
   const variantClasses = {
     primary:
       'bg-forge-orange-main hover:bg-forge-orange-gold text-white shadow-forge-cta hover:shadow-forge-hover hover:scale-[1.02] active:scale-[0.98]',

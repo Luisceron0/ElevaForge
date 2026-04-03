@@ -20,6 +20,13 @@ const teamCapabilitySchema = z.object({
   imageUrl: optionalAssetRef('team.imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
 })
 
+const scoreNumber = z.number().int().min(0).max(100)
+
+const lighthouseMetricSchema = z.object({
+  score: scoreNumber,
+  description: text(300),
+})
+
 const aboutSchema = z.object({
   intro: text(2200),
   phases: z.array(aboutItemSchema).max(12),
@@ -31,6 +38,13 @@ const aboutSchema = z.object({
     description: text(1200),
     items: z.array(text(220)).max(20),
     imageUrl: optionalAssetRef('experience.imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
+  }),
+  lighthouse: z.object({
+    performance: lighthouseMetricSchema,
+    accessibility: lighthouseMetricSchema,
+    bestPractices: lighthouseMetricSchema,
+    seo: lighthouseMetricSchema,
+    auditedProject: text(180),
   }),
   projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),

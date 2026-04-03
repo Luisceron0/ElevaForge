@@ -7,14 +7,18 @@ import PricingSection from '@/components/sections/PricingSection'
 import RoadmapSection from '@/components/sections/RoadmapSection'
 import AutonomySection from '@/components/sections/AutonomySection'
 import ContactSection from '@/components/sections/ContactSection'
+import { getResolvedSiteContent } from '@/lib/site-content'
 
-export default function Home() {
+export default async function Home() {
+  const content = await getResolvedSiteContent()
+  const lighthouse = content.about.lighthouse
+
   return (
     <>
       <Navbar />
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
-        <HeroSection />
-        <ForgeStandards />
+        <HeroSection lighthouse={lighthouse} />
+        <ForgeStandards lighthouse={lighthouse} />
         <ProjectsSection />
         <PricingSection />
         <RoadmapSection />

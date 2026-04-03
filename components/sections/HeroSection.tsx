@@ -5,8 +5,13 @@ import CTAButton from '@/components/ui/CTAButton'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { gsap } from '@/lib/gsap'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import type { LighthouseScores } from '@/lib/site-content'
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  lighthouse: LighthouseScores
+}
+
+export default function HeroSection({ lighthouse }: HeroSectionProps) {
   const containerRef = useRef<HTMLElement>(null)
 
   useLayoutEffect(() => {
@@ -24,6 +29,13 @@ export default function HeroSection() {
 
     return () => ctx.revert()
   }, [])
+
+  const scores = [
+    { label: 'Performance', metric: lighthouse.performance },
+    { label: 'Accessibility', metric: lighthouse.accessibility },
+    { label: 'Best Practices', metric: lighthouse.bestPractices },
+    { label: 'SEO', metric: lighthouse.seo },
+  ]
 
   return (
     <section
@@ -63,15 +75,15 @@ export default function HeroSection() {
             data-hero-subtitle
             className="text-forge-text-body text-lg md:text-xl leading-relaxed max-w-xl mb-10"
           >
-            Tecnología simple, resultados medibles. Entregas claras, costos
-            transparentes y soporte real para cada proyecto.
+            Trust &amp; Authority real: resultados medibles, costos claros y
+            acompañamiento técnico de punta a punta.
           </p>
 
           <div data-hero-ctas className="flex flex-col sm:flex-row gap-4 mb-12">
             <CTAButton href={WHATSAPP_URLS.hero} size="lg" label="Iniciar proyecto" />
             <a
               href="#proyectos"
-              className="inline-flex items-center justify-center gap-2.5 font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
+              className="inline-flex items-center justify-center text-center gap-2.5 font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
             >
               Ver proyectos
             </a>
@@ -82,45 +94,40 @@ export default function HeroSection() {
             <span className="text-forge-blue-mid/50">·</span>
             <span>2 proyectos entregados</span>
             <span className="text-forge-blue-mid/50">·</span>
-            <span>Lighthouse 100/100</span>
+            <span>
+              Lighthouse {lighthouse.performance.score}/{lighthouse.accessibility.score}/{lighthouse.bestPractices.score}/{lighthouse.seo.score}
+            </span>
           </div>
         </div>
 
         <div className="flex justify-center lg:justify-end" data-hero-card>
-          <div className="bg-forge-card-bg rounded-2xl p-8 border border-forge-blue-mid/20 shadow-forge-hover w-full max-w-sm">
-            <p className="text-xs font-semibold tracking-widest uppercase text-forge-text-muted mb-6">
-              Validado con Google Lighthouse
+          <div className="bg-forge-card-bg rounded-2xl p-6 md:p-8 border border-forge-blue-mid/20 shadow-forge-hover w-full max-w-md">
+            <p className="text-xs font-semibold tracking-widest uppercase text-forge-text-muted mb-6 text-center">
+              Trust &amp; Authority validado con Lighthouse
             </p>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <AnimatedNumber
-                  target={100}
-                  className="font-humanst text-forge-orange-main leading-none text-[clamp(2.5rem,6vw,3.5rem)]"
-                />
-                <p className="text-xs text-forge-text-muted mt-1">Performance</p>
-              </div>
-              <div className="text-center">
-                <AnimatedNumber
-                  target={100}
-                  className="font-humanst text-forge-orange-main leading-none text-[clamp(2.5rem,6vw,3.5rem)]"
-                />
-                <p className="text-xs text-forge-text-muted mt-1">SEO</p>
-              </div>
-              <div className="text-center">
-                <AnimatedNumber
-                  target={100}
-                  className="font-humanst text-forge-orange-main leading-none text-[clamp(2.5rem,6vw,3.5rem)]"
-                />
-                <p className="text-xs text-forge-text-muted mt-1">Prácticas</p>
-              </div>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {scores.map((item) => (
+                <div key={item.label} className="rounded-xl border border-forge-blue-mid/20 bg-forge-bg-dark/50 p-4 hover:border-forge-orange-main/30 transition-colors">
+                  <AnimatedNumber
+                    target={item.metric.score}
+                    className="font-humanst text-forge-orange-main leading-none text-[clamp(1.8rem,5vw,2.4rem)] block"
+                  />
+                  <p className="text-xs text-forge-text-muted mt-2 font-semibold">{item.label}</p>
+                  <p className="text-xs text-forge-text-muted/70 mt-2 leading-snug line-clamp-2">
+                    {item.metric.description}
+                  </p>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-6 pt-6 border-t border-forge-blue-mid/15 flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <p className="text-xs text-forge-text-muted">
-                Verificado en producción · AVC Inmobiliaria
-              </p>
+            <div className="relative pt-6 border-t border-forge-blue-mid/15">
+              <div className="flex items-start justify-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0 mt-1" />
+                <p className="text-xs text-forge-text-muted text-center">
+                  Verificado en producción · {lighthouse.auditedProject}
+                </p>
+              </div>
             </div>
           </div>
         </div>

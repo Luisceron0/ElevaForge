@@ -9,7 +9,7 @@ interface Props {
   onSave: (about: AboutContent) => void
 }
 
-type TabType = 'intro' | 'fases' | 'pilares' | 'soporte'
+type TabType = 'intro' | 'fases' | 'pilares' | 'lighthouse' | 'soporte'
 
 export default function AboutAdminEditor({ about, saving, onSave }: Props) {
   const [draft, setDraft] = useState<AboutContent>(normalizeAboutDraft(about))
@@ -65,6 +65,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
     { id: 'intro' as TabType, label: '📋 Introducción', icon: '📋' },
     { id: 'fases' as TabType, label: '📊 Fases', icon: '📊' },
     { id: 'pilares' as TabType, label: '🎯 Pilares', icon: '🎯' },
+    { id: 'lighthouse' as TabType, label: '📈 Lighthouse', icon: '📈' },
     { id: 'soporte' as TabType, label: '📌 Soporte', icon: '📌' },
   ]
 
@@ -181,6 +182,210 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
           </div>
         )}
 
+        {/* Tab: Lighthouse */}
+        {activeTab === 'lighthouse' && (
+          <div className="space-y-6 animate-in fade-in-50">
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Performance */}
+              <div className="border border-white/10 rounded-lg p-4 bg-white/5">
+                <label className="block text-sm font-semibold text-white mb-3">Performance</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={draft.lighthouse.performance?.score ?? 0}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        performance: {
+                          ...prev.lighthouse.performance,
+                          score: Number(e.target.value || 0),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 mb-3"
+                />
+                <textarea
+                  value={draft.lighthouse.performance?.description ?? ''}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        performance: {
+                          ...prev.lighthouse.performance,
+                          description: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  placeholder="Describe qué significa este puntaje..."
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[100px]"
+                />
+                <p className="text-xs text-white/40 mt-2">
+                  {draft.lighthouse.performance?.description?.length ?? 0} / 300 caracteres
+                </p>
+              </div>
+
+              {/* Accessibility */}
+              <div className="border border-white/10 rounded-lg p-4 bg-white/5">
+                <label className="block text-sm font-semibold text-white mb-3">Accessibility</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={draft.lighthouse.accessibility?.score ?? 0}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        accessibility: {
+                          ...prev.lighthouse.accessibility,
+                          score: Number(e.target.value || 0),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 mb-3"
+                />
+                <textarea
+                  value={draft.lighthouse.accessibility?.description ?? ''}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        accessibility: {
+                          ...prev.lighthouse.accessibility,
+                          description: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  placeholder="Describe qué significa este puntaje..."
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[100px]"
+                />
+                <p className="text-xs text-white/40 mt-2">
+                  {draft.lighthouse.accessibility?.description?.length ?? 0} / 300 caracteres
+                </p>
+              </div>
+
+              {/* Best Practices */}
+              <div className="border border-white/10 rounded-lg p-4 bg-white/5">
+                <label className="block text-sm font-semibold text-white mb-3">Best Practices</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={draft.lighthouse.bestPractices?.score ?? 0}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        bestPractices: {
+                          ...prev.lighthouse.bestPractices,
+                          score: Number(e.target.value || 0),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 mb-3"
+                />
+                <textarea
+                  value={draft.lighthouse.bestPractices?.description ?? ''}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        bestPractices: {
+                          ...prev.lighthouse.bestPractices,
+                          description: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  placeholder="Describe qué significa este puntaje..."
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[100px]"
+                />
+                <p className="text-xs text-white/40 mt-2">
+                  {draft.lighthouse.bestPractices?.description?.length ?? 0} / 300 caracteres
+                </p>
+              </div>
+
+              {/* SEO */}
+              <div className="border border-white/10 rounded-lg p-4 bg-white/5">
+                <label className="block text-sm font-semibold text-white mb-3">SEO</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={draft.lighthouse.seo?.score ?? 0}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        seo: {
+                          ...prev.lighthouse.seo,
+                          score: Number(e.target.value || 0),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 mb-3"
+                />
+                <textarea
+                  value={draft.lighthouse.seo?.description ?? ''}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      lighthouse: {
+                        ...prev.lighthouse,
+                        seo: {
+                          ...prev.lighthouse.seo,
+                          description: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  placeholder="Describe qué significa este puntaje..."
+                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[100px]"
+                />
+                <p className="text-xs text-white/40 mt-2">
+                  {draft.lighthouse.seo?.description?.length ?? 0} / 300 caracteres
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-white mb-2">Proyecto auditado</label>
+              <input
+                value={draft.lighthouse.auditedProject}
+                onChange={(e) =>
+                  setDraft((prev) => ({
+                    ...prev,
+                    lighthouse: {
+                      ...prev.lighthouse,
+                      auditedProject: e.target.value,
+                    },
+                  }))
+                }
+                className="w-full border border-white/20 rounded-lg px-4 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+                placeholder="Ej: AVC Inmobiliaria y Constructora"
+              />
+              <p className="text-xs text-white/50 mt-2">
+                Estos datos alimentan el módulo de Trust &amp; Authority en Hero y Estándares.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Tab: Soporte */}
         {activeTab === 'soporte' && (
           <div className="space-y-4 animate-in fade-in-50">
@@ -251,6 +456,15 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
     ? about.experience.items
     : []
 
+  const normalizeLighthouseMetric = (
+    metric: any,
+    defaultScore: number,
+    defaultDesc: string
+  ) => ({
+    score: typeof metric?.score === 'number' ? metric.score : defaultScore,
+    description: typeof metric?.description === 'string' ? metric.description : defaultDesc,
+  })
+
   return {
     ...about,
     pillars: mergedDifferentiationItems,
@@ -260,6 +474,30 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
     experience: {
       ...about.experience,
       items: dedupeTextItems(experienceItems),
+    },
+    lighthouse: {
+      performance: normalizeLighthouseMetric(
+        about?.lighthouse?.performance,
+        99,
+        'El sitio carga en menos de 2 segundos. Imágenes optimizadas, CSS minimizado y JavaScript lazy-loaded.'
+      ),
+      accessibility: normalizeLighthouseMetric(
+        about?.lighthouse?.accessibility,
+        97,
+        'Interfaz completamente navegable con teclado, legible para desórdenes visuales. WCAG AA cumplido.'
+      ),
+      bestPractices: normalizeLighthouseMetric(
+        about?.lighthouse?.bestPractices,
+        100,
+        'Código moderno, sin librerías deprecadas. HTTPS, CSP headers y manejo seguro de datos aplicado.'
+      ),
+      seo: normalizeLighthouseMetric(
+        about?.lighthouse?.seo,
+        100,
+        'Metaetiquetas, estructura semántica y Robot.txt optimizados. Indexable en Google desde el primer día.'
+      ),
+      auditedProject:
+        String(about?.lighthouse?.auditedProject ?? '').trim() || 'AVC Inmobiliaria y Constructora',
     },
   }
 }

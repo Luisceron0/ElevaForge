@@ -4,8 +4,13 @@ import { useLayoutEffect, useRef } from 'react'
 import BentoCard from '@/components/ui/BentoCard'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { gsap } from '@/lib/gsap'
+import type { LighthouseScores } from '@/lib/site-content'
 
-export default function ForgeStandards() {
+interface ForgeStandardsProps {
+  lighthouse: LighthouseScores
+}
+
+export default function ForgeStandards({ lighthouse }: ForgeStandardsProps) {
   const containerRef = useRef<HTMLElement>(null)
 
   useLayoutEffect(() => {
@@ -42,11 +47,11 @@ export default function ForgeStandards() {
             className="font-humanst text-white leading-tight mb-4"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
           >
-            Trust & Authority por defecto en cada entrega
+            Trust &amp; Authority con métricas verificables
           </h2>
           <p className="text-forge-text-body text-lg leading-relaxed">
-            Cada proyecto pasa por rendimiento, SEO y seguridad antes de salir
-            a producción. Sin excepciones.
+            Publicamos resultados reales de Lighthouse y mantenemos la misma barra
+            de calidad en cada entrega.
           </p>
         </div>
 
@@ -57,16 +62,16 @@ export default function ForgeStandards() {
             value={
               <>
                 <AnimatedNumber
-                  target={100}
+                  target={lighthouse.performance.score}
                   className="font-humanst text-forge-orange-main leading-none mb-2"
                 />
                 <p className="text-forge-text-muted text-base">
-                  Lighthouse · Google PageSpeed
+                  Carga rápida medida en producción
                 </p>
               </>
             }
             valueClassName="font-humanst text-forge-orange-main leading-none mb-2 text-[clamp(5rem,10vw,8rem)]"
-            description="Validamos con herramientas de Google antes de cada entrega. Tu sitio carga rápido desde el primer día."
+            description={lighthouse.performance.description}
             icon={
               <svg aria-hidden="true" className="h-6 w-6 text-forge-orange-main" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -79,7 +84,7 @@ export default function ForgeStandards() {
             value={
               <>
                 <AnimatedNumber
-                  target={100}
+                  target={lighthouse.seo.score}
                   className="font-humanst text-forge-blue-light leading-none mb-2"
                 />
                 <p className="text-forge-text-muted text-base">
@@ -88,7 +93,7 @@ export default function ForgeStandards() {
               </>
             }
             valueClassName="text-[clamp(4rem,8vw,6rem)]"
-            description="Estructuras pensadas para que Google te encuentre antes que a la competencia."
+            description={lighthouse.seo.description}
             icon={
               <svg aria-hidden="true" className="h-6 w-6 text-forge-blue-light" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -97,16 +102,18 @@ export default function ForgeStandards() {
           />
 
           <BentoCard
-            label="Seguridad"
+            label="Best Practices"
             value={
               <>
-                <p className="font-humanst text-forge-orange-gold leading-none mb-2 text-[clamp(4rem,8vw,6rem)]">
-                  A+
-                </p>
-                <p className="text-forge-text-muted text-base">Protección activa desde arquitectura</p>
+                <AnimatedNumber
+                  target={lighthouse.bestPractices.score}
+                  className="font-humanst text-forge-orange-gold leading-none mb-2"
+                />
+                <p className="text-forge-text-muted text-base">Calidad técnica mantenible y segura</p>
               </>
             }
-            description="Seguridad desde la arquitectura, no como parche."
+            valueClassName="text-[clamp(4rem,8vw,6rem)]"
+            description={lighthouse.bestPractices.description}
             icon={
               <svg aria-hidden="true" className="h-6 w-6 text-forge-orange-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -119,12 +126,11 @@ export default function ForgeStandards() {
               className="font-humanst text-white leading-tight max-w-2xl"
               style={{ fontSize: 'clamp(1.4rem, 3vw, 2.3rem)' }}
             >
-              Cada proyecto pasa por los 3 antes de ser entregado. Sin
-              excepciones.
+              Accesibilidad {lighthouse.accessibility.score}/100 y mejora continua en cada iteración.
             </p>
             <a
               href="#proceso"
-              className="mt-8 inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white transition-colors duration-200 w-fit"
+              className="mt-8 inline-flex items-center justify-center text-center rounded-xl px-6 py-3 text-base font-semibold border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white transition-colors duration-200 w-fit"
             >
               Ver nuestro proceso
             </a>
