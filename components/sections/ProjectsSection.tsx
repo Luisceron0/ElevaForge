@@ -35,7 +35,7 @@ export default async function ProjectsSection() {
                 {deliveredProjects.length}
               </span>
             </div>
-            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {deliveredProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
@@ -51,7 +51,7 @@ export default async function ProjectsSection() {
                 {inProgressProjects.length}
               </span>
             </div>
-            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {inProgressProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}

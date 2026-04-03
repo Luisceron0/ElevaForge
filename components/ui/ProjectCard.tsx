@@ -7,13 +7,14 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const isDelivered = project.status === 'entregado'
+  const isRemoteImage = Boolean(project.imageUrl && /^https?:\/\//i.test(project.imageUrl))
 
   return (
     <article
-      className="group relative rounded-2xl overflow-hidden bg-forge-card-bg border border-forge-blue-mid/20 cursor-pointer flex-shrink-0 w-full md:w-[480px] min-h-[320px] transition-all duration-300 hover:border-forge-orange-main/40 hover:shadow-forge-hover snap-center"
+      className="group relative rounded-2xl overflow-hidden bg-forge-card-bg border border-forge-blue-mid/20 w-full min-h-[320px] transition-all duration-300 hover:border-forge-orange-main/40 hover:shadow-forge-hover"
       aria-label={`Proyecto ${project.title}`}
     >
-      <div className="p-8 h-full flex flex-col justify-between">
+      <div className="p-6 md:p-8 h-full flex flex-col">
         <div>
           {project.imageUrl && (
             <div className="mb-4 overflow-hidden rounded-xl border border-forge-blue-mid/20 bg-forge-bg-dark/35 p-2">
@@ -23,7 +24,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 width={960}
                 height={540}
                 className="h-36 w-full rounded-lg object-cover"
-                unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
+                unoptimized={isRemoteImage}
               />
             </div>
           )}
@@ -62,7 +63,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {project.lighthouse && (
-          <div className="grid grid-cols-2 gap-2 border-t border-forge-blue-mid/15 pt-4">
+          <div className="mt-6 grid grid-cols-2 gap-2 border-t border-forge-blue-mid/15 pt-4">
             {project.lighthouse.performance && (
               <div className="rounded-lg bg-forge-bg-dark/50 p-2 text-center">
                 <p className="font-humanst text-base leading-none text-forge-orange-main">
