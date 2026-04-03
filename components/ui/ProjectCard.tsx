@@ -29,7 +29,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           )}
 
           <div className="mb-4 flex items-center justify-between gap-3">
-            <span className="inline-flex items-center rounded-full border border-forge-blue-mid/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-forge-blue-light">
+            <span className="inline-flex items-center rounded-full border border-forge-blue-mid/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-forge-blue-light break-words max-w-[60%]">
               {project.sector}
             </span>
             <span
@@ -43,11 +43,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </span>
           </div>
 
-          <h3 className="mb-3 font-humanst text-[clamp(1.2rem,2vw,1.7rem)] leading-tight text-white">
+          <h3 className="mb-3 font-humanst text-[clamp(1.2rem,2vw,1.7rem)] leading-tight text-white break-words">
             {project.title}
           </h3>
 
-          <p className="text-sm leading-relaxed text-forge-text-body">{project.summary}</p>
+          <p className="text-sm leading-relaxed text-forge-text-body break-words">{project.summary}</p>
 
           {project.externalUrl && (
             <a
@@ -96,23 +96,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               </div>
             )}
           </div>
-        )}
-      </div>
-
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-2xl bg-forge-bg-dark/90 p-6 text-center opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-        <p className="font-humanst text-2xl text-white">Ver proyecto</p>
-
-        {project.externalUrl ? (
-          <a
-            href={project.externalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-xl bg-forge-orange-main px-6 py-3 text-base font-semibold text-white shadow-forge-cta transition-colors duration-200 hover:bg-forge-orange-gold"
-          >
-            Visitar sitio
-          </a>
-        ) : (
-          <p className="text-base text-forge-text-body">Disponible pronto</p>
         )}
       </div>
     </article>
