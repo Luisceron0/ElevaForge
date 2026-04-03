@@ -33,9 +33,19 @@ export default function Navbar() {
     }
   }, [isOpen])
 
-  const headerClass = isScrolled
+  useEffect(() => {
+    const closeMenu = () => setIsOpen(false)
+    window.addEventListener('hashchange', closeMenu)
+    window.addEventListener('popstate', closeMenu)
+    return () => {
+      window.removeEventListener('hashchange', closeMenu)
+      window.removeEventListener('popstate', closeMenu)
+    }
+  }, [])
+
+  const headerClass = isOpen || isScrolled
     ? 'bg-forge-bg-dark/95 backdrop-blur-md border-b border-forge-blue-mid/15 shadow-forge-card'
-    : 'bg-transparent'
+    : 'bg-forge-bg-dark/95 lg:bg-transparent'
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${headerClass}`}>
