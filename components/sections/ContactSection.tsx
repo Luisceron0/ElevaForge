@@ -8,7 +8,13 @@ function sanitizeInput(value: string): string {
   return value.replace(/[\u0000-\u001F\u007F]/g, '').trim()
 }
 
-export default function ContactSection() {
+interface ContactSectionProps {
+  title?: string
+  description?: string
+  responseTime?: string
+}
+
+export default function ContactSection({ title, description, responseTime }: ContactSectionProps) {
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -120,11 +126,10 @@ export default function ContactSection() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 items-start">
         <div>
           <h2 className="font-humanst text-white leading-tight mb-4" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
-            Hablemos de tu proyecto
+            {title || 'Hablemos de tu proyecto'}
           </h2>
           <p className="text-forge-text-body text-lg leading-relaxed max-w-xl mb-8">
-            Te ayudamos a aterrizar tu idea con alcance claro, tiempos realistas
-            y una propuesta transparente.
+            {description || 'Te ayudamos a aterrizar tu idea con alcance claro, tiempos realistas y una propuesta transparente.'}
           </p>
 
           <div className="space-y-4 text-base">
@@ -134,7 +139,7 @@ export default function ContactSection() {
             <a href="mailto:elevaforge@gmail.com" className="block text-forge-blue-light hover:text-white transition-colors duration-200">
               Email: elevaforge@gmail.com
             </a>
-            <p className="text-forge-text-body">Tiempo de respuesta: Menos de 24 horas</p>
+            <p className="text-forge-text-body">Tiempo de respuesta: {responseTime || 'Menos de 24 horas'}</p>
           </div>
         </div>
 

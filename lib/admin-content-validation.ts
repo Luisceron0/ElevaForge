@@ -13,6 +13,18 @@ const aboutItemSchema = z.object({
   description: text(1000),
 })
 
+const autonomyCardSchema = z.object({
+  badge: text(80),
+  title: text(120),
+  description: text(300),
+})
+
+const homeSectionSchema = z.object({
+  eyebrow: text(120),
+  title: text(180),
+  description: text(420),
+})
+
 const teamCapabilitySchema = z.object({
   area: text(120),
   owner: text(80),
@@ -49,6 +61,35 @@ const aboutSchema = z.object({
   }),
   projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),
+  autonomyCards: z.array(autonomyCardSchema).max(4),
+  homeContent: z.object({
+    hero: z.object({
+      badge: text(120),
+      title: text(160),
+      highlight: text(120),
+      primaryCta: text(60),
+      secondaryCta: text(60),
+    }),
+    projects: homeSectionSchema.extend({
+      deliveredLabel: text(120),
+      inProgressLabel: text(120),
+      notesTitle: text(140),
+    }),
+    pricing: homeSectionSchema.extend({
+      legalNote: text(260),
+      ctaLabel: text(80),
+    }),
+    roadmap: homeSectionSchema.extend({
+      ctaTitle: text(140),
+      ctaButton: text(80),
+    }),
+    autonomy: homeSectionSchema,
+    contact: z.object({
+      title: text(140),
+      description: text(280),
+      responseTime: text(80),
+    }),
+  }),
 })
 
 const projectSchema = z.object({

@@ -8,9 +8,14 @@ import type { AboutPhase } from '@/lib/site-content'
 
 interface RoadmapSectionProps {
   phases: AboutPhase[]
+  eyebrow?: string
+  title?: string
+  description?: string
+  ctaTitle?: string
+  ctaLabel?: string
 }
 
-export default function RoadmapSection({ phases }: RoadmapSectionProps) {
+export default function RoadmapSection({ phases, eyebrow, title, description, ctaTitle, ctaLabel }: RoadmapSectionProps) {
   const containerRef = useRef<HTMLElement>(null)
   const steps = phases.slice(0, 4).map((phase, index) => ({
     number: String(index + 1).padStart(2, '0'),
@@ -58,17 +63,16 @@ export default function RoadmapSection({ phases }: RoadmapSectionProps) {
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="max-w-3xl mb-12">
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
-            Proceso transparente
+            {eyebrow || 'Proceso transparente'}
           </p>
           <h2
             className="font-humanst text-white leading-tight mb-4"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
           >
-            De la idea a la entrega sin zonas grises
+            {title || 'De la idea a la entrega sin zonas grises'}
           </h2>
           <p className="text-forge-text-body text-lg leading-relaxed">
-            Cada fase está definida para que sepas qué estamos haciendo, por qué
-            lo hacemos y qué sigue después.
+            {description || 'Cada fase está definida para que sepas qué estamos haciendo, por qué lo hacemos y qué sigue después.'}
           </p>
         </div>
 
@@ -108,9 +112,9 @@ export default function RoadmapSection({ phases }: RoadmapSectionProps) {
 
         <div className="bg-forge-blue-deep/20 rounded-2xl p-8 mt-12 border border-forge-blue-mid/30">
           <p className="font-humanst text-white text-[clamp(1.5rem,3vw,2.2rem)] mb-6">
-            ¿Listo para el paso 01?
+            {ctaTitle || '¿Listo para el paso 01?'}
           </p>
-          <CTAButton href={WHATSAPP_URLS.roadmap} label="Solicitar asesoría gratuita" />
+          <CTAButton href={WHATSAPP_URLS.roadmap} label={ctaLabel || 'Solicitar asesoría gratuita'} />
         </div>
       </div>
     </section>

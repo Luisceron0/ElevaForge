@@ -1,5 +1,5 @@
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
-import { getResolvedSiteContent } from '@/lib/site-content'
+import type { PackagePlan } from '@/lib/site-content'
 
 const ctaByPlanId: Record<string, string> = {
   web: WHATSAPP_URLS.pricingWeb,
@@ -13,26 +13,32 @@ const badgeByPlanId: Record<string, string> = {
   custom: 'Operaciones',
 }
 
-export default async function PricingSection() {
-  const content = await getResolvedSiteContent()
-  const plans = content.packages
+interface PricingSectionProps {
+  plans: PackagePlan[]
+  eyebrow: string
+  title: string
+  description: string
+  legalNote: string
+  ctaLabel: string
+}
+
+export default function PricingSection({ plans, eyebrow, title, description, legalNote, ctaLabel }: PricingSectionProps) {
 
   return (
     <section id="precios" aria-label="Paquetes" className="py-24 md:py-32 bg-forge-bg-light">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="max-w-3xl mb-10">
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
-            Paquetes orientativos
+            {eyebrow}
           </p>
           <h2
             className="font-humanst text-forge-bg-dark leading-tight mb-4"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
           >
-            Inversión clara para resultados medibles
+            {title}
           </h2>
           <p className="text-forge-blue-deep text-lg leading-relaxed">
-            Precios de referencia en USD para definir un alcance inicial y
-            avanzar con transparencia.
+            {description}
           </p>
         </div>
 
@@ -90,14 +96,14 @@ export default async function PricingSection() {
                 rel="noopener noreferrer"
                 className="mt-8 w-full text-center inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold border border-forge-blue-mid text-forge-blue-deep hover:bg-forge-blue-deep hover:text-white transition-colors duration-200"
               >
-                Solicitar propuesta
+                {ctaLabel}
               </a>
             </article>
           ))}
         </div>
 
         <p className="text-center text-base text-forge-bg-dark/50 mt-8">
-          Los precios son orientativos en USD. El costo final se define según el alcance acordado con el cliente.
+          {legalNote}
         </p>
       </div>
     </section>

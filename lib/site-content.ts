@@ -42,6 +42,47 @@ export interface AboutItem {
   description: string
 }
 
+export interface AutonomyCard {
+  badge: string
+  title: string
+  description: string
+}
+
+export interface HomeSectionCopy {
+  eyebrow: string
+  title: string
+  description: string
+}
+
+export interface HomeContent {
+  hero: {
+    badge: string
+    title: string
+    highlight: string
+    primaryCta: string
+    secondaryCta: string
+  }
+  projects: HomeSectionCopy & {
+    deliveredLabel: string
+    inProgressLabel: string
+    notesTitle: string
+  }
+  pricing: HomeSectionCopy & {
+    legalNote: string
+    ctaLabel: string
+  }
+  roadmap: HomeSectionCopy & {
+    ctaTitle: string
+    ctaButton: string
+  }
+  autonomy: HomeSectionCopy
+  contact: {
+    title: string
+    description: string
+    responseTime: string
+  }
+}
+
 export interface TeamCapability {
   area: string
   owner: string
@@ -78,6 +119,8 @@ export interface AboutContent {
   lighthouse: LighthouseScores
   projectsInProgress: string[]
   supportItems: string[]
+  autonomyCards: AutonomyCard[]
+  homeContent: HomeContent
 }
 
 export interface SiteContent {
@@ -307,6 +350,72 @@ export const DEFAULT_ABOUT: AboutContent = {
     'Atención directa por WhatsApp con el equipo técnico para resolver dudas operativas y ajustes puntuales.',
     'Definimos procesos para que puedas administrar contenidos y tareas comunes sin fricción técnica diaria.',
   ],
+  autonomyCards: [
+    {
+      badge: '100% tuya',
+      title: 'Propiedad del código',
+      description: 'El código fuente, repositorio y accesos quedan a nombre del cliente al finalizar la entrega.',
+    },
+    {
+      badge: 'Manual PDF + Video',
+      title: 'Capacitación real',
+      description:
+        'Entregamos manual PDF y video explicativo para que tu equipo pueda operar la plataforma sin depender de terceros.',
+    },
+    {
+      badge: 'Soporte directo',
+      title: 'WhatsApp sin intermediarios',
+      description:
+        'Atención directa por WhatsApp con el equipo técnico para resolver dudas operativas y ajustes puntuales.',
+    },
+    {
+      badge: 'Sin dependencia',
+      title: 'Autonomía operativa',
+      description:
+        'Definimos procesos para que puedas administrar contenidos y tareas comunes sin fricción técnica diaria.',
+    },
+  ],
+  homeContent: {
+    hero: {
+      badge: 'Agencia de software · Colombia',
+      title: 'Forjamos el motor digital',
+      highlight: 'de tu empresa',
+      primaryCta: 'Iniciar proyecto',
+      secondaryCta: 'Ver proyectos',
+    },
+    projects: {
+      eyebrow: 'Proyectos y resultados',
+      title: 'Casos reales que respaldan nuestro estándar',
+      description: 'Experiencia aplicada en productos digitales con foco en velocidad, SEO y claridad operativa.',
+      deliveredLabel: 'Proyectos entregados',
+      inProgressLabel: 'Proyectos en curso',
+      notesTitle: 'Seguimiento activo del equipo',
+    },
+    pricing: {
+      eyebrow: 'Paquetes orientativos',
+      title: 'Inversión clara para resultados medibles',
+      description: 'Precios de referencia en USD para definir un alcance inicial y avanzar con transparencia.',
+      legalNote: 'Los precios son orientativos en USD. El costo final se define según el alcance acordado con el cliente.',
+      ctaLabel: 'Solicitar propuesta',
+    },
+    roadmap: {
+      eyebrow: 'Proceso transparente',
+      title: 'De la idea a la entrega sin zonas grises',
+      description: 'Cada fase está definida para que sepas qué estamos haciendo, por qué lo hacemos y qué sigue después.',
+      ctaTitle: '¿Listo para el paso 01?',
+      ctaButton: 'Solicitar asesoría gratuita',
+    },
+    autonomy: {
+      eyebrow: 'Diferencial ElevaForge',
+      title: 'Autonomía y formación desde el día uno',
+      description: 'Entregamos tecnología útil, documentada y operable por tu equipo.',
+    },
+    contact: {
+      title: 'Hablemos de tu proyecto',
+      description: 'Te ayudamos a aterrizar tu idea con alcance claro, tiempos realistas y una propuesta transparente.',
+      responseTime: 'Menos de 24 horas',
+    },
+  },
 }
 
 export const DEFAULT_SITE_CONTENT: SiteContent = {
@@ -372,6 +481,84 @@ function normalizeSupportItems(value: unknown, fallback: string[]): string[] {
   })
 
   return result.filter(Boolean)
+}
+
+function normalizeAutonomyCards(value: unknown, fallback: AutonomyCard[]): AutonomyCard[] {
+  if (!Array.isArray(value)) return fallback
+
+  const cards = value
+    .filter(isRecord)
+    .slice(0, 4)
+    .map((card, index) => {
+      const fallbackCard = fallback[index] ?? fallback[0]
+      return {
+        badge: String(card.badge ?? fallbackCard?.badge ?? '').trim(),
+        title: String(card.title ?? fallbackCard?.title ?? '').trim(),
+        description: String(card.description ?? fallbackCard?.description ?? '').trim(),
+      }
+    })
+
+  return cards.length ? cards : fallback
+}
+
+function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeContent {
+  const merged = isRecord(value) ? value : {}
+
+  const normalizeSection = (sectionValue: unknown, sectionFallback: HomeSectionCopy): HomeSectionCopy => {
+    const section = isRecord(sectionValue) ? sectionValue : {}
+    return {
+      eyebrow: String(section.eyebrow ?? sectionFallback.eyebrow).trim() || sectionFallback.eyebrow,
+      title: String(section.title ?? sectionFallback.title).trim() || sectionFallback.title,
+      description: String(section.description ?? sectionFallback.description).trim() || sectionFallback.description,
+    }
+  }
+
+  const projects = isRecord(merged.projects) ? merged.projects : {}
+  const hero = isRecord(merged.hero) ? merged.hero : {}
+  const pricing = isRecord(merged.pricing) ? merged.pricing : {}
+  const roadmap = isRecord(merged.roadmap) ? merged.roadmap : {}
+  const contact = isRecord(merged.contact) ? merged.contact : {}
+
+  return {
+    hero: {
+      badge: String(hero.badge ?? fallback.hero.badge).trim() || fallback.hero.badge,
+      title: String(hero.title ?? fallback.hero.title).trim() || fallback.hero.title,
+      highlight: String(hero.highlight ?? fallback.hero.highlight).trim() || fallback.hero.highlight,
+      primaryCta: String(hero.primaryCta ?? fallback.hero.primaryCta).trim() || fallback.hero.primaryCta,
+      secondaryCta:
+        String(hero.secondaryCta ?? fallback.hero.secondaryCta).trim() || fallback.hero.secondaryCta,
+    },
+    projects: {
+      ...normalizeSection(projects, fallback.projects),
+      deliveredLabel:
+        String(projects.deliveredLabel ?? fallback.projects.deliveredLabel).trim() ||
+        fallback.projects.deliveredLabel,
+      inProgressLabel:
+        String(projects.inProgressLabel ?? fallback.projects.inProgressLabel).trim() ||
+        fallback.projects.inProgressLabel,
+      notesTitle:
+        String(projects.notesTitle ?? fallback.projects.notesTitle).trim() ||
+        fallback.projects.notesTitle,
+    },
+    pricing: {
+      ...normalizeSection(pricing, fallback.pricing),
+      legalNote: String(pricing.legalNote ?? fallback.pricing.legalNote).trim() || fallback.pricing.legalNote,
+      ctaLabel: String(pricing.ctaLabel ?? fallback.pricing.ctaLabel).trim() || fallback.pricing.ctaLabel,
+    },
+    roadmap: {
+      ...normalizeSection(roadmap, fallback.roadmap),
+      ctaTitle: String(roadmap.ctaTitle ?? fallback.roadmap.ctaTitle).trim() || fallback.roadmap.ctaTitle,
+      ctaButton: String(roadmap.ctaButton ?? fallback.roadmap.ctaButton).trim() || fallback.roadmap.ctaButton,
+    },
+    autonomy: normalizeSection(merged.autonomy, fallback.autonomy),
+    contact: {
+      title: String(contact.title ?? fallback.contact.title).trim() || fallback.contact.title,
+      description: String(contact.description ?? fallback.contact.description).trim() || fallback.contact.description,
+      responseTime:
+        String(contact.responseTime ?? fallback.contact.responseTime).trim() ||
+        fallback.contact.responseTime,
+    },
+  }
 }
 
 function mergeAboutItems(primary: AboutItem[], secondary: AboutItem[]): AboutItem[] {
@@ -522,6 +709,8 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
       normalizeTextList(merged.projectsInProgress, fallback.projectsInProgress),
     ),
     supportItems: normalizeSupportItems(merged.supportItems, fallback.supportItems),
+    autonomyCards: normalizeAutonomyCards(merged.autonomyCards, fallback.autonomyCards),
+    homeContent: normalizeHomeContent(merged.homeContent, fallback.homeContent),
   }
 }
 

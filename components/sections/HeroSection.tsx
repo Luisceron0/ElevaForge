@@ -12,9 +12,24 @@ interface HeroSectionProps {
   deliveredProjects: number
   inProgressProjects: number
   subtitle?: string
+  badge?: string
+  title?: string
+  highlight?: string
+  primaryCtaLabel?: string
+  secondaryCtaLabel?: string
 }
 
-export default function HeroSection({ lighthouse, deliveredProjects, inProgressProjects, subtitle }: HeroSectionProps) {
+export default function HeroSection({
+  lighthouse,
+  deliveredProjects,
+  inProgressProjects,
+  subtitle,
+  badge,
+  title,
+  highlight,
+  primaryCtaLabel,
+  secondaryCtaLabel,
+}: HeroSectionProps) {
   const containerRef = useRef<HTMLElement>(null)
 
   useLayoutEffect(() => {
@@ -62,7 +77,7 @@ export default function HeroSection({ lighthouse, deliveredProjects, inProgressP
             data-hero-badge
             className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-forge-blue-mid/15 text-forge-blue-light border border-forge-blue-mid/25"
           >
-            Agencia de software · Colombia
+            {badge || 'Agencia de software · Colombia'}
           </span>
 
           <h1
@@ -70,8 +85,8 @@ export default function HeroSection({ lighthouse, deliveredProjects, inProgressP
             className="font-humanst leading-none text-white mb-6"
             style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)' }}
           >
-            Forjamos el motor digital
-            <span className="block text-forge-orange-main">de tu empresa</span>
+            {title || 'Forjamos el motor digital'}
+            <span className="block text-forge-orange-main">{highlight || 'de tu empresa'}</span>
           </h1>
 
           <p
@@ -82,12 +97,12 @@ export default function HeroSection({ lighthouse, deliveredProjects, inProgressP
           </p>
 
           <div data-hero-ctas className="flex flex-col sm:flex-row gap-4 mb-12">
-            <CTAButton href={WHATSAPP_URLS.hero} size="lg" label="Iniciar proyecto" />
+            <CTAButton href={WHATSAPP_URLS.hero} size="lg" label={primaryCtaLabel || 'Iniciar proyecto'} />
             <a
               href="#proyectos"
               className="inline-flex items-center justify-center text-center gap-2.5 font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
             >
-              Ver proyectos
+              {secondaryCtaLabel || 'Ver proyectos'}
             </a>
           </div>
 
