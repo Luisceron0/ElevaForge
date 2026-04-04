@@ -11,6 +11,13 @@ interface Props {
 
 type TabType = 'intro' | 'fases' | 'pilares' | 'lighthouse' | 'soporte'
 
+const SUPPORT_CARD_TITLES = [
+  'Propiedad del código',
+  'Capacitación real',
+  'WhatsApp sin intermediarios',
+  'Autonomía operativa',
+]
+
 export default function AboutAdminEditor({ about, saving, onSave }: Props) {
   const [draft, setDraft] = useState<AboutContent>(normalizeAboutDraft(about))
   const [activeTab, setActiveTab] = useState<TabType>('intro')
@@ -46,18 +53,6 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
     setDraft((prev) => ({
       ...prev,
       pillars: prev.pillars.filter((_, idx) => idx !== index),
-    }))
-  }
-
-  function addSupportItem() {
-    setDraft((prev) => ({ ...prev, supportItems: [...prev.supportItems, ''] }))
-  }
-
-  function removeSupportItem(index: number) {
-    if (!window.confirm('¿Eliminar este item de soporte?')) return
-    setDraft((prev) => ({
-      ...prev,
-      supportItems: prev.supportItems.filter((_, idx) => idx !== index),
     }))
   }
 
@@ -110,6 +105,18 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
         {/* Tab: Introducción */}
         {activeTab === 'intro' && (
           <div className="space-y-4 animate-in fade-in-50">
+            <div>
+              <label className="block text-sm font-semibold text-white mb-3">Subtítulo del Hero (Home)</label>
+              <p className="text-xs text-white/60 mb-3">Texto bajo el H1 principal en la portada.</p>
+              <textarea
+                value={draft.heroSubtitle}
+                onChange={(e) => setDraft((prev) => ({ ...prev, heroSubtitle: e.target.value }))}
+                placeholder="Describe la propuesta de valor principal de ElevaForge..."
+                className="w-full min-h-[120px] border border-white/20 rounded-lg px-4 py-3 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
+              />
+              <p className="text-xs text-white/40 mt-2">{draft.heroSubtitle.length} caracteres</p>
+            </div>
+
             <div>
               <label className="block text-sm font-semibold text-white mb-3">Introducción</label>
               <p className="text-xs text-white/60 mb-3">Texto principal que aparece en la sección "Quiénes somos"</p>
@@ -390,46 +397,27 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
         {activeTab === 'soporte' && (
           <div className="space-y-4 animate-in fade-in-50">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h4 className="font-semibold text-white">Items de soporte</h4>
-                  <p className="text-xs text-white/60 mt-1">Servicios adicionales o garantías</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={addSupportItem}
-                  className="text-xs border border-white/20 rounded-lg px-3 py-2 hover:bg-white/10 transition-colors font-medium text-white"
-                >
-                  + Agregar item
-                </button>
+              <div className="mb-4">
+                <h4 className="font-semibold text-white">Diferencial ElevaForge</h4>
+                <p className="text-xs text-white/60 mt-1">Edita la descripción de cada tarjeta para que coincida con su título.</p>
               </div>
 
               <div className="space-y-3">
-                {draft.supportItems.length === 0 ? (
-                  <p className="text-sm text-white/50 text-center py-8">No hay items de soporte. Haz clic en "+ Agregar item" para crear uno.</p>
-                ) : (
-                  draft.supportItems.map((item, index) => (
-                    <div key={index} className="flex gap-2 group">
-                      <input
-                        value={item}
-                        onChange={(e) => {
-                          const next = [...draft.supportItems]
-                          next[index] = e.target.value
-                          setDraft((prev) => ({ ...prev, supportItems: next }))
-                        }}
-                        placeholder="Ej: Soporte 24/7"
-                        className="flex-1 border border-white/20 rounded-lg px-4 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeSupportItem(index)}
-                        className="border border-red-500/50 text-red-300 rounded-lg px-3 py-2 text-xs hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  ))
-                )}
+                {SUPPORT_CARD_TITLES.map((title, index) => (
+                  <div key={title} className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-2">
+                    <label className="block text-xs font-semibold text-white/70 uppercase tracking-wider">{title}</label>
+                    <textarea
+                      value={draft.supportItems[index] ?? ''}
+                      onChange={(e) => {
+                        const next = [...draft.supportItems]
+                        next[index] = e.target.value
+                        setDraft((prev) => ({ ...prev, supportItems: next.slice(0, SUPPORT_CARD_TITLES.length) }))
+                      }}
+                      placeholder={`Descripción para "${title}"`}
+                      className="w-full min-h-[90px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -467,10 +455,13 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
 
   return {
     ...about,
+    heroSubtitle:
+      String((about as unknown as Record<string, unknown>)?.heroSubtitle ?? '').trim() ||
+      'Diseñamos, construimos y optimizamos plataformas web con métricas verificables, acompañamiento cercano y decisiones técnicas enfocadas en resultados de negocio.',
     pillars: mergedDifferentiationItems,
     differentiators: [],
     projectsInProgress,
-    supportItems: dedupeTextItems(about.supportItems),
+    supportItems: padSupportItems(about.supportItems),
     experience: {
       ...about.experience,
       items: dedupeTextItems(experienceItems),
@@ -500,6 +491,18 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
         String(about?.lighthouse?.auditedProject ?? '').trim() || 'AVC Inmobiliaria y Constructora',
     },
   }
+}
+
+function padSupportItems(items: string[]): string[] {
+  const normalized = [...items].map((item) => String(item ?? '').trim())
+  const defaults = [
+    'El código fuente, repositorio y accesos quedan a nombre del cliente al finalizar la entrega.',
+    'Entregamos manual PDF y video explicativo para que tu equipo pueda operar la plataforma sin depender de terceros.',
+    'Atención directa por WhatsApp con el equipo técnico para resolver dudas operativas y ajustes puntuales.',
+    'Definimos procesos para que puedas administrar contenidos y tareas comunes sin fricción técnica diaria.',
+  ]
+
+  return SUPPORT_CARD_TITLES.map((_, index) => normalized[index] || defaults[index])
 }
 
 function dedupeAboutItems(items: Entity[]): Entity[] {

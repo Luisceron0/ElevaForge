@@ -1,7 +1,6 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import HeroSection from '@/components/sections/HeroSection'
-import ForgeStandards from '@/components/sections/ForgeStandards'
 import ProjectsSection from '@/components/sections/ProjectsSection'
 import PricingSection from '@/components/sections/PricingSection'
 import RoadmapSection from '@/components/sections/RoadmapSection'
@@ -25,8 +24,8 @@ export default async function Home() {
           lighthouse={lighthouse}
           deliveredProjects={deliveredProjects}
           inProgressProjects={inProgressProjects}
+          subtitle={content.about.heroSubtitle}
         />
-        <ForgeStandards lighthouse={lighthouse} />
         <ProjectsSection />
         <PricingSection />
         <RoadmapSection phases={phases} />

@@ -11,9 +11,10 @@ interface HeroSectionProps {
   lighthouse: LighthouseScores
   deliveredProjects: number
   inProgressProjects: number
+  subtitle?: string
 }
 
-export default function HeroSection({ lighthouse, deliveredProjects, inProgressProjects }: HeroSectionProps) {
+export default function HeroSection({ lighthouse, deliveredProjects, inProgressProjects, subtitle }: HeroSectionProps) {
   const containerRef = useRef<HTMLElement>(null)
 
   useLayoutEffect(() => {
@@ -77,8 +78,7 @@ export default function HeroSection({ lighthouse, deliveredProjects, inProgressP
             data-hero-subtitle
             className="text-forge-text-body text-lg md:text-xl leading-relaxed max-w-xl mb-10"
           >
-            Trust &amp; Authority real: resultados medibles, costos claros y
-            acompañamiento técnico de punta a punta.
+            {subtitle || 'Diseñamos, construimos y optimizamos plataformas web con métricas verificables, acompañamiento cercano y decisiones técnicas enfocadas en resultados de negocio.'}
           </p>
 
           <div data-hero-ctas className="flex flex-col sm:flex-row gap-4 mb-12">

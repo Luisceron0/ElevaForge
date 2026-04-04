@@ -9,7 +9,7 @@ import { WHATSAPP_URLS } from '@/lib/whatsapp'
 const links = [
   { href: '/#precios', label: 'Paquetes' },
   { href: '/#proyectos', label: 'Proyectos' },
-  { href: '/#estandar', label: 'Garantía' },
+  { href: '/#autonomia', label: 'Garantía' },
   { href: '/#proceso', label: 'Proceso' },
   { href: '/#autonomia', label: 'Diferencial' },
   { href: '/nosotros', label: 'Quiénes somos' },

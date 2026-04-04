@@ -28,6 +28,7 @@ const lighthouseMetricSchema = z.object({
 })
 
 const aboutSchema = z.object({
+  heroSubtitle: text(320),
   intro: text(2200),
   phases: z.array(aboutItemSchema).max(12),
   pillars: z.array(aboutItemSchema).max(12),

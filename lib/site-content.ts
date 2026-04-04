@@ -63,6 +63,7 @@ export interface LighthouseScores {
 }
 
 export interface AboutContent {
+  heroSubtitle: string
   intro: string
   phases: AboutPhase[]
   pillars: AboutItem[]
@@ -156,6 +157,8 @@ export const DEFAULT_PROJECTS: ProjectItem[] = [
 ]
 
 export const DEFAULT_ABOUT: AboutContent = {
+  heroSubtitle:
+    'Diseñamos, construimos y optimizamos plataformas web con métricas verificables, acompañamiento cercano y decisiones técnicas enfocadas en resultados de negocio.',
   intro:
     'ElevaForge trabaja bajo un proceso estructurado con visibilidad y control en cada etapa. Cada fase tiene entregables definidos, tiempos acordados y validación del cliente antes de avanzar.',
   phases: [
@@ -299,10 +302,10 @@ export const DEFAULT_ABOUT: AboutContent = {
     'Los aprendizajes entre proyectos aceleran la mejora técnica.',
   ],
   supportItems: [
-    'Corrección de errores funcionales durante los primeros 6 meses',
-    'Actualizaciones de seguridad y parches ante vulnerabilidades',
-    'Ajustes menores de contenido o configuración sin desarrollo nuevo',
-    'Soporte por WhatsApp con tiempo de respuesta máximo de 24 horas hábiles',
+    'El código fuente, repositorio y accesos quedan a nombre del cliente al finalizar la entrega.',
+    'Entregamos manual PDF y video explicativo para que tu equipo pueda operar la plataforma sin depender de terceros.',
+    'Atención directa por WhatsApp con el equipo técnico para resolver dudas operativas y ajustes puntuales.',
+    'Definimos procesos para que puedas administrar contenidos y tareas comunes sin fricción técnica diaria.',
   ],
 }
 
@@ -358,6 +361,17 @@ function dedupeTextList(items: string[]): string[] {
   }
 
   return result
+}
+
+function normalizeSupportItems(value: unknown, fallback: string[]): string[] {
+  const normalized = normalizeTextList(value, fallback)
+  const maxCards = 4
+  const result = Array.from({ length: maxCards }, (_, index) => {
+    const current = String(normalized[index] ?? '').trim()
+    return current || fallback[index] || ''
+  })
+
+  return result.filter(Boolean)
 }
 
 function mergeAboutItems(primary: AboutItem[], secondary: AboutItem[]): AboutItem[] {
@@ -471,6 +485,8 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
   return {
     ...fallback,
     ...merged,
+    heroSubtitle:
+      String(merged.heroSubtitle ?? '').trim() || fallback.heroSubtitle,
     team: normalizedTeam,
     pillars: mergedDifferentiationItems,
     differentiators: [],
@@ -505,7 +521,7 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
     projectsInProgress: dedupeTextList(
       normalizeTextList(merged.projectsInProgress, fallback.projectsInProgress),
     ),
-    supportItems: dedupeTextList(normalizeTextList(merged.supportItems, fallback.supportItems)),
+    supportItems: normalizeSupportItems(merged.supportItems, fallback.supportItems),
   }
 }
 
