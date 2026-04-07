@@ -112,11 +112,13 @@ export default function Navbar() {
         </ul>
 
         {/* CTA desktop */}
-        <CTAButton
-          href={buildWhatsAppURL()}
-          label="Iniciar proyecto"
-          className="hidden md:inline-flex text-sm px-5 py-2.5"
-        />
+        <div className="hidden md:block">
+          <CTAButton
+            href={buildWhatsAppURL()}
+            label="Iniciar proyecto"
+            className="text-sm px-5 py-2.5"
+          />
+        </div>
 
         {/* Botón hamburger móvil */}
         <button
