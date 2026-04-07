@@ -1,0 +1,22 @@
+{
+  "type": "frontend",
+  "localEndpoint": "http://127.0.0.1:3000/",
+  "serverPort": 41689,
+  "loginUser": "testsprite_user",
+  "loginPassword": "Test@1234!",
+  "backendAuthType": "",
+  "backendApiKey": "",
+  "backendApiValue": "",
+  "status": "commited",
+  "executionArgs": {
+    "projectName": "ElevaForge",
+    "projectPath": "/workspaces/ElevaForge",
+    "testIds": [],
+    "additionalInstruction": "Ejecutar pruebas E2E completas: formularios, validación, rate-limit, auth, y endpoints listados.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "",
+      "NODE_ENV": "development"
+    }
+  }
+}

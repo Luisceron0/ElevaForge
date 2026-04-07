@@ -1,0 +1,21 @@
+
+⢰⡾⢶⣤⡀⠀⠀⣀⣴⠾⢶⡂⠀⠀⢠⣤⣤⣤⣤⣤⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⢀⣠⣤⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣤⠀⢀⡀⠀⠀⠀⠀⠀⠀
+⢽⡃⠀⢈⣛⡷⣾⣙⠁⠀⢼⡏⠀⠀⠈⠈⢸⡿⠁⢡⣵⢴⣤⡄⢀⡴⠴⣤⡄⣦⣿⣷⡄⢾⣏⣀⡈⠛⠣⣦⣄⣴⣴⣤⡀⣴⣄⣤⡦⣰⡵⢰⣽⣿⡄⢀⣴⡴⣤⡄
+⢹⣇⣶⠟⠋⠁⠈⠛⠷⢆⣘⠃⠀⠀⠀⠀⢽⡇⢠⣿⢦⢦⠾⡗⠹⢿⣶⣬⡁⢨⣿⠀⠀⡈⠙⠛⠻⣿⡄⣺⡏⠀⠀⢽⡇⢸⣿⠀⠀⣻⡇⠀⣿⠅⢠⣿⢧⠦⡾⠿
+⠀⠉⠲⢶⣤⣀⣄⣴⠾⠛⠁⠀⠀⠀⠀⠠⢿⠃⠈⠿⡦⡦⠶⠂⠷⡦⡦⠿⠁⠼⢷⢴⠘⠿⡶⡴⡴⠟⠀⣾⡿⢦⠾⠟⠁⢸⠟⠀⠀⡿⠃⠐⡿⢵⠈⠿⡦⡦⠶⠃
+⠀⠀⠀⠀⠈⠉⠉⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢐⣿⠀⠀⠀⠀⠀⠀⠀⠀
+
+Starting test execution...
+[31mTest execution failed:[0m Error: Failed to generate and execute tests: TypeError: testPlanObj.map is not a function
+    at _generateCodeAndExecute (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:144568:47)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:144085:24
+    at async Command.<anonymous> (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:149395:9)
+    at async Command.parseAsync (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:147655:6)
+    at async main (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:149615:9)
+    at _generateCodeAndExecute (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:144842:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:144085:24
+    at async Command.<anonymous> (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:149395:9)
+    at async Command.parseAsync (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:147655:6)
+    at async main (file:///workspaces/ElevaForge/node_modules/@testsprite/testsprite-mcp/dist/index.js:149615:9)

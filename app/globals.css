@@ -63,10 +63,6 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-forge-blue-mid/20;
-  }
-
   button,
   [type='button'],
   [type='submit'],

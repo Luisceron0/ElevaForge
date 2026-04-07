@@ -37,6 +37,8 @@ export interface GuardResult {
 
 const JSON_TYPE = 'application/json'
 
+const NO_STORE_HEADERS = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+
 function shouldValidateJsonContentType(request: NextRequest): boolean {
   const method = request.method.toUpperCase()
   if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
@@ -86,7 +88,7 @@ export async function runApiGuard(
       blocked: true,
       response: NextResponse.json(
         { error: 'Content-Type debe ser application/json' },
-        { status: 415 },
+        { status: 415, headers: NO_STORE_HEADERS },
       ),
       ip,
     }
@@ -101,7 +103,7 @@ export async function runApiGuard(
       blocked: true,
       response: NextResponse.json(
         { error: 'Payload demasiado grande' },
-        { status: 413 },
+        { status: 413, headers: NO_STORE_HEADERS },
       ),
       ip,
     }
@@ -118,7 +120,7 @@ export async function runApiGuard(
           blocked: true,
           response: NextResponse.json(
             { error: 'Payload demasiado grande' },
-            { status: 413 },
+            { status: 413, headers: NO_STORE_HEADERS },
           ),
           ip,
         }
@@ -129,7 +131,7 @@ export async function runApiGuard(
         blocked: true,
         response: NextResponse.json(
           { error: 'Cuerpo de solicitud inválido' },
-          { status: 400 },
+          { status: 400, headers: NO_STORE_HEADERS },
         ),
         ip,
       }
@@ -144,7 +146,7 @@ export async function runApiGuard(
       blocked: true,
       response: NextResponse.json(
         { error: 'Solicitud no autorizada' },
-        { status: 403 },
+        { status: 403, headers: NO_STORE_HEADERS },
       ),
       ip,
     }
@@ -164,6 +166,7 @@ export async function runApiGuard(
         {
           status: 429,
           headers: {
+            ...NO_STORE_HEADERS,
             'Retry-After': String(Math.ceil(rl.resetMs / 1000)),
           },
         },

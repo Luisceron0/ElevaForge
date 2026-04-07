@@ -137,13 +137,14 @@ function getClientIp(req: NextRequest): string {
 }
 
 async function handleWorkerRequest(req: NextRequest) {
+  const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
   // A07: Timing-safe auth check via shared utility
   if (!isAuthorizedWorker(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: NO_STORE })
   }
   try {
     const result = await processBatch()
-    return NextResponse.json({ ok: true, ...result })
+    return NextResponse.json({ ok: true, ...result }, { headers: NO_STORE })
   } catch (err: unknown) {
     // A10: Never expose internal errors to caller — log and return generic message
     logSecurityEvent({
@@ -154,7 +155,7 @@ async function handleWorkerRequest(req: NextRequest) {
       details: err instanceof Error ? err.message : 'unknown',
     })
     console.error('Worker error:', err)
-    return NextResponse.json({ ok: false, error: 'Internal processing error' }, { status: 500 })
+    return NextResponse.json({ ok: false, error: 'Internal processing error' }, { status: 500, headers: NO_STORE })
   }
 }
 

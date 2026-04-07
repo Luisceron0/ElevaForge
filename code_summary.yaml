@@ -1,0 +1,27 @@
+project_name: ElevaForge
+local_endpoint: http://127.0.0.1:3000/
+server_port: 3000
+type: frontend
+login:
+  path: /admin/login
+  method: POST
+  username_field: username
+  password_field: password
+  test_user: testsprite_user
+  test_password: Test@1234!
+api_endpoints:
+  - path: /api/contact
+    method: POST
+    description: Public contact form (validates input)
+  - path: /api/leads
+    method: POST
+    description: Deprecated leads endpoint (redirects or inserts)
+  - path: /api/admin/login
+    method: POST
+    description: Admin login endpoint
+  - path: /api/admin/users
+    method: POST
+    description: Create admin user (requires admin session)
+  - path: /api/workers/process-leads
+    method: POST
+    description: Worker endpoint (requires CRON_SECRET Bearer token)

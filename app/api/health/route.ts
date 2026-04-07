@@ -15,8 +15,5 @@ export async function DELETE() { return methodNotAllowed() }
 export async function PATCH() { return methodNotAllowed() }
 
 function methodNotAllowed() {
-  return new NextResponse(null, {
-    status: 405,
-    headers: { Allow: 'GET' },
-  })
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'GET', 'Cache-Control': 'no-store, no-cache, must-revalidate' } })
 }
