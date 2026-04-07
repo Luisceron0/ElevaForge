@@ -48,58 +48,74 @@ export default function Navbar() {
     : 'bg-forge-bg-dark/95 lg:bg-transparent'
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${headerClass}`}>
-      <nav className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 h-full flex items-center justify-between" aria-label="Navegación principal">
-        <Link href="/" className="flex items-center" aria-label="ElevaForge inicio">
-          <Image
-            src="/LogoEleva.svg"
-            alt="ElevaForge"
-            width={168}
-            height={48}
-            className="h-10 w-auto"
-            priority
-          />
-        </Link>
+    <>
+      <header className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${headerClass}`}>
+        <nav className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 h-full flex items-center justify-between" aria-label="Navegación principal">
+          <Link href="/" className="flex items-center" aria-label="ElevaForge inicio">
+            <Image
+              src="/LogoEleva.svg"
+              alt="ElevaForge"
+              width={168}
+              height={48}
+              className="h-10 w-auto"
+              priority
+            />
+          </Link>
 
-        <ul className="hidden lg:flex items-center gap-6" role="list">
-          {links.map((link) => (
-            <li key={link.label}>
-              <Link
-                href={link.href}
-                className="text-base font-medium text-white/65 hover:text-white transition-colors duration-200"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+          <ul className="hidden lg:flex items-center gap-6" role="list">
+            {links.map((link) => (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  className="text-base font-medium text-white/65 hover:text-white transition-colors duration-200"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
 
-        <div className="hidden lg:block">
-          <CTAButton href={WHATSAPP_URLS.hero} size="sm" label="Iniciar proyecto" />
-        </div>
-
-        <button
-          type="button"
-          className="lg:hidden text-white p-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main"
-          aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
-          aria-expanded={isOpen}
-          onClick={() => setIsOpen((prev) => !prev)}
-        >
-          <span className="sr-only">Menu</span>
-          <div className="w-6 h-6 relative">
-            <span className={`absolute left-0 top-1 h-0.5 w-6 bg-white transition-all ${isOpen ? 'rotate-45 top-3' : ''}`} />
-            <span className={`absolute left-0 top-3 h-0.5 w-6 bg-white transition-all ${isOpen ? 'opacity-0' : ''}`} />
-            <span className={`absolute left-0 top-5 h-0.5 w-6 bg-white transition-all ${isOpen ? '-rotate-45 top-3' : ''}`} />
+          <div className="hidden lg:block">
+            <CTAButton href={WHATSAPP_URLS.hero} size="sm" label="Iniciar proyecto" />
           </div>
-        </button>
-      </nav>
 
+          <button
+            type="button"
+            className="lg:hidden text-white p-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main"
+            aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen((prev) => !prev)}
+          >
+            <span className="sr-only">Menu</span>
+            <div className="w-6 h-6 relative">
+              <span className={`absolute left-0 top-1 h-0.5 w-6 bg-white transition-all ${isOpen ? 'rotate-45 top-3' : ''}`} />
+              <span className={`absolute left-0 top-3 h-0.5 w-6 bg-white transition-all ${isOpen ? 'opacity-0' : ''}`} />
+              <span className={`absolute left-0 top-5 h-0.5 w-6 bg-white transition-all ${isOpen ? '-rotate-45 top-3' : ''}`} />
+            </div>
+          </button>
+        </nav>
+      </header>
+
+      {/* Menú móvil fuera del header para evitar el bug de backdrop-filter en iOS Safari
+          que convierte al header en containing block, aplastando el fixed inset-0 a 64px */}
       <div
-        className={`lg:hidden fixed inset-0 z-[100] bg-forge-bg-dark flex flex-col justify-center items-center gap-8 transform transition-transform duration-300 ${
+        className={`lg:hidden fixed inset-0 z-[100] bg-forge-bg-dark flex flex-col justify-center items-center gap-8 transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
+        aria-hidden={!isOpen}
       >
-        {links.map((link) =>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          aria-label="Cerrar menú"
+          className="absolute top-4 right-4 text-white p-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {links.map((link) => (
           <Link
             key={link.label}
             href={link.href}
@@ -108,12 +124,12 @@ export default function Navbar() {
           >
             {link.label}
           </Link>
-        )}
+        ))}
 
         <div className="w-full px-8 max-w-sm">
           <CTAButton href={WHATSAPP_URLS.hero} size="full" label="Iniciar proyecto" />
         </div>
       </div>
-    </header>
+    </>
   )
 }
