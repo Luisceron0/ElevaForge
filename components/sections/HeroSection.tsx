@@ -1,156 +1,152 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
-import { buildWhatsAppURL } from '@/lib/whatsapp'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+import { gsap } from '@/lib/gsap'
+import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import type { LighthouseScores } from '@/lib/site-content'
 
-export default function HeroSection() {
-  const parallaxRef = useRef<HTMLDivElement>(null)
-  const sectionRef = useRef<HTMLElement>(null)
-  const [reducedMotion, setReducedMotion] = useState(false)
+interface HeroSectionProps {
+  lighthouse: LighthouseScores
+  deliveredProjects: number
+  inProgressProjects: number
+  subtitle?: string
+  badge?: string
+  title?: string
+  highlight?: string
+  primaryCtaLabel?: string
+  secondaryCtaLabel?: string
+}
 
-  useEffect(() => {
-    const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mql.matches)
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
-    mql.addEventListener('change', handler)
-    return () => mql.removeEventListener('change', handler)
-  }, [])
+export default function HeroSection({
+  lighthouse,
+  deliveredProjects,
+  inProgressProjects,
+  subtitle,
+  badge,
+  title,
+  highlight,
+  primaryCtaLabel,
+  secondaryCtaLabel,
+}: HeroSectionProps) {
+  const containerRef = useRef<HTMLElement>(null)
 
-  useEffect(() => {
-    if (reducedMotion) return
-    // Only enable parallax on larger screens
-    if (typeof window === 'undefined' || window.innerWidth < 768) return
-
-    let ticking = false
-    let isVisible = true
-
-    // Use IntersectionObserver to pause parallax when section is off-screen
-    const observer = new IntersectionObserver(
-      ([entry]) => { isVisible = entry.isIntersecting },
-      { threshold: 0 }
-    )
-    if (sectionRef.current) observer.observe(sectionRef.current)
-
-    const handleScroll = () => {
-      if (ticking || !isVisible) return
-      ticking = true
-      requestAnimationFrame(() => {
-        if (!parallaxRef.current) { ticking = false; return }
-        const y = window.scrollY * 0.12
-        parallaxRef.current.style.transform = `translate3d(0, ${y}px, 0)`
-        ticking = false
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: { ease: 'power2.out', duration: 0.6 },
       })
-    }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      observer.disconnect()
-    }
-  }, [reducedMotion])
+      tl.from('[data-hero-badge]', { opacity: 0, y: -16 })
+        .from('[data-hero-title]', { opacity: 0, y: 24 }, '-=0.3')
+        .from('[data-hero-subtitle]', { opacity: 0, y: 16 }, '-=0.4')
+        .from('[data-hero-ctas]', { opacity: 0, y: 12 }, '-=0.4')
+        .from('[data-hero-card]', { opacity: 0, x: 20 }, '-=0.5')
+    }, containerRef)
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) element.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  // Simple A/B experiment: read ?ab=variantB to show alternate copy
-  const [abVariant, setAbVariant] = useState<'A' | 'B'>('A')
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search)
-      if (params.get('ab') === 'variantB') setAbVariant('B')
-    } catch {
-      // ignore server-side
-    }
+    return () => ctx.revert()
   }, [])
 
-  const headline = abVariant === 'B'
-    ? 'Multiplica tus ventas con productos digitales' 
-    : 'Construimos productos digitales que hacen crecer tu negocio'
-
-  const subtitle = abVariant === 'B'
-    ? 'Soluciones prácticas: entregas rápidas, precios claros y soporte humano.'
-    : 'Sitios y herramientas que venden: entregas claras, costos transparentes y soporte real. Hacemos tecnologías simples para que tú vendas más.'
-
-  const ctaLabel = abVariant === 'B' ? 'Quiero una propuesta' : 'Iniciar proyecto'
+  const scores = [
+    { label: 'Performance', metric: lighthouse.performance },
+    { label: 'Accessibility', metric: lighthouse.accessibility },
+    { label: 'Best Practices', metric: lighthouse.bestPractices },
+    { label: 'SEO', metric: lighthouse.seo },
+  ]
 
   return (
     <section
-      ref={sectionRef}
+      ref={containerRef}
       id="inicio"
-      className="relative py-20 min-h-[60vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-forge-bg-dark to-[#0f0f22] text-white"
+      aria-label="Inicio"
+      className="relative min-h-screen flex items-center pt-20 bg-forge-bg-dark overflow-hidden"
     >
-      {/* Background Pattern - cruces SVG como en AVC */}
-      <div className="absolute inset-0 opacity-10" aria-hidden="true">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23306A9C' fillOpacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
-      </div>
-
-      {/* Degradado inferior para transición suave */}
       <div
         aria-hidden="true"
-        className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-forge-bg-dark to-transparent"
+        className="absolute top-0 right-0 w-[60%] h-[70%] pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 50% at 85% 20%, rgba(49,133,197,0.08) 0%, transparent 70%)',
+        }}
       />
 
-      {/* Contenido con parallax */}
-      <div
-        ref={parallaxRef}
-        className={`relative z-10 container mx-auto px-4 text-center ${reducedMotion ? '' : 'will-change-transform'}`}
-      >
-        {/* Headline */}
-        <h1 className="font-humanst text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-balance leading-tight">{headline}</h1>
-
-        {/* Subtítulo más claro y no técnico */}
-        <p className="text-base md:text-lg text-white/90 max-w-2xl mx-auto mb-8 leading-relaxed">{subtitle}</p>
-
-        {/* CTAs - patrón AVC: flex-col sm:flex-row */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <CTAButton
-            href={buildWhatsAppURL()}
-            label={ctaLabel}
-            className="w-full sm:w-auto"
-          />
-          <button
-            type="button"
-            onClick={() => scrollToSection('precios')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 items-center py-16 md:py-24 relative z-10">
+        <div>
+          <span
+            data-hero-badge
+            className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-forge-blue-mid/15 text-forge-blue-light border border-forge-blue-mid/25"
           >
-            Paquetes
-          </button>
+            {badge || 'Agencia de software · Colombia'}
+          </span>
 
-          <button
-            type="button"
-            onClick={() => scrollToSection('estandar')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+          <h1
+            data-hero-title
+            className="font-humanst leading-none text-white mb-6"
+            style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)' }}
           >
-            Nuestros Estándares
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollToSection('proceso')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
-          >
-            Ver Proceso
-          </button>
+            {title || 'Forjamos el motor digital'}
+            <span className="block text-forge-orange-main">{highlight || 'de tu empresa'}</span>
+          </h1>
 
-          <button
-            type="button"
-            onClick={() => scrollToSection('autonomia')}
-            className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 hover:bg-forge-orange-main hover:border-forge-orange-main text-white font-bold px-6 py-3 text-base rounded-lg shadow-lg transition-colors duration-200 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+          <p
+            data-hero-subtitle
+            className="text-forge-text-body text-lg md:text-xl leading-relaxed max-w-xl mb-10"
           >
-            Diferencial
-          </button>
+            {subtitle || 'Diseñamos, construimos y optimizamos plataformas web con métricas verificables, acompañamiento cercano y decisiones técnicas enfocadas en resultados de negocio.'}
+          </p>
+
+          <div data-hero-ctas className="flex flex-col sm:flex-row gap-4 mb-12">
+            <CTAButton href={WHATSAPP_URLS.hero} size="lg" label={primaryCtaLabel || 'Iniciar proyecto'} />
+            <a
+              href="#proyectos"
+              className="inline-flex items-center justify-center text-center gap-2.5 font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
+            >
+              {secondaryCtaLabel || 'Ver proyectos'}
+            </a>
+          </div>
+
+          <div className="flex flex-wrap gap-x-4 md:gap-x-8 gap-y-2 text-base text-forge-text-muted">
+            <span>4 ingenieros graduados</span>
+            <span className="text-forge-blue-mid/50">·</span>
+            <span>{deliveredProjects} proyectos entregados</span>
+            <span className="text-forge-blue-mid/50">·</span>
+            <span>{inProgressProjects} en curso</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center lg:justify-end" data-hero-card>
+          <div className="bg-forge-card-bg rounded-2xl p-6 md:p-8 border border-forge-blue-mid/20 shadow-forge-hover w-full max-w-md">
+            <p className="text-xs font-semibold tracking-widest uppercase text-forge-text-muted mb-6 text-center">
+              Trust &amp; Authority validado con Lighthouse
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {scores.map((item) => (
+                <div key={item.label} className="rounded-xl border border-forge-blue-mid/20 bg-forge-bg-dark/50 p-4 hover:border-forge-orange-main/30 transition-colors">
+                  <AnimatedNumber
+                    target={item.metric.score}
+                    className="font-humanst text-forge-orange-main leading-none text-[clamp(1.8rem,5vw,2.4rem)] block"
+                  />
+                  <p className="text-xs text-forge-text-muted mt-2 font-semibold">{item.label}</p>
+                  <p className="text-xs text-forge-text-muted/70 mt-2 leading-snug line-clamp-2">
+                    {item.metric.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="relative pt-6 border-t border-forge-blue-mid/15">
+              <div className="flex items-start justify-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0 mt-1" />
+                <p className="text-xs text-forge-text-muted text-center">
+                  Verificado en producción · {lighthouse.auditedProject}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      {/* Scroll indicator removed to reduce visual clutter on mobile */}
     </section>
   )
 }

@@ -18,6 +18,10 @@ const config: Config = {
           'orange-main': '#F97300',
           'orange-gold': '#FBA81E',
           'card-bg': '#1F1F3A',
+          surface: '#242442',
+          border: 'rgba(49,133,197,0.15)',
+          'text-muted': 'rgba(255,255,255,0.55)',
+          'text-body': 'rgba(255,255,255,0.82)',
         },
       },
       fontFamily: {
@@ -25,6 +29,10 @@ const config: Config = {
         inter: ['var(--font-inter)', 'sans-serif'],
       },
       boxShadow: {
+        'forge-card': '0 1px 3px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.4)',
+        'forge-cta': '0 0 0 1px rgba(249,115,0,0.3), 0 8px 24px rgba(249,115,0,0.25)',
+        'forge-hover': '0 0 0 1px rgba(49,133,197,0.4), 0 12px 40px rgba(49,133,197,0.15)',
+        'forge-input': '0 0 0 2px rgba(249,115,0,0.5)',
         cta: '0 0 24px rgba(249,115,0,0.4)',
         card: '0 4px 32px rgba(25,25,46,0.6)',
         'glow-blue': '0 0 20px rgba(49,133,197,0.3)',

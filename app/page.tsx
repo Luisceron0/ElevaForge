@@ -1,65 +1,77 @@
-import nextDynamic from 'next/dynamic'
-import HeroSection from '@/components/sections/HeroSection'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import WhoWeAreSection from '@/components/sections/WhoWeAreSection'
+import HeroSection from '@/components/sections/HeroSection'
+import ProjectsSection from '@/components/sections/ProjectsSection'
+import PricingSection from '@/components/sections/PricingSection'
+import RoadmapSection from '@/components/sections/RoadmapSection'
+import AutonomySection from '@/components/sections/AutonomySection'
+import ContactSection from '@/components/sections/ContactSection'
 import { getResolvedSiteContent } from '@/lib/site-content'
 
-// Lazy load below-the-fold sections for better performance
-const ForgeStandards = nextDynamic(
-  () => import('@/components/sections/ForgeStandards'),
-  { loading: () => <SectionSkeleton /> }
-)
-const AutonomySection = nextDynamic(
-  () => import('@/components/sections/AutonomySection'),
-  { loading: () => <SectionSkeleton /> }
-)
-const RoadmapSection = nextDynamic(
-  () => import('@/components/sections/RoadmapSection'),
-  { loading: () => <SectionSkeleton /> }
-)
-const PricingSection = nextDynamic(
-  () => import('@/components/sections/PricingSection'),
-  { loading: () => <SectionSkeleton /> }
-)
+export const dynamic = 'force-dynamic'
 
-function SectionSkeleton() {
-  return (
-    <div
-      className="py-20 animate-pulse bg-forge-bg-light"
-      aria-hidden="true"
-    >
-      <div className="container mx-auto px-4">
-        <div className="h-8 bg-forge-blue-mid/10 rounded w-1/3 mx-auto mb-4" />
-        <div className="h-4 bg-forge-blue-mid/10 rounded w-1/2 mx-auto" />
-      </div>
-    </div>
-  )
-}
-
-export default function Home() {
-  const contentPromise = getResolvedSiteContent()
-
-  return <HomeContent contentPromise={contentPromise} />
-}
-
-async function HomeContent({
-  contentPromise,
-}: {
-  contentPromise: ReturnType<typeof getResolvedSiteContent>
-}) {
-  const content = await contentPromise
+export default async function Home() {
+  const content = await getResolvedSiteContent()
+  const lighthouse = content.about.lighthouse
+  const phases = content.about.phases
+  const deliveredProjects = content.projects.filter((project) => project.status === 'entregado').length
+  const inProgressProjects = content.projects.filter((project) => project.status === 'en-curso').length
+  const projectsInProgress = content.about.projectsInProgress
+  const autonomyCards = content.about.autonomyCards
+  const homeContent = content.about.homeContent
 
   return (
     <>
       <Navbar />
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
-        <HeroSection />
-        <PricingSection plans={content.packages} />
-        <WhoWeAreSection about={content.about} projects={content.projects} />
-        <ForgeStandards />
-        <RoadmapSection />
-        <AutonomySection />
+        <HeroSection
+          lighthouse={lighthouse}
+          deliveredProjects={deliveredProjects}
+          inProgressProjects={inProgressProjects}
+          subtitle={content.about.heroSubtitle}
+          badge={homeContent.hero.badge}
+          title={homeContent.hero.title}
+          highlight={homeContent.hero.highlight}
+          primaryCtaLabel={homeContent.hero.primaryCta}
+          secondaryCtaLabel={homeContent.hero.secondaryCta}
+        />
+        <ProjectsSection
+          projects={content.projects}
+          inProgressNotes={projectsInProgress}
+          eyebrow={homeContent.projects.eyebrow}
+          title={homeContent.projects.title}
+          description={homeContent.projects.description}
+          deliveredLabel={homeContent.projects.deliveredLabel}
+          inProgressLabel={homeContent.projects.inProgressLabel}
+          notesTitle={homeContent.projects.notesTitle}
+        />
+        <PricingSection
+          plans={content.packages}
+          eyebrow={homeContent.pricing.eyebrow}
+          title={homeContent.pricing.title}
+          description={homeContent.pricing.description}
+          legalNote={homeContent.pricing.legalNote}
+          ctaLabel={homeContent.pricing.ctaLabel}
+        />
+        <RoadmapSection
+          phases={phases}
+          eyebrow={homeContent.roadmap.eyebrow}
+          title={homeContent.roadmap.title}
+          description={homeContent.roadmap.description}
+          ctaTitle={homeContent.roadmap.ctaTitle}
+          ctaLabel={homeContent.roadmap.ctaButton}
+        />
+        <AutonomySection
+          eyebrow={homeContent.autonomy.eyebrow}
+          title={homeContent.autonomy.title}
+          description={homeContent.autonomy.description}
+          cards={autonomyCards}
+        />
+        <ContactSection
+          title={homeContent.contact.title}
+          description={homeContent.contact.description}
+          responseTime={homeContent.contact.responseTime}
+        />
       </main>
       <Footer />
     </>

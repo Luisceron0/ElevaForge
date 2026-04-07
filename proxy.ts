@@ -1,5 +1,5 @@
 /**
- * Next.js Edge Middleware — protects /api/admin/* endpoints.
+ * Next.js Edge Proxy — protects /api/admin/* endpoints.
  *
  * OWASP A01 — Broken Access Control (origin/CSRF validation)
  * OWASP A05 — Security Misconfiguration (Content-Type enforcement)
@@ -108,7 +108,7 @@ function buildCsp(nonce: string): string {
   ].join('; ')
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
   const method = req.method.toUpperCase()
 
@@ -120,7 +120,7 @@ export function middleware(req: NextRequest) {
   const requestHeaders = new Headers(req.headers)
   requestHeaders.set('x-nonce', nonce)
 
-  // ── CSRF / origin + Content-Type guard for admin API routes ────────
+  // CSRF / origin + Content-Type guard for admin API routes
   if (path.startsWith('/api/admin/')) {
     if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
       if (!allowOrigin(req)) {
@@ -162,7 +162,7 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // ── Set CSP and forward modified request ───────────────────────────
+  // Set CSP and forward modified request
   const response = NextResponse.next({ request: { headers: requestHeaders } })
   response.headers.set('content-security-policy', csp)
   return response
@@ -170,11 +170,6 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all routes except Next.js internals and static assets.
-     * The generated nonce is forwarded to server components via the
-     * x-nonce request header and set on the CSP response header.
-     */
     '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|eot)$).*)',
   ],
 }

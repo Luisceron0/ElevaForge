@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: '%s | ElevaForge',
   },
   description:
-    'Agencia de desarrollo de software con transparencia total. Sitios web, apps y herramientas digitales con Lighthouse 100/100.',
+    'Agencia de desarrollo de software con transparencia total. Sitios web, apps y herramientas digitales con métricas Lighthouse verificables.',
   keywords: [
     'desarrollo web',
     'agencia digital',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'ElevaForge — Forjamos tu crecimiento digital',
     description:
-      'No solo creamos herramientas; forjamos el motor digital de tu empresa con transparencia total y estándares Lighthouse 100/100.',
+      'No solo creamos herramientas; forjamos el motor digital de tu empresa con transparencia total y resultados Lighthouse verificables.',
     type: 'website',
     locale: 'es_MX',
     url: SITE_URL,
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'ElevaForge — Forjamos tu crecimiento digital',
     description:
-      'Agencia de desarrollo de software con transparencia total y estándares Lighthouse 100/100.',
+      'Agencia de desarrollo de software con transparencia total y resultados Lighthouse verificables.',
     images: ['/ElevaIcon.png'],
   },
   robots: {
@@ -136,7 +136,7 @@ export default async function RootLayout({
           itemOffered: {
             '@type': 'Service',
             name: 'Desarrollo Web Profesional',
-            description: 'Sitios web con Lighthouse 100/100 y SEO optimizado',
+            description: 'Sitios web con Lighthouse verificado y SEO optimizado',
           },
         },
         {

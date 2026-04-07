@@ -1,200 +1,119 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
-import { buildWhatsAppURL } from '@/lib/whatsapp'
+import { WHATSAPP_URLS } from '@/lib/whatsapp'
 
-const navLinks = [
-  { href: '#precios', label: 'Paquetes' },
-  { href: '#quienes', label: 'Quiénes somos' },
-  { href: '#proyectos', label: 'Proyectos' },
-  { href: '#estandar', label: 'Garantía' },
-  { href: '#proceso', label: 'Proceso' },
-  { href: '#autonomia', label: 'Diferencial' },
+const links = [
+  { href: '/#precios', label: 'Paquetes' },
+  { href: '/#proyectos', label: 'Proyectos' },
+  { href: '/#autonomia', label: 'Garantía' },
+  { href: '/#proceso', label: 'Proceso' },
+  { href: '/#autonomia', label: 'Diferencial' },
+  { href: '/nosotros', label: 'Quiénes somos' },
 ]
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const hamburgerRef = useRef<HTMLButtonElement>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
 
-  // Consolidated keyboard handler: Escape to close + focus trap when open
   useEffect(() => {
-    if (!isOpen) return
+    const onScroll = () => setIsScrolled(window.scrollY > 10)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
-    document.body.style.overflow = 'hidden'
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsOpen(false)
-        hamburgerRef.current?.focus()
-        return
-      }
-
-      // Focus trap
-      if (e.key === 'Tab' && menuRef.current) {
-        const focusables = menuRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
-        )
-        if (focusables.length === 0) return
-        const first = focusables[0]
-        const last = focusables[focusables.length - 1]
-
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault()
-            last.focus()
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault()
-            first.focus()
-          }
-        }
-      }
-    }
-
-    // Auto-focus first link when menu opens
-    if (menuRef.current) {
-      const firstFocusable = menuRef.current.querySelector<HTMLElement>(
-        'a[href], button'
-      )
-      firstFocusable?.focus()
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
-      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [isOpen])
 
-  const scrollToSection = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    href: string
-  ) => {
-    e.preventDefault()
-    setIsOpen(false)
-    const element = document.querySelector(href)
-    if (element) element.scrollIntoView({ behavior: 'smooth' })
-  }
+  useEffect(() => {
+    const closeMenu = () => setIsOpen(false)
+    window.addEventListener('hashchange', closeMenu)
+    window.addEventListener('popstate', closeMenu)
+    return () => {
+      window.removeEventListener('hashchange', closeMenu)
+      window.removeEventListener('popstate', closeMenu)
+    }
+  }, [])
+
+  const headerClass = isOpen || isScrolled
+    ? 'bg-forge-bg-dark/95 backdrop-blur-md border-b border-forge-blue-mid/15 shadow-forge-card'
+    : 'bg-forge-bg-dark/95 lg:bg-transparent'
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-forge-bg-dark/95 border-b border-forge-blue-mid/20">
-      <nav
-        className="container mx-auto px-4 h-16 flex items-center justify-between"
-        aria-label="Navegación principal"
-      >
-        {/* Logo: usar LogoEleva.svg con tamaño mayor */}
-        <a
-          href="#inicio"
-          onClick={(e) => scrollToSection(e, '#inicio')}
-          aria-label="ElevaForge - Inicio"
-          className="flex items-center gap-3"
-        >
-          <img src="/LogoEleva.svg" alt="ElevaForge" className="h-12 w-auto object-contain" />
-          <span className="sr-only">ElevaForge</span>
-        </a>
+    <header className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${headerClass}`}>
+      <nav className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 h-full flex items-center justify-between" aria-label="Navegación principal">
+        <Link href="/" className="flex items-center" aria-label="ElevaForge inicio">
+          <Image
+            src="/LogoEleva.svg"
+            alt="ElevaForge"
+            width={168}
+            height={48}
+            className="h-10 w-auto"
+            priority
+          />
+        </Link>
 
-        {/* Links desktop */}
-        <ul className="hidden md:flex items-center gap-8" role="list">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <a
+        <ul className="hidden lg:flex items-center gap-6" role="list">
+          {links.map((link) => (
+            <li key={link.label}>
+              <Link
                 href={link.href}
-                onClick={(e) => scrollToSection(e, link.href)}
-                className="text-white/70 hover:text-white transition-colors duration-150 text-sm"
+                className="text-base font-medium text-white/65 hover:text-white transition-colors duration-200"
               >
                 {link.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
-        {/* CTA desktop */}
-        <div className="hidden md:block">
-          <CTAButton
-            href={buildWhatsAppURL()}
-            label="Iniciar proyecto"
-            className="text-sm px-5 py-2.5"
-          />
+        <div className="hidden lg:block">
+          <CTAButton href={WHATSAPP_URLS.hero} size="sm" label="Iniciar proyecto" />
         </div>
 
-        {/* Botón hamburger móvil */}
         <button
-          ref={hamburgerRef}
-          className="md:hidden text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-forge-orange-main"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
+          type="button"
+          className="lg:hidden text-white p-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main"
+          aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={isOpen}
-          aria-controls="mobile-nav-menu"
+          onClick={() => setIsOpen((prev) => !prev)}
         >
-          {isOpen ? (
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          )}
+          <span className="sr-only">Menu</span>
+          <div className="w-6 h-6 relative">
+            <span className={`absolute left-0 top-1 h-0.5 w-6 bg-white transition-all ${isOpen ? 'rotate-45 top-3' : ''}`} />
+            <span className={`absolute left-0 top-3 h-0.5 w-6 bg-white transition-all ${isOpen ? 'opacity-0' : ''}`} />
+            <span className={`absolute left-0 top-5 h-0.5 w-6 bg-white transition-all ${isOpen ? '-rotate-45 top-3' : ''}`} />
+          </div>
         </button>
       </nav>
 
-      {/* Menú móvil */}
-      {isOpen && (
-        <div
-          ref={menuRef}
-          id="mobile-nav-menu"
-          className="md:hidden bg-forge-bg-dark border-b border-forge-blue-mid/20"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Menú de navegación móvil"
-        >
-          <ul className="px-6 py-4 space-y-4" role="list">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={(e) => scrollToSection(e, link.href)}
-                  className="block text-white/70 hover:text-white transition-colors text-lg"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-            <li className="pt-4">
-              <CTAButton
-                href={buildWhatsAppURL()}
-                label="Iniciar proyecto"
-                className="w-full justify-center text-sm px-5 py-3"
-              />
-            </li>
-          </ul>
+      <div
+        className={`lg:hidden fixed inset-0 z-[100] bg-forge-bg-dark flex flex-col justify-center items-center gap-8 transform transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {links.map((link) =>
+          <Link
+            key={link.label}
+            href={link.href}
+            onClick={() => setIsOpen(false)}
+            className="font-humanst text-3xl text-white hover:text-forge-orange-main transition-colors"
+          >
+            {link.label}
+          </Link>
+        )}
+
+        <div className="w-full px-8 max-w-sm">
+          <CTAButton href={WHATSAPP_URLS.hero} size="full" label="Iniciar proyecto" />
         </div>
-      )}
+      </div>
     </header>
   )
 }

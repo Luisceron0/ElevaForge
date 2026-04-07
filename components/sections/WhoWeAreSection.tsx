@@ -57,9 +57,9 @@ export default function WhoWeAreSection({ about, projects }: Props) {
               )}
               <p className="text-forge-bg-dark/75 mb-4">{about.experience.description}</p>
               {about.experience.items.length > 0 && (
-                <ul className="grid gap-2 sm:grid-cols-2 mb-6">
+                <ul className="grid gap-2 sm:grid-cols-2 mb-6 min-w-0">
                   {about.experience.items.map((item, index) => (
-                    <li key={`${item}-${index}`} className="bg-white rounded-xl border border-forge-blue-mid/15 p-3 text-sm text-forge-bg-dark/80">
+                    <li key={`${item}-${index}`} className="bg-white rounded-xl border border-forge-blue-mid/15 p-3 text-sm text-forge-bg-dark/80 min-w-0 break-words">
                       {item}
                     </li>
                   ))}
@@ -94,11 +94,11 @@ export default function WhoWeAreSection({ about, projects }: Props) {
                         </div>
                       )}
                       <div className="flex items-center justify-between gap-3 mb-2">
-                        <h4 className="font-semibold text-forge-bg-dark">{project.title || 'Proyecto sin título'}</h4>
-                        <span className={getProjectStatusBadgeClassName(project.status)}>{project.status}</span>
+                        <h4 className="font-semibold text-forge-bg-dark min-w-0 break-words">{project.title || 'Proyecto sin título'}</h4>
+                        <span className={`${getProjectStatusBadgeClassName(project.status)} shrink-0`}>{project.status}</span>
                       </div>
                       <p className="text-sm text-forge-blue-mid font-semibold">{project.sector || 'Sector no especificado'}</p>
-                      <p className="text-forge-bg-dark/75 mt-2 text-sm">{project.summary || 'Sin resumen'}</p>
+                      <p className="text-forge-bg-dark/75 mt-2 text-sm break-words">{project.summary || 'Sin resumen'}</p>
                       {project.externalUrl && (
                         <a
                           href={project.externalUrl}

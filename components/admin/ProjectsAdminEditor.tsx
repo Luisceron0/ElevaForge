@@ -1,17 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AboutContent, ProjectItem } from '@/lib/site-content'
+import { ProjectItem } from '@/lib/site-content'
 import ImageUploadInput from './ImageUploadInput'
 import { isAssetRef } from '@/lib/asset-refs'
 
 interface Props {
   projects: ProjectItem[]
-  narrative: AboutContent['experience']
   saving: boolean
-  narrativeSaving: boolean
   onSave: (projects: ProjectItem[]) => void
-  onSaveNarrative: (value: AboutContent['experience']) => void
 }
 
 interface ProjectDraft {
@@ -23,6 +20,14 @@ interface ProjectDraft {
   externalUrl: string
   status: 'entregado' | 'en-curso'
   resultsText: string
+  lighthousePerformanceScore: number
+  lighthousePerformanceDesc: string
+  lighthouseAccessibilityScore: number
+  lighthouseAccessibilityDesc: string
+  lighthousBestPracticesScore: number
+  lighthousBestPracticesDesc: string
+  lighthouseSeoScore: number
+  lighthousSeoDesc: string
 }
 
 const EMPTY_DRAFT: ProjectDraft = {
@@ -34,6 +39,14 @@ const EMPTY_DRAFT: ProjectDraft = {
   externalUrl: '',
   status: 'entregado',
   resultsText: '',
+  lighthousePerformanceScore: 0,
+  lighthousePerformanceDesc: '',
+  lighthouseAccessibilityScore: 0,
+  lighthouseAccessibilityDesc: '',
+  lighthousBestPracticesScore: 0,
+  lighthousBestPracticesDesc: '',
+  lighthouseSeoScore: 0,
+  lighthousSeoDesc: '',
 }
 
 function toDraft(item: ProjectItem): ProjectDraft {
@@ -46,6 +59,14 @@ function toDraft(item: ProjectItem): ProjectDraft {
     externalUrl: item.externalUrl || '',
     status: item.status,
     resultsText: item.results.join('\n'),
+    lighthousePerformanceScore: item.lighthouse?.performance?.score ?? 0,
+    lighthousePerformanceDesc: item.lighthouse?.performance?.description ?? '',
+    lighthouseAccessibilityScore: item.lighthouse?.accessibility?.score ?? 0,
+    lighthouseAccessibilityDesc: item.lighthouse?.accessibility?.description ?? '',
+    lighthousBestPracticesScore: item.lighthouse?.bestPractices?.score ?? 0,
+    lighthousBestPracticesDesc: item.lighthouse?.bestPractices?.description ?? '',
+    lighthouseSeoScore: item.lighthouse?.seo?.score ?? 0,
+    lighthousSeoDesc: item.lighthouse?.seo?.description ?? '',
   }
 }
 
@@ -53,19 +74,66 @@ function toProject(draft: ProjectDraft): ProjectItem {
   const slugBase = draft.id.trim() || draft.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
   const fallbackId = slugBase || `project-${Date.now()}`
 
+  const hasLighthouse = [
+    draft.lighthousePerformanceScore,
+    draft.lighthouseAccessibilityScore,
+    draft.lighthousBestPracticesScore,
+    draft.lighthouseSeoScore,
+  ].some((s) => s > 0)
+
   return {
     id: fallbackId,
     title: draft.title.trim(),
     sector: draft.sector.trim(),
     summary: draft.summary.trim(),
     imageUrl: draft.imageUrl.trim() || undefined,
-    externalUrl: draft.externalUrl.trim() || undefined,
+    externalUrl: normalizeExternalUrl(draft.externalUrl),
     status: draft.status,
     results: draft.resultsText
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean),
+    lighthouse: hasLighthouse
+      ? {
+          performance:
+            draft.lighthousePerformanceScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthousePerformanceScore))),
+                  description: draft.lighthousePerformanceDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+          accessibility:
+            draft.lighthouseAccessibilityScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthouseAccessibilityScore))),
+                  description: draft.lighthouseAccessibilityDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+          bestPractices:
+            draft.lighthousBestPracticesScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthousBestPracticesScore))),
+                  description: draft.lighthousBestPracticesDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+          seo:
+            draft.lighthouseSeoScore > 0
+              ? {
+                  score: Math.max(0, Math.min(100, Math.round(draft.lighthouseSeoScore))),
+                  description: draft.lighthousSeoDesc.trim().slice(0, 300) || 'Sin descripción',
+                }
+              : undefined,
+        }
+      : undefined,
   }
+}
+
+function normalizeExternalUrl(value: string): string | undefined {
+  const raw = value.trim()
+  if (!raw) return undefined
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (/^www\./i.test(raw)) return `https://${raw}`
+  return raw
 }
 
 function validate(draft: ProjectDraft, items: ProjectItem[], editingIndex: number | null): string {
@@ -82,13 +150,7 @@ function validate(draft: ProjectDraft, items: ProjectItem[], editingIndex: numbe
   return ''
 }
 
-export default function ProjectsAdminEditor({ projects, narrative, saving, narrativeSaving, onSave, onSaveNarrative }: Props) {
-  const [narrativeDraft, setNarrativeDraft] = useState<AboutContent['experience']>({
-    title: '',
-    description: '',
-    items: [],
-    imageUrl: '',
-  })
+export default function ProjectsAdminEditor({ projects, saving, onSave }: Props) {
   const [items, setItems] = useState<ProjectItem[]>(projects)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [openProjectIndex, setOpenProjectIndex] = useState<number | null>(null)
@@ -107,42 +169,6 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
       setOpenProjectIndex(items.length > 0 ? items.length - 1 : null)
     }
   }, [items, openProjectIndex])
-
-  useEffect(() => {
-    setNarrativeDraft({
-      title: String(narrative?.title ?? '').trim(),
-      description: String(narrative?.description ?? '').trim(),
-      items: Array.isArray(narrative?.items)
-        ? narrative.items.map((item) => String(item ?? '').trim()).filter(Boolean)
-        : [],
-      imageUrl: String(narrative?.imageUrl ?? '').trim(),
-    })
-  }, [narrative])
-
-  function addExperienceItem() {
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      items: [...prev.items, ''],
-    }))
-  }
-
-  function removeExperienceItem(index: number) {
-    if (!window.confirm('¿Eliminar este item de experiencia?')) return
-    setNarrativeDraft((prev) => ({
-      ...prev,
-      items: prev.items.filter((_, currentIndex) => currentIndex !== index),
-    }))
-  }
-
-  function saveNarrative() {
-    onSaveNarrative({
-      ...narrativeDraft,
-      title: narrativeDraft.title.trim(),
-      description: narrativeDraft.description.trim(),
-      imageUrl: narrativeDraft.imageUrl?.trim() || undefined,
-      items: narrativeDraft.items.map((item) => item.trim()).filter(Boolean),
-    })
-  }
 
   function startAdd() {
     setEditingIndex(items.length)
@@ -236,11 +262,12 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-xl font-semibold text-white">Proyectos y contexto</h3>
-          <p className="text-sm text-white/60 mt-0.5">Gestiona narrativa y proyectos de forma individual</p>
+          <h3 className="text-xl font-semibold text-white">Proyectos</h3>
+          <p className="text-sm text-white/60 mt-0.5">Gestiona proyectos de forma individual</p>
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={startAdd}
             disabled={editingIndex !== null}
             className="border border-white/20 rounded-lg px-4 py-2 text-sm font-medium hover:bg-white/10 disabled:opacity-40 transition-colors text-white"
@@ -248,6 +275,7 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
             + Proyecto
           </button>
           <button
+            type="button"
             onClick={() => onSave(items)}
             disabled={saving || editingIndex !== null}
             className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
@@ -258,72 +286,6 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
       </div>
 
       {error && <div className="rounded-lg border border-red-500 bg-red-950 text-red-200 px-4 py-3 text-sm">{error}</div>}
-
-      <div className="rounded-xl border border-white/10 p-6 space-y-4 bg-white/5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h3 className="font-semibold text-white">Contexto institucional de proyectos</h3>
-            <p className="text-xs text-white/60">Este bloque alimenta el caso de experiencia visible encima del listado de proyectos.</p>
-          </div>
-          <button
-            onClick={saveNarrative}
-            disabled={narrativeSaving}
-            className="bg-forge-blue-mid text-white px-3 py-2 rounded-lg text-sm disabled:opacity-50"
-          >
-            {narrativeSaving ? 'Guardando...' : 'Guardar contexto'}
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-white">Caso de experiencia - título</label>
-          <input
-            value={narrativeDraft.title}
-            onChange={(e) => setNarrativeDraft((prev) => ({ ...prev, title: e.target.value }))}
-            className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-white">Caso de experiencia - descripción</label>
-          <textarea
-            value={narrativeDraft.description}
-            onChange={(e) => setNarrativeDraft((prev) => ({ ...prev, description: e.target.value }))}
-            className="w-full min-h-[90px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
-          />
-        </div>
-
-        <ImageUploadInput
-          label="Caso de experiencia - imagen"
-          value={narrativeDraft.imageUrl || ''}
-          folder="about"
-          onChange={(next) => setNarrativeDraft((prev) => ({ ...prev, imageUrl: next }))}
-          placeholder="URL imagen (opcional)"
-        />
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-white">Caso de experiencia - items</h4>
-            <button onClick={addExperienceItem} className="border border-white/20 rounded px-3 py-1 text-sm text-white hover:bg-white/10 transition-colors">Agregar item</button>
-          </div>
-
-          <div className="space-y-2">
-            {narrativeDraft.items.map((item, index) => (
-              <div key={index} className="flex gap-2 group">
-                <input
-                  value={item}
-                  onChange={(e) => {
-                    const next = [...narrativeDraft.items]
-                    next[index] = e.target.value
-                    setNarrativeDraft((prev) => ({ ...prev, items: next }))
-                  }}
-                  className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-                />
-                <button onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between rounded-lg border border-white/20 bg-white/5 px-3 py-2">
@@ -408,8 +370,8 @@ export default function ProjectsAdminEditor({ projects, narrative, saving, narra
                         ))}
                       </ul>
                       <div className="flex flex-wrap gap-2">
-                        <button onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Editar</button>
-                        <button onClick={() => remove(index)} disabled={editingIndex !== null} className="border border-red-500/50 rounded px-2 py-1 text-sm text-red-300 hover:bg-red-900/20 disabled:opacity-40 transition-colors">Eliminar</button>
+                        <button type="button" onClick={() => startEdit(index)} disabled={editingIndex !== null} className="border border-white/20 rounded px-2 py-1 text-sm text-white hover:bg-white/10 disabled:opacity-40 transition-colors">Editar</button>
+                        <button type="button" onClick={() => remove(index)} disabled={editingIndex !== null} className="border border-red-500/50 rounded px-2 py-1 text-sm text-red-300 hover:bg-red-900/20 disabled:opacity-40 transition-colors">Eliminar</button>
                       </div>
                     </>
                   )}
@@ -449,6 +411,84 @@ interface FormProps {
 function ProjectForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
   return (
     <div className="space-y-3">
+      <fieldset className="border border-forge-blue-mid/30 rounded-lg p-4">
+        <legend className="text-xs font-semibold text-white uppercase px-2">Lighthouse Scores (Opcional)</legend>
+        <div className="grid sm:grid-cols-2 gap-4 mt-4">
+          {/* Performance */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">Performance</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthousePerformanceScore}
+              onChange={(e) => onChange({ ...draft, lighthousePerformanceScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthousePerformanceDesc}
+              onChange={(e) => onChange({ ...draft, lighthousePerformanceDesc: e.target.value })}
+              placeholder="Descripción de performance (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+          {/* Accessibility */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">Accessibility</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthouseAccessibilityScore}
+              onChange={(e) => onChange({ ...draft, lighthouseAccessibilityScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthouseAccessibilityDesc}
+              onChange={(e) => onChange({ ...draft, lighthouseAccessibilityDesc: e.target.value })}
+              placeholder="Descripción de accesibilidad (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+          {/* Best Practices */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">Best Practices</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthousBestPracticesScore}
+              onChange={(e) => onChange({ ...draft, lighthousBestPracticesScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthousBestPracticesDesc}
+              onChange={(e) => onChange({ ...draft, lighthousBestPracticesDesc: e.target.value })}
+              placeholder="Descripción de best practices (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+          {/* SEO */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-white/70">SEO</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={draft.lighthouseSeoScore}
+              onChange={(e) => onChange({ ...draft, lighthouseSeoScore: Number(e.target.value || 0) })}
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+            />
+            <textarea
+              value={draft.lighthousSeoDesc}
+              onChange={(e) => onChange({ ...draft, lighthousSeoDesc: e.target.value })}
+              placeholder="Descripción de SEO (máx 300 caracteres)"
+              className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[60px]"
+            />
+          </div>
+        </div>
+      </fieldset>
+
       <div className="grid sm:grid-cols-2 gap-3">
         <input value={draft.id} onChange={(e) => onChange({ ...draft, id: e.target.value })} placeholder="id (ej: avc)" className="border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50" />
         <select value={draft.status} onChange={(e) => onChange({ ...draft, status: e.target.value as 'entregado' | 'en-curso' })} className="border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50">
@@ -468,11 +508,22 @@ function ProjectForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
         onChange={(next) => onChange({ ...draft, imageUrl: next })}
         placeholder="URL imagen (opcional)"
       />
-      <input value={draft.externalUrl} onChange={(e) => onChange({ ...draft, externalUrl: e.target.value })} placeholder="URL externa (opcional)" className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50" />
+      <div className="space-y-2">
+        <label className="block text-sm font-semibold text-white">Enlace del proyecto (redirección)</label>
+        <input
+          value={draft.externalUrl}
+          onChange={(e) => onChange({ ...draft, externalUrl: e.target.value })}
+          placeholder="https://tu-sitio.com"
+          className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+        />
+        <p className="text-xs text-white/60">
+          Si escribes `www...`, el sistema lo convertirá automáticamente a `https://...` al guardar.
+        </p>
+      </div>
       <textarea value={draft.resultsText} onChange={(e) => onChange({ ...draft, resultsText: e.target.value })} placeholder="Resultados, uno por línea" className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none min-h-[90px]" />
       <div className="flex gap-2">
-        <button onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forge-orange-main/90 transition-colors">Confirmar</button>
-        <button onClick={onCancel} className="border border-white/20 text-white px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition-colors">Cancelar</button>
+        <button type="button" onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forge-orange-main/90 transition-colors">Confirmar</button>
+        <button type="button" onClick={onCancel} className="border border-white/20 text-white px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition-colors">Cancelar</button>
       </div>
     </div>
   )

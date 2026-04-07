@@ -14,6 +14,8 @@ import { leadSchema } from '@/lib/validations'
 import { runApiGuard } from '@/lib/security/api-guard'
 import { logSecurityEvent } from '@/lib/security/logger'
 
+const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+
 export async function POST(request: NextRequest) {
   // Same guard as /api/contact — single invocation, no self-fetch
   const guard = await runApiGuard(request, {
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'Cuerpo de solicitud inválido' }, { status: 400 })
+    return NextResponse.json({ error: 'Cuerpo de solicitud inválido' }, { status: 400, headers: NO_STORE })
   }
 
   try {
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     if (record._hp && String(record._hp).length > 0) {
       logSecurityEvent({ type: 'HONEYPOT_TRIGGERED', ip: guard.ip, path: '/api/leads', method: 'POST' })
-      return NextResponse.json({ success: true, message: 'Mensaje recibido' })
+      return NextResponse.json({ success: true, message: 'Mensaje recibido' }, { headers: NO_STORE })
     }
 
     const parsed = leadSchema.safeParse({
@@ -60,7 +62,7 @@ export async function POST(request: NextRequest) {
       })
       return NextResponse.json(
         { error: parsed.error.issues[0]?.message ?? 'Datos inválidos' },
-        { status: 400 },
+        { status: 400, headers: NO_STORE },
       )
     }
 
@@ -87,10 +89,10 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Supabase insert error (leads):', error)
-      return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500 })
+      return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500, headers: NO_STORE })
     }
 
-    return NextResponse.json({ success: true, message: 'Lead recibido', id: data?.id }, { status: 202 })
+    return NextResponse.json({ success: true, message: 'Lead recibido', id: data?.id }, { status: 202, headers: NO_STORE })
   } catch (err) {
     logSecurityEvent({
       type: 'UNHANDLED_ERROR',
@@ -100,7 +102,7 @@ export async function POST(request: NextRequest) {
       details: err instanceof Error ? err.message : 'unknown',
     })
     console.error('Leads API error:', err)
-    return NextResponse.json({ error: 'Error interno al procesar solicitud' }, { status: 500 })
+    return NextResponse.json({ error: 'Error interno al procesar solicitud' }, { status: 500, headers: NO_STORE })
   }
 }
 

@@ -72,6 +72,7 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
           </p>
         </div>
         <button
+          type="button"
           onClick={() => onSave(normalizeDraft(draft))}
           disabled={saving}
           className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50 hover:bg-forge-orange-main/90 transition-colors"
@@ -124,7 +125,7 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h4 className="font-semibold text-white">Caso de experiencia - items</h4>
-          <button onClick={addExperienceItem} className="border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white hover:bg-white/10 transition-colors">+ Agregar item</button>
+          <button type="button" onClick={addExperienceItem} className="border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white hover:bg-white/10 transition-colors">+ Agregar item</button>
         </div>
 
         <div className="space-y-2">
@@ -142,7 +143,7 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
                 }}
                 className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
               />
-              <button onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded-lg px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
+              <button type="button" onClick={() => removeExperienceItem(index)} className="border border-red-500/50 rounded-lg px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
             </div>
           ))}
         </div>
@@ -151,7 +152,7 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h4 className="font-semibold text-white">Proyectos en progreso</h4>
-          <button onClick={addProjectInProgressItem} className="border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white hover:bg-white/10 transition-colors">+ Agregar item</button>
+          <button type="button" onClick={addProjectInProgressItem} className="border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white hover:bg-white/10 transition-colors">+ Agregar item</button>
         </div>
 
         <div className="space-y-2">
@@ -166,7 +167,7 @@ export default function ProjectNarrativeAdminEditor({ value, saving, onSave }: P
                 }}
                 className="flex-1 border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
               />
-              <button onClick={() => removeProjectInProgressItem(index)} className="border border-red-500/50 rounded-lg px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
+              <button type="button" onClick={() => removeProjectInProgressItem(index)} className="border border-red-500/50 rounded-lg px-3 py-2 text-sm text-red-300 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100">Eliminar</button>
             </div>
           ))}
         </div>

@@ -24,6 +24,12 @@ export interface ProjectItem {
   imageUrl?: string
   externalUrl?: string
   status: 'entregado' | 'en-curso'
+  lighthouse?: {
+    performance?: LighthouseMetric
+    accessibility?: LighthouseMetric
+    bestPractices?: LighthouseMetric
+    seo?: LighthouseMetric
+  }
 }
 
 export interface AboutPhase {
@@ -36,6 +42,47 @@ export interface AboutItem {
   description: string
 }
 
+export interface AutonomyCard {
+  badge: string
+  title: string
+  description: string
+}
+
+export interface HomeSectionCopy {
+  eyebrow: string
+  title: string
+  description: string
+}
+
+export interface HomeContent {
+  hero: {
+    badge: string
+    title: string
+    highlight: string
+    primaryCta: string
+    secondaryCta: string
+  }
+  projects: HomeSectionCopy & {
+    deliveredLabel: string
+    inProgressLabel: string
+    notesTitle: string
+  }
+  pricing: HomeSectionCopy & {
+    legalNote: string
+    ctaLabel: string
+  }
+  roadmap: HomeSectionCopy & {
+    ctaTitle: string
+    ctaButton: string
+  }
+  autonomy: HomeSectionCopy
+  contact: {
+    title: string
+    description: string
+    responseTime: string
+  }
+}
+
 export interface TeamCapability {
   area: string
   owner: string
@@ -43,7 +90,21 @@ export interface TeamCapability {
   imageUrl?: string
 }
 
+export interface LighthouseMetric {
+  score: number
+  description: string
+}
+
+export interface LighthouseScores {
+  performance: LighthouseMetric
+  accessibility: LighthouseMetric
+  bestPractices: LighthouseMetric
+  seo: LighthouseMetric
+  auditedProject: string
+}
+
 export interface AboutContent {
+  heroSubtitle: string
   intro: string
   phases: AboutPhase[]
   pillars: AboutItem[]
@@ -55,8 +116,11 @@ export interface AboutContent {
     items: string[]
     imageUrl?: string
   }
+  lighthouse: LighthouseScores
   projectsInProgress: string[]
   supportItems: string[]
+  autonomyCards: AutonomyCard[]
+  homeContent: HomeContent
 }
 
 export interface SiteContent {
@@ -136,6 +200,8 @@ export const DEFAULT_PROJECTS: ProjectItem[] = [
 ]
 
 export const DEFAULT_ABOUT: AboutContent = {
+  heroSubtitle:
+    'Diseñamos, construimos y optimizamos plataformas web con métricas verificables, acompañamiento cercano y decisiones técnicas enfocadas en resultados de negocio.',
   intro:
     'ElevaForge trabaja bajo un proceso estructurado con visibilidad y control en cada etapa. Cada fase tiene entregables definidos, tiempos acordados y validación del cliente antes de avanzar.',
   phases: [
@@ -254,17 +320,102 @@ export const DEFAULT_ABOUT: AboutContent = {
     ],
     imageUrl: '',
   },
+  lighthouse: {
+    performance: {
+      score: 99,
+      description: 'El sitio carga en menos de 2 segundos. Imágenes optimizadas, CSS minimizado y JavaScript lazy-loaded.',
+    },
+    accessibility: {
+      score: 97,
+      description: 'Interfaz completamente navegable con teclado, legible para desórdenes visuales. WCAG AA cumplido.',
+    },
+    bestPractices: {
+      score: 100,
+      description: 'Código moderno, sin librerías deprecadas. HTTPS, CSP headers y manejo seguro de datos aplicado.',
+    },
+    seo: {
+      score: 100,
+      description: 'Metaetiquetas, estructura semántica y Robot.txt optimizados. Indexable en Google desde el primer día.',
+    },
+    auditedProject: 'AVC Inmobiliaria y Constructora',
+  },
   projectsInProgress: [
     'Actualmente tenemos varios proyectos en desarrollo en distintos sectores.',
     'El trabajo continuo mantiene al equipo en práctica constante.',
     'Los aprendizajes entre proyectos aceleran la mejora técnica.',
   ],
   supportItems: [
-    'Corrección de errores funcionales durante los primeros 6 meses',
-    'Actualizaciones de seguridad y parches ante vulnerabilidades',
-    'Ajustes menores de contenido o configuración sin desarrollo nuevo',
-    'Soporte por WhatsApp con tiempo de respuesta máximo de 24 horas hábiles',
+    'El código fuente, repositorio y accesos quedan a nombre del cliente al finalizar la entrega.',
+    'Entregamos manual PDF y video explicativo para que tu equipo pueda operar la plataforma sin depender de terceros.',
+    'Atención directa por WhatsApp con el equipo técnico para resolver dudas operativas y ajustes puntuales.',
+    'Definimos procesos para que puedas administrar contenidos y tareas comunes sin fricción técnica diaria.',
   ],
+  autonomyCards: [
+    {
+      badge: '100% tuya',
+      title: 'Propiedad del código',
+      description: 'El código fuente, repositorio y accesos quedan a nombre del cliente al finalizar la entrega.',
+    },
+    {
+      badge: 'Manual PDF + Video',
+      title: 'Capacitación real',
+      description:
+        'Entregamos manual PDF y video explicativo para que tu equipo pueda operar la plataforma sin depender de terceros.',
+    },
+    {
+      badge: 'Soporte directo',
+      title: 'WhatsApp sin intermediarios',
+      description:
+        'Atención directa por WhatsApp con el equipo técnico para resolver dudas operativas y ajustes puntuales.',
+    },
+    {
+      badge: 'Sin dependencia',
+      title: 'Autonomía operativa',
+      description:
+        'Definimos procesos para que puedas administrar contenidos y tareas comunes sin fricción técnica diaria.',
+    },
+  ],
+  homeContent: {
+    hero: {
+      badge: 'Agencia de software · Colombia',
+      title: 'Forjamos el motor digital',
+      highlight: 'de tu empresa',
+      primaryCta: 'Iniciar proyecto',
+      secondaryCta: 'Ver proyectos',
+    },
+    projects: {
+      eyebrow: 'Proyectos y resultados',
+      title: 'Casos reales que respaldan nuestro estándar',
+      description: 'Experiencia aplicada en productos digitales con foco en velocidad, SEO y claridad operativa.',
+      deliveredLabel: 'Proyectos entregados',
+      inProgressLabel: 'Proyectos en curso',
+      notesTitle: 'Seguimiento activo del equipo',
+    },
+    pricing: {
+      eyebrow: 'Paquetes orientativos',
+      title: 'Inversión clara para resultados medibles',
+      description: 'Precios de referencia en USD para definir un alcance inicial y avanzar con transparencia.',
+      legalNote: 'Los precios son orientativos en USD. El costo final se define según el alcance acordado con el cliente.',
+      ctaLabel: 'Solicitar propuesta',
+    },
+    roadmap: {
+      eyebrow: 'Proceso transparente',
+      title: 'De la idea a la entrega sin zonas grises',
+      description: 'Cada fase está definida para que sepas qué estamos haciendo, por qué lo hacemos y qué sigue después.',
+      ctaTitle: '¿Listo para el paso 01?',
+      ctaButton: 'Solicitar asesoría gratuita',
+    },
+    autonomy: {
+      eyebrow: 'Diferencial ElevaForge',
+      title: 'Autonomía y formación desde el día uno',
+      description: 'Entregamos tecnología útil, documentada y operable por tu equipo.',
+    },
+    contact: {
+      title: 'Hablemos de tu proyecto',
+      description: 'Te ayudamos a aterrizar tu idea con alcance claro, tiempos realistas y una propuesta transparente.',
+      responseTime: 'Menos de 24 horas',
+    },
+  },
 }
 
 export const DEFAULT_SITE_CONTENT: SiteContent = {
@@ -321,6 +472,95 @@ function dedupeTextList(items: string[]): string[] {
   return result
 }
 
+function normalizeSupportItems(value: unknown, fallback: string[]): string[] {
+  const normalized = normalizeTextList(value, fallback)
+  const maxCards = 4
+  const result = Array.from({ length: maxCards }, (_, index) => {
+    const current = String(normalized[index] ?? '').trim()
+    return current || fallback[index] || ''
+  })
+
+  return result.filter(Boolean)
+}
+
+function normalizeAutonomyCards(value: unknown, fallback: AutonomyCard[]): AutonomyCard[] {
+  if (!Array.isArray(value)) return fallback
+
+  const cards = value
+    .filter(isRecord)
+    .slice(0, 4)
+    .map((card, index) => {
+      const fallbackCard = fallback[index] ?? fallback[0]
+      return {
+        badge: String(card.badge ?? fallbackCard?.badge ?? '').trim(),
+        title: String(card.title ?? fallbackCard?.title ?? '').trim(),
+        description: String(card.description ?? fallbackCard?.description ?? '').trim(),
+      }
+    })
+
+  return cards.length ? cards : fallback
+}
+
+function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeContent {
+  const merged = isRecord(value) ? value : {}
+
+  const normalizeSection = (sectionValue: unknown, sectionFallback: HomeSectionCopy): HomeSectionCopy => {
+    const section = isRecord(sectionValue) ? sectionValue : {}
+    return {
+      eyebrow: String(section.eyebrow ?? sectionFallback.eyebrow).trim() || sectionFallback.eyebrow,
+      title: String(section.title ?? sectionFallback.title).trim() || sectionFallback.title,
+      description: String(section.description ?? sectionFallback.description).trim() || sectionFallback.description,
+    }
+  }
+
+  const projects = isRecord(merged.projects) ? merged.projects : {}
+  const hero = isRecord(merged.hero) ? merged.hero : {}
+  const pricing = isRecord(merged.pricing) ? merged.pricing : {}
+  const roadmap = isRecord(merged.roadmap) ? merged.roadmap : {}
+  const contact = isRecord(merged.contact) ? merged.contact : {}
+
+  return {
+    hero: {
+      badge: String(hero.badge ?? fallback.hero.badge).trim() || fallback.hero.badge,
+      title: String(hero.title ?? fallback.hero.title).trim() || fallback.hero.title,
+      highlight: String(hero.highlight ?? fallback.hero.highlight).trim() || fallback.hero.highlight,
+      primaryCta: String(hero.primaryCta ?? fallback.hero.primaryCta).trim() || fallback.hero.primaryCta,
+      secondaryCta:
+        String(hero.secondaryCta ?? fallback.hero.secondaryCta).trim() || fallback.hero.secondaryCta,
+    },
+    projects: {
+      ...normalizeSection(projects, fallback.projects),
+      deliveredLabel:
+        String(projects.deliveredLabel ?? fallback.projects.deliveredLabel).trim() ||
+        fallback.projects.deliveredLabel,
+      inProgressLabel:
+        String(projects.inProgressLabel ?? fallback.projects.inProgressLabel).trim() ||
+        fallback.projects.inProgressLabel,
+      notesTitle:
+        String(projects.notesTitle ?? fallback.projects.notesTitle).trim() ||
+        fallback.projects.notesTitle,
+    },
+    pricing: {
+      ...normalizeSection(pricing, fallback.pricing),
+      legalNote: String(pricing.legalNote ?? fallback.pricing.legalNote).trim() || fallback.pricing.legalNote,
+      ctaLabel: String(pricing.ctaLabel ?? fallback.pricing.ctaLabel).trim() || fallback.pricing.ctaLabel,
+    },
+    roadmap: {
+      ...normalizeSection(roadmap, fallback.roadmap),
+      ctaTitle: String(roadmap.ctaTitle ?? fallback.roadmap.ctaTitle).trim() || fallback.roadmap.ctaTitle,
+      ctaButton: String(roadmap.ctaButton ?? fallback.roadmap.ctaButton).trim() || fallback.roadmap.ctaButton,
+    },
+    autonomy: normalizeSection(merged.autonomy, fallback.autonomy),
+    contact: {
+      title: String(contact.title ?? fallback.contact.title).trim() || fallback.contact.title,
+      description: String(contact.description ?? fallback.contact.description).trim() || fallback.contact.description,
+      responseTime:
+        String(contact.responseTime ?? fallback.contact.responseTime).trim() ||
+        fallback.contact.responseTime,
+    },
+  }
+}
+
 function mergeAboutItems(primary: AboutItem[], secondary: AboutItem[]): AboutItem[] {
   const seen = new Set<string>()
   const result: AboutItem[] = []
@@ -337,6 +577,54 @@ function mergeAboutItems(primary: AboutItem[], secondary: AboutItem[]): AboutIte
   }
 
   return result
+}
+
+function normalizeScore(value: unknown, fallback: number): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return fallback
+  const bounded = Math.max(0, Math.min(100, Math.round(parsed)))
+  return bounded
+}
+
+function normalizeProjectStatus(value: unknown, fallback: ProjectItem['status']): ProjectItem['status'] {
+  const normalized = String(value ?? '').trim().toLowerCase().replace(/[_\s]+/g, '-')
+  if (!normalized) return fallback
+
+  if (
+    normalized === 'en-curso' ||
+    normalized === 'encurso' ||
+    normalized === 'enproceso' ||
+    normalized === 'in-progress' ||
+    normalized === 'inprogress'
+  ) {
+    return 'en-curso'
+  }
+
+  return 'entregado'
+}
+
+function normalizeExternalUrl(value: unknown): string | undefined {
+  const raw = String(value ?? '').trim()
+  if (!raw) return undefined
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (/^www\./i.test(raw)) return `https://${raw}`
+  return raw
+}
+
+function normalizeLighthouseMetric(
+  value: unknown,
+  fallbackScore: number,
+  fallbackDescription: string,
+): LighthouseMetric {
+  if (isRecord(value)) {
+    const score = normalizeScore(value.score, fallbackScore)
+    const description = String(value.description ?? fallbackDescription).trim().slice(0, 300)
+    return { score, description: description || fallbackDescription }
+  }
+  return {
+    score: fallbackScore,
+    description: fallbackDescription,
+  }
 }
 
 function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutContent {
@@ -379,9 +667,13 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
     }))
     : fallback.team
 
+  const lighthouseRecord = isRecord(merged.lighthouse) ? merged.lighthouse : fallback.lighthouse
+
   return {
     ...fallback,
     ...merged,
+    heroSubtitle:
+      String(merged.heroSubtitle ?? '').trim() || fallback.heroSubtitle,
     team: normalizedTeam,
     pillars: mergedDifferentiationItems,
     differentiators: [],
@@ -389,10 +681,36 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
       ...normalizedExperience,
       imageUrl: normalizeAssetRef(String(normalizedExperience.imageUrl ?? '')) || undefined,
     },
+    lighthouse: {
+      performance: normalizeLighthouseMetric(
+        lighthouseRecord.performance,
+        fallback.lighthouse.performance.score,
+        fallback.lighthouse.performance.description,
+      ),
+      accessibility: normalizeLighthouseMetric(
+        lighthouseRecord.accessibility,
+        fallback.lighthouse.accessibility.score,
+        fallback.lighthouse.accessibility.description,
+      ),
+      bestPractices: normalizeLighthouseMetric(
+        lighthouseRecord.bestPractices,
+        fallback.lighthouse.bestPractices.score,
+        fallback.lighthouse.bestPractices.description,
+      ),
+      seo: normalizeLighthouseMetric(
+        lighthouseRecord.seo,
+        fallback.lighthouse.seo.score,
+        fallback.lighthouse.seo.description,
+      ),
+      auditedProject:
+        String(lighthouseRecord.auditedProject ?? '').trim() || fallback.lighthouse.auditedProject,
+    },
     projectsInProgress: dedupeTextList(
       normalizeTextList(merged.projectsInProgress, fallback.projectsInProgress),
     ),
-    supportItems: dedupeTextList(normalizeTextList(merged.supportItems, fallback.supportItems)),
+    supportItems: normalizeSupportItems(merged.supportItems, fallback.supportItems),
+    autonomyCards: normalizeAutonomyCards(merged.autonomyCards, fallback.autonomyCards),
+    homeContent: normalizeHomeContent(merged.homeContent, fallback.homeContent),
   }
 }
 
@@ -402,11 +720,42 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
 
   return merged.map((project, index) => {
     const fallbackProject = fallback[index] ?? fallback[0]
+    const projectRecord: Record<string, unknown> = isRecord(project) ? project : {}
+    const lighthouseData = isRecord(projectRecord.lighthouse) ? projectRecord.lighthouse : fallbackProject?.lighthouse
+    
+    const normalizedLighthouse = lighthouseData
+      ? {
+          performance: isRecord((lighthouseData as any).performance)
+            ? {
+                score: normalizeScore((lighthouseData as any).performance.score, 0),
+                description: String((lighthouseData as any).performance.description ?? '').slice(0, 300)
+              }
+            : undefined,
+          accessibility: isRecord((lighthouseData as any).accessibility)
+            ? {
+                score: normalizeScore((lighthouseData as any).accessibility.score, 0),
+                description: String((lighthouseData as any).accessibility.description ?? '').slice(0, 300)
+              }
+            : undefined,
+          bestPractices: isRecord((lighthouseData as any).bestPractices)
+            ? {
+                score: normalizeScore((lighthouseData as any).bestPractices.score, 0),
+                description: String((lighthouseData as any).bestPractices.description ?? '').slice(0, 300)
+              }
+            : undefined,
+          seo: isRecord((lighthouseData as any).seo)
+            ? {
+                score: normalizeScore((lighthouseData as any).seo.score, 0),
+                description: String((lighthouseData as any).seo.description ?? '').slice(0, 300)
+              }
+            : undefined,
+        }
+      : undefined
     return {
       ...fallbackProject,
-      ...(isRecord(project) ? project : {}),
+      ...projectRecord,
       imageUrl: normalizeAssetRef(String((isRecord(project) ? project.imageUrl : '') ?? '')) || undefined,
-      externalUrl: String((isRecord(project) ? project.externalUrl : '') ?? '').trim() || undefined,
+      externalUrl: normalizeExternalUrl(isRecord(project) ? project.externalUrl : undefined),
       results: Array.isArray(isRecord(project) ? project.results : undefined)
         ? (project.results as unknown[]).map((item) => String(item ?? '').trim()).filter(Boolean)
         : fallbackProject?.results ?? [],
@@ -414,9 +763,11 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
       sector: String((isRecord(project) ? project.sector : '') ?? ''),
       summary: String((isRecord(project) ? project.summary : '') ?? ''),
       id: String((isRecord(project) ? project.id : '') ?? fallbackProject?.id ?? `project-${index + 1}`),
-      status: (String((isRecord(project) ? project.status : '') ?? fallbackProject?.status ?? 'entregado') === 'en-curso'
-        ? 'en-curso'
-        : 'entregado'),
+      status: normalizeProjectStatus(
+        isRecord(project) ? project.status : undefined,
+        fallbackProject?.status ?? 'entregado',
+      ),
+      lighthouse: normalizedLighthouse,
     }
   })
 }

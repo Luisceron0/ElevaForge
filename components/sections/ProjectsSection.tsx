@@ -1,70 +1,93 @@
-import Image from 'next/image'
-import { ProjectItem } from '@/lib/site-content'
+import type { ProjectItem } from '@/lib/site-content'
+import ProjectCard from '@/components/ui/ProjectCard'
 
-interface Props {
+interface ProjectsSectionProps {
   projects: ProjectItem[]
+  inProgressNotes: string[]
+  eyebrow: string
+  title: string
+  description: string
+  deliveredLabel: string
+  inProgressLabel: string
+  notesTitle: string
 }
 
-export default function ProjectsSection({ projects }: Props) {
+export default function ProjectsSection({
+  projects,
+  inProgressNotes,
+  eyebrow,
+  title,
+  description,
+  deliveredLabel,
+  inProgressLabel,
+  notesTitle,
+}: ProjectsSectionProps) {
+  const filteredProjects = projects.filter((p) => p.id || p.title || p.summary || p.sector)
+  const deliveredProjects = filteredProjects.filter((project) => project.status === 'entregado')
+  const inProgressProjects = filteredProjects.filter((project) => project.status === 'en-curso')
+
   return (
-    <section id="proyectos" className="py-20 bg-forge-bg-light">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <p className="text-sm uppercase tracking-[0.2em] text-forge-orange-main font-semibold">Proyectos, experiencia y resultados</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-forge-bg-dark mt-3">Trabajos que respaldan nuestro estándar</h2>
-          <p className="text-forge-bg-dark/70 mt-4 text-lg">
-            Aquí consolidamos experiencia aplicada y resultados medibles en proyectos entregados y casos en curso. Todo este contenido es editable desde el panel de administración.
+    <section id="proyectos" aria-label="Proyectos" className="py-24 md:py-32 bg-forge-bg-light">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
+        <div className="max-w-3xl mb-10">
+          <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+            {eyebrow}
+          </p>
+          <h2
+            className="font-humanst text-forge-bg-dark leading-tight mb-4"
+            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
+          >
+            {title}
+          </h2>
+          <p className="text-forge-blue-deep text-lg leading-relaxed">
+            {description}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((project) => (
-            <article key={project.id} className="bg-white rounded-2xl border border-forge-blue-mid/15 overflow-hidden shadow-sm">
-              {project.imageUrl && (
-                <div className="h-44 bg-forge-bg-dark/5 flex items-center justify-center p-4">
-                  <Image
-                    src={project.imageUrl}
-                    alt={project.title}
-                    width={720}
-                    height={360}
-                    className="max-h-full w-auto object-contain"
-                    unoptimized={project.imageUrl.startsWith('http') && !project.imageUrl.includes('/storage/v1/object/')}
-                  />
-                </div>
-              )}
-              <div className="p-6">
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <h3 className="font-semibold text-xl text-forge-bg-dark">{project.title}</h3>
-                  <span className="px-2 py-1 rounded-full text-xs font-semibold bg-forge-orange-main/10 text-forge-orange-main">
-                    {project.status}
-                  </span>
-                </div>
-                <p className="text-sm text-forge-blue-mid font-semibold">{project.sector}</p>
-                <p className="text-forge-bg-dark/75 mt-3">{project.summary}</p>
+        {deliveredProjects.length > 0 && (
+          <div className="mb-10">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-humanst text-forge-bg-dark text-[clamp(1.3rem,2vw,1.8rem)]">{deliveredLabel}</h3>
+              <span className="rounded-full border border-emerald-600/30 bg-emerald-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-700">
+                {deliveredProjects.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {deliveredProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+        )}
 
-                <ul className="mt-4 space-y-2 text-sm text-forge-bg-dark/75">
-                  {project.results.map((result) => (
-                    <li key={result} className="flex items-start gap-2">
-                      <span className="text-forge-orange-main mt-1">●</span>
-                      <span>{result}</span>
-                    </li>
-                  ))}
-                </ul>
+        {inProgressProjects.length > 0 && (
+          <div>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-humanst text-forge-bg-dark text-[clamp(1.3rem,2vw,1.8rem)]">{inProgressLabel}</h3>
+              <span className="rounded-full border border-forge-orange-main/30 bg-forge-orange-main/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-forge-orange-main">
+                {inProgressProjects.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {inProgressProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+        )}
 
-                {project.externalUrl && (
-                  <a
-                    href={project.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-5 text-forge-orange-main font-semibold hover:underline"
-                  >
-                    Ver proyecto
-                  </a>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
+        {inProgressNotes.length > 0 && (
+          <div className="mt-10 rounded-2xl border border-forge-blue-mid/20 bg-white p-6 md:p-8">
+            <h4 className="font-humanst text-forge-bg-dark text-xl mb-4">{notesTitle}</h4>
+            <ul className="space-y-3">
+              {inProgressNotes.map((note, index) => (
+                <li key={`${note}-${index}`} className="text-forge-blue-deep text-base leading-relaxed break-words">
+                  {note}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   )

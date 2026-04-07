@@ -6,19 +6,10 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
+  * {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
 
@@ -60,10 +51,27 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer base {
   * {
     @apply border-forge-blue-mid/20;
+  }
+
+  button,
+  [type='button'],
+  [type='submit'],
+  [type='reset'],
+  a.inline-flex {
+    text-align: center;
   }
 }

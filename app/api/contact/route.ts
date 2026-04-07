@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { leadSchema } from '@/lib/validations'
 import { runApiGuard } from '@/lib/security/api-guard'
+
+const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
 import { logSecurityEvent } from '@/lib/security/logger'
 
 /**
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
       path: '/api/contact',
       method: 'POST',
     })
-    return NextResponse.json({ error: 'Cuerpo de solicitud inválido' }, { status: 400 })
+    return NextResponse.json({ error: 'Cuerpo de solicitud inválido' }, { status: 400, headers: NO_STORE })
   }
 
   try {
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest) {
     // Honeypot — silently accept if triggered
     if (record._hp && String(record._hp).length > 0) {
       logSecurityEvent({ type: 'HONEYPOT_TRIGGERED', ip: guard.ip, path: '/api/contact', method: 'POST' })
-      return NextResponse.json({ success: true, message: 'Mensaje recibido' })
+      return NextResponse.json({ success: true, message: 'Mensaje recibido' }, { headers: NO_STORE })
     }
 
     // Validate incoming payload
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
         method: 'POST',
         details: parsed.error.issues.map((i) => i.message).join('; '),
       })
-      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos' }, { status: 400 })
+      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos' }, { status: 400, headers: NO_STORE })
     }
 
     const supabase = createServerSupabaseClient()
@@ -82,10 +84,10 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase.from('leads').insert([insertData]).select('id').single()
     if (error) {
       console.error('Supabase insert error (contact outbox):', error)
-      return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500 })
+      return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500, headers: NO_STORE })
     }
 
-    return NextResponse.json({ success: true, message: 'Lead recibido', id: data?.id }, { status: 202 })
+    return NextResponse.json({ success: true, message: 'Lead recibido', id: data?.id }, { status: 202, headers: NO_STORE })
   } catch (err) {
     logSecurityEvent({
       type: 'UNHANDLED_ERROR',
@@ -95,16 +97,16 @@ export async function POST(request: NextRequest) {
       details: err instanceof Error ? err.message : 'unknown',
     })
     console.error('Contact API error:', err)
-    return NextResponse.json({ error: 'Error interno al procesar solicitud' }, { status: 500 })
+    return NextResponse.json({ error: 'Error interno al procesar solicitud' }, { status: 500, headers: NO_STORE })
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST', ...NO_STORE } })
 }
 export async function PUT() {
-  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST', ...NO_STORE } })
 }
 export async function DELETE() {
-  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST' } })
+  return NextResponse.json({ error: 'Método no permitido' }, { status: 405, headers: { Allow: 'POST', ...NO_STORE } })
 }

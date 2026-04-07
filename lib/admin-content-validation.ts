@@ -13,6 +13,18 @@ const aboutItemSchema = z.object({
   description: text(1000),
 })
 
+const autonomyCardSchema = z.object({
+  badge: text(80),
+  title: text(120),
+  description: text(300),
+})
+
+const homeSectionSchema = z.object({
+  eyebrow: text(120),
+  title: text(180),
+  description: text(420),
+})
+
 const teamCapabilitySchema = z.object({
   area: text(120),
   owner: text(80),
@@ -20,7 +32,15 @@ const teamCapabilitySchema = z.object({
   imageUrl: optionalAssetRef('team.imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
 })
 
+const scoreNumber = z.number().int().min(0).max(100)
+
+const lighthouseMetricSchema = z.object({
+  score: scoreNumber,
+  description: text(300),
+})
+
 const aboutSchema = z.object({
+  heroSubtitle: text(320),
   intro: text(2200),
   phases: z.array(aboutItemSchema).max(12),
   pillars: z.array(aboutItemSchema).max(12),
@@ -32,8 +52,44 @@ const aboutSchema = z.object({
     items: z.array(text(220)).max(20),
     imageUrl: optionalAssetRef('experience.imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
   }),
+  lighthouse: z.object({
+    performance: lighthouseMetricSchema,
+    accessibility: lighthouseMetricSchema,
+    bestPractices: lighthouseMetricSchema,
+    seo: lighthouseMetricSchema,
+    auditedProject: text(180),
+  }),
   projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),
+  autonomyCards: z.array(autonomyCardSchema).max(4),
+  homeContent: z.object({
+    hero: z.object({
+      badge: text(120),
+      title: text(160),
+      highlight: text(120),
+      primaryCta: text(60),
+      secondaryCta: text(60),
+    }),
+    projects: homeSectionSchema.extend({
+      deliveredLabel: text(120),
+      inProgressLabel: text(120),
+      notesTitle: text(140),
+    }),
+    pricing: homeSectionSchema.extend({
+      legalNote: text(260),
+      ctaLabel: text(80),
+    }),
+    roadmap: homeSectionSchema.extend({
+      ctaTitle: text(140),
+      ctaButton: text(80),
+    }),
+    autonomy: homeSectionSchema,
+    contact: z.object({
+      title: text(140),
+      description: text(280),
+      responseTime: text(80),
+    }),
+  }),
 })
 
 const projectSchema = z.object({
@@ -45,6 +101,12 @@ const projectSchema = z.object({
   imageUrl: optionalAssetRef('imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
   externalUrl: optionalUrl,
   status: z.enum(['entregado', 'en-curso']),
+  lighthouse: z.object({
+    performance: lighthouseMetricSchema.optional(),
+    accessibility: lighthouseMetricSchema.optional(),
+    bestPractices: lighthouseMetricSchema.optional(),
+    seo: lighthouseMetricSchema.optional(),
+  }).optional(),
 })
 
 const packageSchema = z.object({
