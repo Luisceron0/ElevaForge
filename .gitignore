@@ -57,6 +57,13 @@ next-env.d.ts
 testem.log
 /typings
 
+# Testing (Vitest / Playwright)
+/coverage
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
+
 # System files
 .DS_Store
 Thumbs.db
