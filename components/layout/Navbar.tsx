@@ -7,7 +7,7 @@ import CTAButton from '@/components/ui/CTAButton'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
 
 const links = [
-  { href: '/#precios', label: 'Paquetes' },
+  { href: '/#soluciones', label: 'Soluciones' },
   { href: '/#proyectos', label: 'Proyectos' },
   { href: '/#proceso', label: 'Proceso' },
   { href: '/#autonomia', label: 'Diferencial' },

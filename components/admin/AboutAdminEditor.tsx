@@ -167,12 +167,11 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
-              <p className="text-sm font-semibold text-white">Precios</p>
-              <input value={draft.homeContent.pricing.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
-              <input value={draft.homeContent.pricing.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
-              <textarea value={draft.homeContent.pricing.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, description: e.target.value } } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
-              <textarea value={draft.homeContent.pricing.legalNote} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, legalNote: e.target.value } } }))} className="w-full min-h-[70px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Nota legal" />
-              <input value={draft.homeContent.pricing.ctaLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, ctaLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Texto CTA" />
+              <p className="text-sm font-semibold text-white">Soluciones</p>
+              <input value={draft.homeContent.soluciones.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
+              <input value={draft.homeContent.soluciones.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
+              <textarea value={draft.homeContent.soluciones.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, description: e.target.value } } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
+              <input value={draft.homeContent.soluciones.ctaLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, ctaLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Texto CTA" />
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
@@ -571,12 +570,11 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
           about.homeContent?.projects?.inProgressLabel || DEFAULT_ABOUT.homeContent.projects.inProgressLabel,
         notesTitle: about.homeContent?.projects?.notesTitle || DEFAULT_ABOUT.homeContent.projects.notesTitle,
       },
-      pricing: {
-        eyebrow: about.homeContent?.pricing?.eyebrow || DEFAULT_ABOUT.homeContent.pricing.eyebrow,
-        title: about.homeContent?.pricing?.title || DEFAULT_ABOUT.homeContent.pricing.title,
-        description: about.homeContent?.pricing?.description || DEFAULT_ABOUT.homeContent.pricing.description,
-        legalNote: about.homeContent?.pricing?.legalNote || DEFAULT_ABOUT.homeContent.pricing.legalNote,
-        ctaLabel: about.homeContent?.pricing?.ctaLabel || DEFAULT_ABOUT.homeContent.pricing.ctaLabel,
+      soluciones: {
+        eyebrow: about.homeContent?.soluciones?.eyebrow || DEFAULT_ABOUT.homeContent.soluciones.eyebrow,
+        title: about.homeContent?.soluciones?.title || DEFAULT_ABOUT.homeContent.soluciones.title,
+        description: about.homeContent?.soluciones?.description || DEFAULT_ABOUT.homeContent.soluciones.description,
+        ctaLabel: about.homeContent?.soluciones?.ctaLabel || DEFAULT_ABOUT.homeContent.soluciones.ctaLabel,
       },
       roadmap: {
         eyebrow: about.homeContent?.roadmap?.eyebrow || DEFAULT_ABOUT.homeContent.roadmap.eyebrow,

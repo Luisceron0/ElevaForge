@@ -44,12 +44,14 @@ export async function PUT(request: NextRequest) {
   }
 
   const record = body as Record<string, unknown>
-  const key = String(record.key ?? '') as keyof SiteContent
+  const rawKey = String(record.key ?? '')
   const value = record.value
 
-  if (!['about', 'projects', 'packages'].includes(key)) {
+  const validKeys = Object.keys(DEFAULT_SITE_CONTENT) as Array<keyof SiteContent>
+  if (!validKeys.includes(rawKey as keyof SiteContent)) {
     return NextResponse.json({ error: 'Clave de contenido inválida' }, { status: 400, headers: NO_STORE })
   }
+  const key = rawKey as keyof SiteContent
 
   const fallback = DEFAULT_SITE_CONTENT[key]
   if (Array.isArray(fallback) && !Array.isArray(value)) {

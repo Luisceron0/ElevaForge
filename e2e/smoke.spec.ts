@@ -89,6 +89,28 @@ test.describe('smoke', () => {
     expect(html).not.toContain('México')
   })
 
+  test('no prices anywhere in the public HTML (ADR-003)', async ({ request }) => {
+    const response = await request.get('/')
+    const html = await response.text()
+    // Old package model showed literal USD/COP prices — the new
+    // "Familias de soluciones" section must never show a price.
+    expect(html).not.toMatch(/USD\s*\$?\d/)
+    expect(html).not.toMatch(/\bCOP\b/)
+    expect(html).not.toMatch(/priceUsd|priceCop/)
+  })
+
+  test('home renders the 3 fixed familias de soluciones, no "Paquetes" (§11/§15)', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.locator('#soluciones')).toBeVisible()
+    const solucionesText = await page.locator('#soluciones').innerText()
+    expect(solucionesText).toContain('Presencia Digital')
+    expect(solucionesText).toContain('Sistemas de Gestión')
+    expect(solucionesText).toContain('Software Personalizado')
+
+    const navText = await page.locator('header nav').innerText()
+    expect(navText).not.toContain('Paquetes')
+  })
+
   test('Vercel Analytics script does not trigger a CSP violation (RF-017)', async ({ page }) => {
     const cspViolations: string[] = []
     page.on('console', (msg) => {

@@ -38,9 +38,9 @@ Precondición: Fase 2 desplegada.
 DoD Fase 3: HTML servido contiene los valores reales (test de CI que assertee que no aparece "0" en la sección de métricas); cero `@gmail.com`; cero enlaces duplicados en nav.
 
 ## Fase 4 — IA multipágina + SEO estructural
-Precondición: `[BLOCKED:G4 — Anexo B #11, naming de /proceso]` para esa página; geo confirmado (para hreflang).
+Precondición: naming de `/proceso` confirmado por el usuario (2026-07-21, delegado explícitamente): **"Estándar Forge"** (ya existía informalmente en `DEFAULT_ABOUT.experience.description`). Geo confirmado (es-CO).
 - [ ] **§14** Migrar de single-page a rutas: `/soluciones`, `/soluciones/[familia]`, `/proyectos`, `/proyectos/[slug]`, `/proceso`, `/contacto`. Header ≤ 6 ítems, CTA persistente.
-- [ ] **§11/§12** Rename `packages`→`soluciones` (schema + tipos + defaults + editor + `PricingSection` + migración de datos, sin dejar la clave vieja); eliminar precios del sitio público (ADR-003).
+- [x] **§11/§12** Rename `packages`→`soluciones` hecho: `lib/site-content.ts` (`FamiliaDeSolucion`, `DEFAULT_SOLUCIONES` — 3 familias fijas del brief, sin precios), `lib/admin-content-validation.ts` (`familiaSchema`, `soluciones` con `.length(3)`), `components/admin/SolucionesAdminEditor.tsx` (reemplaza `PackagesAdminEditor` — edita las 3 familias fijas, sin add/remove), `components/sections/SolucionesSection.tsx` (reemplaza `PricingSection`, sin precios), `app/page.tsx`, `app/api/admin/content/route.ts` (el allowlist de keys estaba hardcodeado a `['about','projects','packages']` — bug real que hubiera rechazado `soluciones`; ahora se deriva de `Object.keys(DEFAULT_SITE_CONTENT)`), nav (`Navbar`/`Footer`: `#precios`→`#soluciones`, label "Paquetes"→"Soluciones"). Sin clave vieja: `supabase/01-schema-and-rls.sql` actualizado (constraint ya no incluye `'packages'`, con instrucción de limpieza para filas viejas). Verificación: `npm run typecheck/lint/test/build` en verde; `npx playwright test` 13/13, incluye test nuevo que confirma cero precios en el HTML servido (ADR-003) y las 3 familias visibles en `/`.
 - [ ] **SEO-07/08** Una URL por intención; JSON-LD por tipo (`Service`, `BreadcrumbList`, `Organization` con email corporativo).
 - [ ] **SEO-11** 301/anchor-map de `/#precios`→`/soluciones`, `/#proyectos`→`/proyectos`, etc. Sin 404 de enlaces externos.
 - [ ] **RF-019** FAQ con `FAQPage` schema (incluye "¿cómo se define la inversión?").
@@ -79,7 +79,7 @@ DoD Fase 6: si entra, cada artículo indexable y con datos estructurados; si no,
 | 8 | Compatibilidad de deprecar `/api/leads` POST | §12, RF-012 | ¿Hay integraciones externas activas llamando a `/api/leads` que se romperían al quitar el POST? |
 | 9 | Métrica objetivo de conversión | CRO-07 | ¿Cuál es el número objetivo (ej. ≥X solicitudes/mes o tasa visita→lead ≥Y%)? |
 | 10 | Herramienta de analítica (duplicado de #5) | ADR-008 | (mismo que #5) |
-| 11 | Naming del método propio para `/proceso` | §29, Fase 4 | ¿Cómo se llama el método/proceso propio de ElevaForge para la página `/proceso`? |
+| 11 | ~~Naming del método propio para `/proceso`~~ — **resuelto 2026-07-21: "Estándar Forge"** (usuario delegó la elección explícitamente; ya existía informalmente en el copy) | §29, Fase 4 | — |
 | 12 | Capacidad editorial real para `/insights` | ADR-009 (duplicado de #4) | ¿Quién escribe artículos y con qué frecuencia sostenible? |
 | 13 | Proveedor de correo en dominio propio | RF-021 | ¿Qué proveedor de correo se usará para `contacto@elevaforge.com` (para configurar SPF/DKIM/DMARC)? |
 

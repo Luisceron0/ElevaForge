@@ -75,8 +75,7 @@ const aboutSchema = z.object({
       inProgressLabel: text(120),
       notesTitle: text(140),
     }),
-    pricing: homeSectionSchema.extend({
-      legalNote: text(260),
+    soluciones: homeSectionSchema.extend({
       ctaLabel: text(80),
     }),
     roadmap: homeSectionSchema.extend({
@@ -109,18 +108,19 @@ const projectSchema = z.object({
   }).optional(),
 })
 
-const packageSchema = z.object({
-  id: z.string().trim().min(1).max(60).regex(/^[a-z0-9-]+$/i, 'ID inválido'),
-  title: text(120),
-  priceUsd: z.number().int().nonnegative(),
-  priceCop: z.number().int().nonnegative(),
-  bullets: z.array(text(220)).min(1).max(12),
+const familiaSchema = z.object({
+  id: z.enum(['presencia-digital', 'sistemas-de-gestion', 'software-personalizado']),
+  nombre: text(120),
+  descripcion: text(600),
+  soluciones: z.array(text(120)).min(1).max(12),
+  capacidades: z.array(text(120)).max(20),
 })
 
 const byKeySchema = {
   about: aboutSchema,
   projects: z.array(projectSchema).max(30),
-  packages: z.array(packageSchema).max(20),
+  // Exactamente 3 familias fijas (§15 del SRS) — nunca más ni menos.
+  soluciones: z.array(familiaSchema).length(3),
 } as const
 
 type ValidContentKey = keyof SiteContent

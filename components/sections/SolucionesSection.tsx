@@ -1,32 +1,24 @@
 import WhatsAppLink from '@/components/ui/WhatsAppLink'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
-import type { PackagePlan } from '@/lib/site-content'
+import type { FamiliaDeSolucion } from '@/lib/site-content'
 
-const ctaByPlanId: Record<string, string> = {
-  web: WHATSAPP_URLS.pricingWeb,
-  pos: WHATSAPP_URLS.pricingPos,
-  custom: WHATSAPP_URLS.pricingCustom,
+const ctaByFamiliaId: Record<string, string> = {
+  'presencia-digital': WHATSAPP_URLS.familiaPresenciaDigital,
+  'sistemas-de-gestion': WHATSAPP_URLS.familiaSistemasGestion,
+  'software-personalizado': WHATSAPP_URLS.familiaSoftwarePersonalizado,
 }
 
-const badgeByPlanId: Record<string, string> = {
-  web: 'Negocios locales',
-  pos: 'Comercio',
-  custom: 'Operaciones',
-}
-
-interface PricingSectionProps {
-  plans: PackagePlan[]
+interface SolucionesSectionProps {
+  familias: FamiliaDeSolucion[]
   eyebrow: string
   title: string
   description: string
-  legalNote: string
   ctaLabel: string
 }
 
-export default function PricingSection({ plans, eyebrow, title, description, legalNote, ctaLabel }: PricingSectionProps) {
-
+export default function SolucionesSection({ familias, eyebrow, title, description, ctaLabel }: SolucionesSectionProps) {
   return (
-    <section id="precios" aria-label="Paquetes" className="py-24 md:py-32 bg-forge-bg-light">
+    <section id="soluciones" aria-label="Familias de soluciones" className="py-24 md:py-32 bg-forge-bg-light">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="max-w-3xl mb-10">
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
@@ -44,37 +36,27 @@ export default function PricingSection({ plans, eyebrow, title, description, leg
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((plan) => (
+          {familias.map((familia) => (
             <article
-              key={plan.id}
+              key={familia.id}
               className="bg-white rounded-2xl p-8 border border-forge-blue-mid/20 shadow-forge-card flex flex-col justify-between hover:border-forge-orange-main/30 hover:shadow-forge-hover transition-all duration-300"
             >
               <div>
-                <div className="flex items-start justify-between mb-6 gap-4">
-                  <div>
-                    <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-2">
-                      {plan.title}
-                    </p>
-                    <p
-                      className="font-humanst text-forge-bg-dark leading-none"
-                      style={{ fontSize: '2rem' }}
-                    >
-                      ${plan.priceUsd}
-                    </p>
-                    <p className="text-base text-forge-blue-deep/70 mt-1">
-                      (≈ {plan.priceCop.toLocaleString()} COP)
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center rounded-full border border-forge-blue-mid/30 px-3 py-1.5 text-xs font-semibold tracking-widest uppercase text-forge-blue-mid">
-                    {badgeByPlanId[plan.id] ?? 'Paquete'}
-                  </span>
-                </div>
+                <p className="font-humanst text-forge-bg-dark leading-tight mb-3" style={{ fontSize: '1.5rem' }}>
+                  {familia.nombre}
+                </p>
+                <p className="text-base text-forge-blue-deep/80 leading-relaxed mb-6">
+                  {familia.descripcion}
+                </p>
 
                 <div className="h-px bg-forge-blue-mid/15 mb-6" />
 
-                <ul className="space-y-3">
-                  {plan.bullets.map((bullet) => (
-                    <li key={bullet} className="flex items-start gap-3 text-base text-forge-bg-dark">
+                <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-3">
+                  Soluciones principales
+                </p>
+                <ul className="space-y-3 mb-6">
+                  {familia.soluciones.map((solucion) => (
+                    <li key={solucion} className="flex items-start gap-3 text-base text-forge-bg-dark">
                       <svg
                         aria-hidden="true"
                         className="h-5 w-5 text-forge-orange-main mt-0.5 shrink-0"
@@ -85,15 +67,26 @@ export default function PricingSection({ plans, eyebrow, title, description, leg
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
-                      <span>{bullet}</span>
+                      <span>{solucion}</span>
                     </li>
                   ))}
                 </ul>
+
+                {familia.capacidades.length > 0 && (
+                  <>
+                    <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid/70 mb-2">
+                      Capacidades configurables
+                    </p>
+                    <p className="text-sm text-forge-bg-dark/60 leading-relaxed">
+                      {familia.capacidades.join(' · ')}
+                    </p>
+                  </>
+                )}
               </div>
 
               <WhatsAppLink
-                href={ctaByPlanId[plan.id] ?? WHATSAPP_URLS.hero}
-                source={`pricing-${plan.id}`}
+                href={ctaByFamiliaId[familia.id] ?? WHATSAPP_URLS.hero}
+                source={`soluciones-${familia.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-8 w-full text-center inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold border border-forge-blue-mid text-forge-blue-deep hover:bg-forge-blue-deep hover:text-white transition-colors duration-200"
@@ -103,10 +96,6 @@ export default function PricingSection({ plans, eyebrow, title, description, leg
             </article>
           ))}
         </div>
-
-        <p className="text-center text-base text-forge-bg-dark/50 mt-8">
-          {legalNote}
-        </p>
       </div>
     </section>
   )

@@ -2,7 +2,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import HeroSection from '@/components/sections/HeroSection'
 import ProjectsSection from '@/components/sections/ProjectsSection'
-import PricingSection from '@/components/sections/PricingSection'
+import SolucionesSection from '@/components/sections/SolucionesSection'
 import RoadmapSection from '@/components/sections/RoadmapSection'
 import AutonomySection from '@/components/sections/AutonomySection'
 import ContactSection from '@/components/sections/ContactSection'
@@ -45,13 +45,12 @@ export default async function Home() {
           inProgressLabel={homeContent.projects.inProgressLabel}
           notesTitle={homeContent.projects.notesTitle}
         />
-        <PricingSection
-          plans={content.packages}
-          eyebrow={homeContent.pricing.eyebrow}
-          title={homeContent.pricing.title}
-          description={homeContent.pricing.description}
-          legalNote={homeContent.pricing.legalNote}
-          ctaLabel={homeContent.pricing.ctaLabel}
+        <SolucionesSection
+          familias={content.soluciones}
+          eyebrow={homeContent.soluciones.eyebrow}
+          title={homeContent.soluciones.title}
+          description={homeContent.soluciones.description}
+          ctaLabel={homeContent.soluciones.ctaLabel}
         />
         <RoadmapSection
           phases={phases}

@@ -222,9 +222,9 @@ export default function ContactSection({ title, description, responseTime }: Con
             <label htmlFor="servicio" className="block text-sm font-semibold text-white/70 mb-2">Servicio de interés</label>
             <select id="servicio" name="servicio" value={formData.servicio} onChange={handleChange} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200">
               <option value="">Seleccionar</option>
-              <option value="landing">Sitio Web / Landing</option>
-              <option value="pos">PoS + Inventario</option>
-              <option value="custom">Software Personalizado</option>
+              <option value="presencia-digital">Presencia Digital (landing / sitio web)</option>
+              <option value="sistemas-de-gestion">Sistemas de Gestión (CRM, ERP, PoS, Help Desk)</option>
+              <option value="software-personalizado">Software Personalizado</option>
             </select>
           </div>
 

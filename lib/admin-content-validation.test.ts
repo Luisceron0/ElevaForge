@@ -8,8 +8,8 @@ describe('validateContentByKey', () => {
     expect(result.ok).toBe(true)
   })
 
-  it('accepts the default packages content as-is', () => {
-    const result = validateContentByKey('packages', DEFAULT_SITE_CONTENT.packages)
+  it('accepts the default soluciones content as-is', () => {
+    const result = validateContentByKey('soluciones', DEFAULT_SITE_CONTENT.soluciones)
     expect(result.ok).toBe(true)
   })
 
@@ -29,19 +29,24 @@ describe('validateContentByKey', () => {
     expect(result.ok).toBe(false)
   })
 
-  it('rejects a package with a negative price', () => {
+  it('rejects soluciones with fewer than the 3 fixed families (§15)', () => {
+    const bad = DEFAULT_SITE_CONTENT.soluciones.slice(0, 2)
+    const result = validateContentByKey('soluciones', bad)
+    expect(result.ok).toBe(false)
+  })
+
+  it('rejects a familia with an id outside the fixed 3 (no prices, no rigid packages)', () => {
     const bad = [
-      {
-        ...DEFAULT_SITE_CONTENT.packages[0],
-        priceUsd: -1,
-      },
+      { ...DEFAULT_SITE_CONTENT.soluciones[0], id: 'paquete-premium' },
+      DEFAULT_SITE_CONTENT.soluciones[1],
+      DEFAULT_SITE_CONTENT.soluciones[2],
     ]
-    const result = validateContentByKey('packages', bad)
+    const result = validateContentByKey('soluciones', bad)
     expect(result.ok).toBe(false)
   })
 
   it('rejects an unknown content key at the type level', () => {
     // @ts-expect-error — deliberately passing an invalid key to prove the schema map is exhaustive
-    expect(() => validateContentByKey('soluciones', [])).toThrow()
+    expect(() => validateContentByKey('packages', [])).toThrow()
   })
 })

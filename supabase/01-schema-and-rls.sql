@@ -75,7 +75,7 @@ alter table public.admin_users enable row level security;
 
 -- ── site_content ───────────────────────────────────────────────────────
 create table if not exists public.site_content (
-  key text primary key check (key in ('about', 'projects', 'packages', 'soluciones')),
+  key text primary key check (key in ('about', 'projects', 'soluciones')),
   value jsonb not null,
   updated_at timestamptz not null default now()
 );
@@ -87,8 +87,14 @@ alter table public.site_content enable row level security;
 -- inyectan al HTML ya renderizado — el navegador nunca consulta
 -- site_content directamente con la anon key. Escritura solo vía
 -- app/api/admin/content (sesión admin + service-role).
--- Nota: 'soluciones' ya incluido en el check para no requerir otra
--- migración cuando se ejecute el rename de §11/§12 (packages→soluciones).
+--
+-- MIGRACIÓN §11/§12 (packages→soluciones): si tu tabla site_content ya
+-- tiene una fila con key='packages' de antes de este cambio, el constraint
+-- de arriba la va a rechazar en cualquier UPDATE futuro sobre esa fila
+-- (no en filas existentes — Postgres no revalida CHECK en filas que no se
+-- tocan). Para limpiarla del todo, una vez que hayas confirmado en el
+-- panel admin que "Familias de soluciones" ya tiene el contenido correcto:
+--   delete from public.site_content where key = 'packages';
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- Verificación TC-06 (correr con la ANON key, no con la service-role key):

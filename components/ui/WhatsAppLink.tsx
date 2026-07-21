@@ -10,7 +10,7 @@ interface WhatsAppLinkProps extends ComponentProps<typeof Link> {
 }
 
 /**
- * Thin client-boundary wrapper so server components (Footer, PricingSection)
+ * Thin client-boundary wrapper so server components (Footer, SolucionesSection)
  * can render a WhatsApp link with click tracking (RF-017) without becoming
  * client components themselves.
  */
