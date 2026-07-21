@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import { trackWhatsAppClick, trackFormStart, trackFormSubmitOk, trackFormError } from '@/lib/analytics'
+
+const FORM_TYPE = 'contact-main'
 
 function sanitizeInput(value: string): string {
   return value.replace(/[\u0000-\u001F\u007F]/g, '').trim()
@@ -31,6 +34,7 @@ export default function ContactSection({ title, description, responseTime }: Con
   const [errorField, setErrorField] = useState<'' | 'nombre' | 'email' | 'consent'>('')
   const [honeypot, setHoneypot] = useState('')
   const statusRef = useRef<HTMLDivElement>(null)
+  const hasTrackedStart = useRef(false)
 
   useEffect(() => {
     if ((status === 'success' || status === 'error') && statusRef.current) {
@@ -41,6 +45,10 @@ export default function ContactSection({ title, description, responseTime }: Con
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
+    if (!hasTrackedStart.current) {
+      hasTrackedStart.current = true
+      trackFormStart(FORM_TYPE)
+    }
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -52,6 +60,7 @@ export default function ContactSection({ title, description, responseTime }: Con
       setStatus('error')
       setErrorField('nombre')
       setErrorMsg('El nombre es requerido (mínimo 2 caracteres).')
+      trackFormError(FORM_TYPE, 'validation')
       return
     }
 
@@ -59,6 +68,7 @@ export default function ContactSection({ title, description, responseTime }: Con
       setStatus('error')
       setErrorField('email')
       setErrorMsg('Por favor ingresa un email válido.')
+      trackFormError(FORM_TYPE, 'validation')
       return
     }
 
@@ -66,6 +76,7 @@ export default function ContactSection({ title, description, responseTime }: Con
       setStatus('error')
       setErrorField('consent')
       setErrorMsg('Debes aceptar la política de privacidad para continuar.')
+      trackFormError(FORM_TYPE, 'validation')
       return
     }
 
@@ -100,6 +111,7 @@ export default function ContactSection({ title, description, responseTime }: Con
       }
 
       setStatus('success')
+      trackFormSubmitOk(FORM_TYPE)
       setFormData({
         nombre: '',
         email: '',
@@ -118,6 +130,7 @@ export default function ContactSection({ title, description, responseTime }: Con
       setErrorMsg(
         'Hubo un error. Escríbenos directamente a elevaforge@gmail.com'
       )
+      trackFormError(FORM_TYPE, 'server')
     }
   }
 
@@ -133,7 +146,13 @@ export default function ContactSection({ title, description, responseTime }: Con
           </p>
 
           <div className="space-y-4 text-base">
-            <a href={WHATSAPP_URLS.hero} target="_blank" rel="noopener noreferrer" className="block text-forge-blue-light hover:text-white transition-colors duration-200">
+            <a
+              href={WHATSAPP_URLS.hero}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick('contact-section')}
+              className="block text-forge-blue-light hover:text-white transition-colors duration-200"
+            >
               WhatsApp: +57 315 081 2166
             </a>
             <a href="mailto:elevaforge@gmail.com" className="block text-forge-blue-light hover:text-white transition-colors duration-200">

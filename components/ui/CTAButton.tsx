@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { trackWhatsAppClick } from '@/lib/analytics'
 
 interface CTAButtonProps {
   href?: string
@@ -60,6 +63,8 @@ export default function CTAButton({
 
   if (href) {
     const isExternal = href.startsWith('http')
+    const isWhatsApp = href.includes('wa.me')
+
     return (
       <Link
         href={href}
@@ -68,6 +73,7 @@ export default function CTAButton({
         aria-label={finalLabel}
         aria-disabled={disabled}
         className={mergedClassName}
+        onClick={isWhatsApp ? () => trackWhatsAppClick(finalLabel || href) : undefined}
       >
         {content}
       </Link>

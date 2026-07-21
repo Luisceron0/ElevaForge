@@ -20,10 +20,12 @@ Precondición: ninguna, salvo F-02 que necesita el SQL (G1/Anexo B #1).
 DoD Fase 1: TC-03, TC-04, TC-05, TC-08, TC-09 en verde; F-02 verificado (TC-06) o explícitamente `[BLOCKED]`; `npm run build` OK; sin secretos en el árbol.
 
 ## Fase 2 — Medición
-Precondición: `[BLOCKED:G1 — ADR-008 sin confirmar, Anexo B #10]` herramienta de analítica (Vercel Analytics vs Plausible).
-- [ ] **RF-017** Analítica sin cookies invasivas, compatible con CSP (actualizar `connect-src`/`script-src` explícitos). Eventos: page_view, click WhatsApp, form_start, form_submit_ok, form_error, click "Solicitar diagnóstico". Sin PII.
+Precondición: herramienta confirmada por el usuario (2026-07-21): **Vercel Analytics**.
+- [x] **RF-017** `@vercel/analytics` instalado; `<Analytics />` en `app/layout.tsx` (page_view automático); eventos `click_whatsapp` (todos los CTAs de WhatsApp: Navbar, Footer, ContactSection, PricingSection — vía `lib/analytics.ts` + `components/ui/WhatsAppLink.tsx`), `form_start`/`form_submit_ok`/`form_error` en `ContactSection.tsx` (el form que realmente se renderiza en `/`). Ningún evento incluye PII (solo `form_type`/`source`/`reason`, nunca nombre/email/mensaje).
+  - **CSP: no requirió ningún cambio.** Verificado empíricamente (no asumido): el script de Vercel Analytics se inyecta vía DOM API desde código ya hidratado (confía en `strict-dynamic`) y las llamadas van a rutas same-origin (`/_vercel/insights/*`, ya cubierto por `connect-src 'self'`). Test e2e nuevo confirma cero violaciones de CSP en consola.
+  - **Falta para cerrar Fase 2 del todo:** capturar la línea base de CRO-01 (funnel actual) antes de tocar el rediseño visual — eso requiere que el sitio esté deployado con este cambio y pase unos días/semanas juntando datos reales; no es algo que se "complete" en una sesión de desarrollo.
 
-DoD Fase 2: funnel visita→interacción→lead consultable; línea base capturada del sitio actual antes de tocar el diseño.
+DoD Fase 2: funnel visita→interacción→lead consultable (mecanismo listo, deployment y ventana de datos reales pendientes); línea base a capturar antes de tocar el diseño (Fase 5).
 
 ## Fase 3 — Quick wins de conversión y confianza
 Precondición: Fase 2 desplegada.

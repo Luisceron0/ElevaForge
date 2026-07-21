@@ -88,4 +88,18 @@ test.describe('smoke', () => {
     expect(html).not.toContain('es_MX')
     expect(html).not.toContain('México')
   })
+
+  test('Vercel Analytics script does not trigger a CSP violation (RF-017)', async ({ page }) => {
+    const cspViolations: string[] = []
+    page.on('console', (msg) => {
+      if (msg.type() === 'error' && /content security policy|csp/i.test(msg.text())) {
+        cspViolations.push(msg.text())
+      }
+    })
+
+    await page.goto('/')
+    // Give the client-boundary <Analytics /> effect a beat to inject its script.
+    await page.waitForTimeout(1000)
+    expect(cspViolations).toEqual([])
+  })
 })

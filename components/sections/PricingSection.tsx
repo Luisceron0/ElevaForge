@@ -1,3 +1,4 @@
+import WhatsAppLink from '@/components/ui/WhatsAppLink'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
 import type { PackagePlan } from '@/lib/site-content'
 
@@ -90,14 +91,15 @@ export default function PricingSection({ plans, eyebrow, title, description, leg
                 </ul>
               </div>
 
-              <a
+              <WhatsAppLink
                 href={ctaByPlanId[plan.id] ?? WHATSAPP_URLS.hero}
+                source={`pricing-${plan.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-8 w-full text-center inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold border border-forge-blue-mid text-forge-blue-deep hover:bg-forge-blue-deep hover:text-white transition-colors duration-200"
               >
                 {ctaLabel}
-              </a>
+              </WhatsAppLink>
             </article>
           ))}
         </div>

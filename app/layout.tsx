@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 // Force per-request server rendering so middleware-provided headers
@@ -173,6 +174,7 @@ export default async function RootLayout({
           Saltar al contenido principal
         </a>
         {children}
+        <Analytics />
       </body>
     </html>
   )
