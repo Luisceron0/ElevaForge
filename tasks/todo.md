@@ -28,7 +28,7 @@ DoD Fase 2: funnel visita→interacción→lead consultable; línea base captura
 ## Fase 3 — Quick wins de conversión y confianza
 Precondición: Fase 2 desplegada.
 - [ ] **F-08 / RF-018** Cifras reales en SSR (métricas Lighthouse, contadores); animación como enhancement; `prefers-reduced-motion`; fix "1 proyectos entregados" (concordancia).
-- [ ] **F-07** Eliminar enlaces de nav duplicados (`#autonomia` x2); regla de nav de §14.
+- [x] **F-07** Eliminar enlaces de nav duplicados (`#autonomia` x2); regla de nav de §14. Se eliminó "Garantía" (duplicaba el destino de "Diferencial", que coincide con el eyebrow/contenido real de `AutonomySection.tsx`) de `Navbar.tsx` y `Footer.tsx` — quedan 5 ítems en el header (≤6, cumple §14). Verificación: `npx playwright test` con un chequeo nuevo que falla si dos `<a>` del nav apuntan al mismo `href`.
 - [ ] **RF-021** Correo en dominio propio (`contacto@elevaforge.com`); quitar todo `@gmail.com`. SPF/DKIM/DMARC → `[BLOCKED:G1 — Anexo B #13, proveedor de correo]`.
 - [ ] **RF-007 / SEO-02** Legales revisados (Ley 1581/2012 → `[BLOCKED:G1 — Anexo B #3, revisión legal]`); `sitemap` incluye `/nosotros`; geo → `[BLOCKED:G1 — Anexo B #2, es-CO sin confirmar]`.
 

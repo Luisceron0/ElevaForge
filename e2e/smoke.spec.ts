@@ -48,4 +48,13 @@ test.describe('smoke', () => {
     expect(body).toContain('/privacidad')
     expect(body).toContain('/terminos')
   })
+
+  test('no two header nav links point to the same destination (F-07)', async ({ page }) => {
+    await page.goto('/')
+    const hrefs = await page.locator('header nav ul a').evaluateAll((links) =>
+      links.map((link) => (link as HTMLAnchorElement).getAttribute('href')),
+    )
+    expect(hrefs.length).toBeGreaterThan(0)
+    expect(new Set(hrefs).size).toBe(hrefs.length)
+  })
 })
