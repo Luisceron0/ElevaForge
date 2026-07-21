@@ -32,5 +32,8 @@ Al grepear `x-forwarded-for` en todo el repo aparecieron 7 ocurrencias, no las 3
 ## `npm audit` reporta 21 vulnerabilidades, ninguna introducida por F-01
 Verificado con `npm audit` antes/después de agregar `@upstash/ratelimit`, `@upstash/redis`, `@vercel/functions`: las vulnerabilidades (axios, hono, next, simple-git, etc.) vienen de dependencias transitivas de `@testsprite/testsprite-mcp` y de la propia versión de `next`/tooling, no de las libs nuevas. Está fuera de scope de F-01 (que es sobre IP confiable + rate-limit compartido); queda para la tarea "Base" de Fase 1 (SAST + dependency scanning en CI, SRS §17).
 
+## `style-src 'unsafe-inline'` no se puede reducir sin tocar 10 archivos
+`grep -rl "style={{" components app` da 10 archivos con inline styles de React. Quitar `unsafe-inline` de `style-src` sin migrar esos estilos a className/nonce rompería el render de esos componentes. Es parte de la decisión ADR-004 (nonce→hash), no de una corrección aislada — no tocar sin confirmar el ADR primero.
+
 ## Repo tiene ramas remotas activas además de `main`/`develop`
 `origin` incluye `copilot/combine-fix-consumption-and-develop`, `copilot/merge-all-branches`, `fix/mobile-menu-global-border`. Antes de crear una rama nueva, chequear que el nombre no choque con trabajo en curso de otro colaborador/bot.
