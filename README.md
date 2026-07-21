@@ -68,7 +68,7 @@ npm run dev
 
 - URL: /admin/login
 - Variables requeridas:
-  - ADMIN_SESSION_SEED (requerido en producción)
+  - ADMIN_SESSION_SEED (requerido en producción; debe ser un secreto propio y dedicado — nunca reutilices `SUPABASE_SERVICE_ROLE_KEY` como semilla)
 - Variables opcionales de migración (legacy):
   - ADMIN_USERNAME
   - ADMIN_PASSWORD
