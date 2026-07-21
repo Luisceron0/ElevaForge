@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     'Next.js',
     'SEO',
     'PyMEs',
-    'desarrollo de software México',
+    'desarrollo de software Colombia',
     'páginas web profesionales',
     'aplicaciones web',
   ],
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     description:
       'No solo creamos herramientas; forjamos el motor digital de tu empresa con transparencia total y resultados Lighthouse verificables.',
     type: 'website',
-    locale: 'es_MX',
+    locale: 'es_CO',
     url: SITE_URL,
     siteName: 'ElevaForge',
     images: [
@@ -117,7 +117,7 @@ export default async function RootLayout({
     },
     areaServed: {
       '@type': 'Country',
-      name: 'México',
+      name: 'Colombia',
     },
     knowsAbout: [
       'Desarrollo Web',

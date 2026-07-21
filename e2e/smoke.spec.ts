@@ -80,4 +80,12 @@ test.describe('smoke', () => {
     expect(html).not.toMatch(/>1<!--\s*-->\s*<!--\s*-->\s*proyectos entregados/)
     expect(html).toMatch(/>1<!--\s*-->\s*<!--\s*-->\s*proyecto entregado</)
   })
+
+  test('geo metadata targets Colombia, not Mexico (SEO-01/ADR-002)', async ({ request }) => {
+    const response = await request.get('/')
+    const html = await response.text()
+    expect(html).toContain('es_CO')
+    expect(html).not.toContain('es_MX')
+    expect(html).not.toContain('México')
+  })
 })
