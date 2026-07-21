@@ -1,0 +1,82 @@
+# todo.md — Plan de ejecución (derivado de SRS-ElevaForge-v0.2.md)
+
+Estado: `[ ]` no iniciada · `[~]` en curso · `[x]` hecha (con verificación) · `[BLOCKED:Gx]` bloqueada por gate.
+
+No dupliques el "por qué" acá — eso vive en el SRS. Esto es solo el checklist de "qué falta ahora".
+
+## Fase 0 — Bootstrap de artefactos
+- [x] Crear `CLAUDE.md`, `tasks/todo.md`, `tasks/lessons.md`. Verificación: archivos existentes, PR `chore/fase0-bootstrap-artefactos`.
+
+## Fase 1 — Seguridad y base técnica
+Precondición: ninguna, salvo F-02 que necesita el SQL (G1/Anexo B #1).
+- [ ] **F-01** IP confiable (`x-real-ip`/`x-vercel-forwarded-for`); rate-limit de login/contact a store compartido (Vercel KV/Upstash). *(RNF-SEC-01, TC-03/05)*
+- [ ] **F-02** `[BLOCKED:G1 — falta SQL de policies RLS, Anexo B #1]` RLS deny-by-default en `leads`/`admin_users`/`site_content`; anon key sin `SELECT` sobre `leads`/`admin_users`. *(RNF-SEC-02, TC-06)*
+- [ ] **F-03** `ADMIN_SESSION_SEED` obligatorio, fail-closed si falta; nunca la service key como semilla. *(RNF-SEC-03)*
+- [ ] **F-04** Check de arranque que alerte si coexisten admins en DB y env legacy; documentar remoción. *(RNF-SEC-04)*
+- [ ] **SEC-05** `X-XSS-Protection: 0`; consolidar headers en una sola fuente; evaluar CSP hash (ADR-004) — decisión antes de implementar.
+- [ ] **Base** Fijar Node ≥ 20 en `engines`; agregar Vitest + Playwright; `npm test` corre tests reales; CI con `lint`+`typecheck`+`test`+secrets-scan.
+
+DoD Fase 1: TC-03, TC-04, TC-05, TC-08, TC-09 en verde; F-02 verificado (TC-06) o explícitamente `[BLOCKED]`; `npm run build` OK; sin secretos en el árbol.
+
+## Fase 2 — Medición
+Precondición: `[BLOCKED:G1 — ADR-008 sin confirmar, Anexo B #10]` herramienta de analítica (Vercel Analytics vs Plausible).
+- [ ] **RF-017** Analítica sin cookies invasivas, compatible con CSP (actualizar `connect-src`/`script-src` explícitos). Eventos: page_view, click WhatsApp, form_start, form_submit_ok, form_error, click "Solicitar diagnóstico". Sin PII.
+
+DoD Fase 2: funnel visita→interacción→lead consultable; línea base capturada del sitio actual antes de tocar el diseño.
+
+## Fase 3 — Quick wins de conversión y confianza
+Precondición: Fase 2 desplegada.
+- [ ] **F-08 / RF-018** Cifras reales en SSR (métricas Lighthouse, contadores); animación como enhancement; `prefers-reduced-motion`; fix "1 proyectos entregados" (concordancia).
+- [ ] **F-07** Eliminar enlaces de nav duplicados (`#autonomia` x2); regla de nav de §14.
+- [ ] **RF-021** Correo en dominio propio (`contacto@elevaforge.com`); quitar todo `@gmail.com`. SPF/DKIM/DMARC → `[BLOCKED:G1 — Anexo B #13, proveedor de correo]`.
+- [ ] **RF-007 / SEO-02** Legales revisados (Ley 1581/2012 → `[BLOCKED:G1 — Anexo B #3, revisión legal]`); `sitemap` incluye `/nosotros`; geo → `[BLOCKED:G1 — Anexo B #2, es-CO sin confirmar]`.
+
+DoD Fase 3: HTML servido contiene los valores reales (test de CI que assertee que no aparece "0" en la sección de métricas); cero `@gmail.com`; cero enlaces duplicados en nav.
+
+## Fase 4 — IA multipágina + SEO estructural
+Precondición: `[BLOCKED:G4 — Anexo B #11, naming de /proceso]` para esa página; geo confirmado (para hreflang).
+- [ ] **§14** Migrar de single-page a rutas: `/soluciones`, `/soluciones/[familia]`, `/proyectos`, `/proyectos/[slug]`, `/proceso`, `/contacto`. Header ≤ 6 ítems, CTA persistente.
+- [ ] **§11/§12** Rename `packages`→`soluciones` (schema + tipos + defaults + editor + `PricingSection` + migración de datos, sin dejar la clave vieja); eliminar precios del sitio público (ADR-003).
+- [ ] **SEO-07/08** Una URL por intención; JSON-LD por tipo (`Service`, `BreadcrumbList`, `Organization` con email corporativo).
+- [ ] **SEO-11** 301/anchor-map de `/#precios`→`/soluciones`, `/#proyectos`→`/proyectos`, etc. Sin 404 de enlaces externos.
+- [ ] **RF-019** FAQ con `FAQPage` schema (incluye "¿cómo se define la inversión?").
+- [ ] **RF-020** Formulario de diagnóstico en 2 pasos (paso 1 ≤ 4 campos ya crea el lead; backend sin cambios).
+- [ ] **RF-012 / §12** Deprecar `POST /api/leads` (dejar solo redirect) tras confirmar compat externa → `[BLOCKED:G1 — Anexo B #8]`.
+
+DoD Fase 4: cada familia y caso con URL, `<h1>` y metadata propios; `packages` no existe en DB ni en código; ningún precio en el sitio público; redirects verificados; TC-10 en verde.
+
+## Fase 5 — Rediseño visual
+Precondición: Fase 4 estable; línea base de Core Web Vitals capturada (Fase 2).
+- [ ] **DIS-01** Sistema de tokens en Tailwind config; sin estilos ad-hoc divergentes.
+- [ ] **§29** Adoptar patrones del modelo de referencia escalados; regla de escala honesta. CI&T es referencia de patrones; no se copia copy, identidad ni activos.
+- [ ] **DIS-03/04** Animaciones como enhancement; el rediseño no degrada CWV vs. línea base (LCP ≤ 2.5s, CLS ≤ 0.1, INP ≤ 200ms móvil).
+
+DoD Fase 5: CWV ≥ línea base; A11Y AA; comparación de conversión vs. línea base disponible.
+
+## Fase 6 — Motor de contenido (condicional)
+Precondición: `[BLOCKED:G4 — Anexo B #12, v1 vs v1.1 y capacidad editorial real]`.
+- [ ] **RF-016** `/insights` mínimo (solo artículos): URL propia, metadata, JSON-LD `Article`, en sitemap; render con escaping por defecto. Sin podcast/webinars/whitepapers.
+
+DoD Fase 6: si entra, cada artículo indexable y con datos estructurados; si no, marcado fuera de scope v1 en este archivo.
+
+---
+
+## Gates abiertos ahora mismo (Anexo B del SRS)
+
+| # | Qué falta | Bloquea | Pregunta para desbloquear |
+|---|---|---|---|
+| 1 | SQL de migración + policies RLS de Supabase | F-02, TC-06, G2 (deploy) | ¿Podés aportar el SQL actual de las policies de `leads`/`admin_users`/`site_content`, o autorizás que se redacte una propuesta de policies deny-by-default para tu revisión antes de aplicarla? |
+| 2 | Geo confirmado (es-CO vs MX vs LATAM) | SEO-01, hreflang, Fase 4 | ¿Confirmás es-CO como único mercado/geo para v1 (ADR-002), o hay otro mercado a cubrir? |
+| 3 | Revisión legal Ley 1581/2012 | RF-007 | ¿Quién revisa legalmente Privacidad/Términos antes de publicarlos? |
+| 4 | Scope de blog/documentación v1 | RF-016, Fase 6 | ¿Entra `/insights` en v1 (ADR-009) o se pospone a v1.1? |
+| 5 | Herramienta y alcance de analítica | RF-017, NF-05, Fase 2 | ¿Vercel Analytics o Plausible (ADR-008)? |
+| 6 | SLA/RTO/RPO objetivo y cobertura mínima de tests | §17 | ¿Hay un SLA formal a cumplir, o "mejor esfuerzo" es aceptable para v1? |
+| 7 | Nombres de personas en copy y veracidad de métricas Lighthouse | RF-005/006 | ¿Los nombres actuales (Miguel, Luis, Jhonatan, Santiago) y los scores Lighthouse mostrados son los reales/autorizados para publicar? |
+| 8 | Compatibilidad de deprecar `/api/leads` POST | §12, RF-012 | ¿Hay integraciones externas activas llamando a `/api/leads` que se romperían al quitar el POST? |
+| 9 | Métrica objetivo de conversión | CRO-07 | ¿Cuál es el número objetivo (ej. ≥X solicitudes/mes o tasa visita→lead ≥Y%)? |
+| 10 | Herramienta de analítica (duplicado de #5) | ADR-008 | (mismo que #5) |
+| 11 | Naming del método propio para `/proceso` | §29, Fase 4 | ¿Cómo se llama el método/proceso propio de ElevaForge para la página `/proceso`? |
+| 12 | Capacidad editorial real para `/insights` | ADR-009 (duplicado de #4) | ¿Quién escribe artículos y con qué frecuencia sostenible? |
+| 13 | Proveedor de correo en dominio propio | RF-021 | ¿Qué proveedor de correo se usará para `contacto@elevaforge.com` (para configurar SPF/DKIM/DMARC)? |
+
+Un `[PENDIENTE]` resuelto por suposición es peor que uno abierto. No se rellenan por inferencia.

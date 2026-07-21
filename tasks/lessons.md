@@ -1,0 +1,27 @@
+# lessons.md — Qué no repetir
+
+Se amplía cada vez que un error se detecta y se corrige. No dupliques el "por qué" del SRS acá; esto es solo la lección práctica.
+
+## Next 16 → `proxy.ts` es el middleware
+Auditores/linters desactualizados lo marcan como "archivo fuera de convención / renombrar a middleware.ts". **Es un falso positivo.** Next.js 16 reemplazó `middleware.ts` por `proxy.ts` (mismo boundary de red: exporta `proxy` + `config.matcher`). No lo renombres ni lo dupliques.
+
+## `AnimatedNumber` renderiza "0" en el HTML server-side
+Anima client-side, partiendo de 0. Confirmado en producción: el HTML servido muestra "0 Performance / 0 Accessibility / 0 Best Practices / 0 SEO" (F-08). Cualquier cifra de valor (métricas Lighthouse, contadores) debe tener su valor real en el SSR; la animación es progressive enhancement (F-08 / RF-018). Falsabilidad: `curl` al HTML debe contener los valores finales.
+
+## `force-dynamic` global existe por el nonce de CSP
+`app/layout.tsx` fuerza dinámico para poder inyectar el nonce per-request de `proxy.ts`. Si se migra a CSP con hash (ADR-004), se puede remover el `force-dynamic` y recuperar generación estática — pero **recién** tras validar que los inline conocidos (JSON-LD de `layout.tsx`) están cubiertos por el hash. No remover antes de esa validación.
+
+## `x-forwarded-for` es spoofeable — no es solo teoría, está confirmado en el código
+El cliente controla el valor izquierdo de `x-forwarded-for`. Confirmado que **tres** archivos usan el patrón vulnerable `req.headers.get('x-forwarded-for')?.split(',')[0]`: `proxy.ts:16-22`, `lib/security/api-guard.ts:62-68`, `lib/security/worker-auth.ts:31-37`. Ninguno usa `x-real-ip`/`x-vercel-forwarded-for`/`ipAddress()` de la plataforma como fuente primaria. F-01 (RNF-SEC-01) requiere corregir los tres, no solo uno — y el rate-limit de `rate-limit.ts` es además un `Map` en memoria per-instancia (no comparte estado entre invocaciones serverless), así que la corrección de IP sin mover a un store compartido (KV/Upstash) no cierra el hallazgo completo.
+
+## `packages` es la clave actual en `site_content`, `soluciones` es la nueva
+Confirmado en `lib/site-content.ts` (`SiteContent.packages`, `DEFAULT_PACKAGES`, `getSiteContent` filtra `.in('key', ['about', 'projects', 'packages'])`) y `lib/admin-content-validation.ts:120-124` (`byKeySchema.packages`). No dupliques la clave al migrar: migrá el dato de la fila `packages` a `soluciones` y borrá la vieja fila — una sola fuente de verdad (§19 del SRS).
+
+## `npm test` no prueba nada todavía
+`package.json:11` — `"test": "npm run typecheck"`. Es un gap conocido del SRS §17. No asumir que "tests pasan" significa cobertura funcional real hasta que Vitest/Playwright estén integrados (parte de Fase 1 / Base).
+
+## `engines` no está fijado en `package.json`
+El entorno de desarrollo real corre Node v24; el SRS pide fijar `engines.node >= 20`. Confirmar esto como parte de la tarea "Base" de Fase 1 antes de asumir compatibilidad de versión en CI/Vercel.
+
+## Repo tiene ramas remotas activas además de `main`/`develop`
+`origin` incluye `copilot/combine-fix-consumption-and-develop`, `copilot/merge-all-branches`, `fix/mobile-menu-global-border`. Antes de crear una rama nueva, chequear que el nombre no choque con trabajo en curso de otro colaborador/bot.
