@@ -82,7 +82,7 @@ El login valida credenciales contra la tabla `admin_users` en Supabase.
 3. Inicia sesión con admin legacy (si aún lo usas).
 4. En el panel admin, sección **Administradores**, crea los nuevos usuarios.
 5. Verifica que el nuevo usuario pueda entrar en `/admin/login`.
-6. Elimina `ADMIN_USERNAME` y `ADMIN_PASSWORD` de tus variables cuando ya no sean necesarios.
+6. Elimina `ADMIN_USERNAME` y `ADMIN_PASSWORD` de tus variables cuando ya no sean necesarios. Si no las eliminás, el servidor loguea una advertencia `LEGACY_ADMIN_CREDENTIAL_ACTIVE` al arrancar (ver `instrumentation.ts` / `lib/security/admin-bootstrap-check.ts`) mientras ese usuario también exista activo en `admin_users`.
 
 Desde el panel puedes:
 - Revisar leads completos y actualizar estado

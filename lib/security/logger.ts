@@ -25,6 +25,7 @@ export type SecurityEventType =
   | 'UNHANDLED_ERROR'
   | 'LOGIN_FAILED'
   | 'LOGIN_SUCCESS'
+  | 'LEGACY_ADMIN_CREDENTIAL_ACTIVE'
 
 export interface SecurityEvent {
   type: SecurityEventType
