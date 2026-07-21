@@ -57,4 +57,27 @@ test.describe('smoke', () => {
     expect(hrefs.length).toBeGreaterThan(0)
     expect(new Set(hrefs).size).toBe(hrefs.length)
   })
+
+  test('Lighthouse trust scores render their real value in the raw HTML, not 0 (F-08/RF-018)', async ({ request }) => {
+    const response = await request.get('/')
+    const html = await response.text()
+    // The Lighthouse score cards use aria-label="<realScore>" on the same
+    // span whose SSR text content used to be hardcoded to "0" before GSAP
+    // hydrated and animated it client-side.
+    const scoreSpans = [...html.matchAll(/aria-label="(\d{1,3})">(\d{1,3})</g)]
+    expect(scoreSpans.length).toBeGreaterThan(0)
+    for (const [, ariaValue, textValue] of scoreSpans) {
+      expect(textValue).toBe(ariaValue)
+      expect(textValue).not.toBe('0')
+    }
+  })
+
+  test('delivered project count agrees grammatically in Spanish (F-08)', async ({ request }) => {
+    const response = await request.get('/')
+    const html = await response.text()
+    // Bug was: count=1 rendered the plural "proyectos entregados" regardless
+    // of value (SRS evidence: "1 proyectos entregados").
+    expect(html).not.toMatch(/>1<!--\s*-->\s*<!--\s*-->\s*proyectos entregados/)
+    expect(html).toMatch(/>1<!--\s*-->\s*<!--\s*-->\s*proyecto entregado</)
+  })
 })
