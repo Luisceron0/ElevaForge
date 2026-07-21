@@ -19,6 +19,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateOrigin } from '@/lib/security/csrf'
 import { checkRateLimit } from '@/lib/security/rate-limit'
 import { logSecurityEvent } from '@/lib/security/logger'
+import { getTrustedClientIp } from '@/lib/security/client-ip'
 
 export interface GuardOptions {
   /** Maximum body size in bytes (default 8 KB). */
@@ -55,18 +56,6 @@ function shouldValidateJsonContentType(request: NextRequest): boolean {
   return false
 }
 
-/**
- * Extract client IP from standard headers.
- * Vercel / Cloudflare / Nginx all populate one of these.
- */
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  )
-}
-
 export async function runApiGuard(
   request: NextRequest,
   options: GuardOptions = {},
@@ -77,7 +66,7 @@ export async function runApiGuard(
     rateLimitWindowMs = 60_000,
   } = options
 
-  const ip = getClientIp(request)
+  const ip = getTrustedClientIp(request)
   const path = request.nextUrl.pathname
 
   // ── 1. Content-Type check (A02, A10) ───────────────────────────────
@@ -153,7 +142,7 @@ export async function runApiGuard(
   }
 
   // ── 4. Rate limiting (A01, A06, A07) ───────────────────────────────
-  const rl = checkRateLimit(`${ip}:${path}`, {
+  const rl = await checkRateLimit(`${ip}:${path}`, {
     maxRequests: rateLimitMax,
     windowMs: rateLimitWindowMs,
   })

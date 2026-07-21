@@ -6,20 +6,11 @@
  * OWASP A07 — Authentication Failures (login-specific rate limiting)
  */
 import { NextRequest, NextResponse } from 'next/server'
+import { getTrustedClientIp } from '@/lib/security/client-ip'
+import { checkRateLimit } from '@/lib/security/rate-limit'
 
-type WindowEntry = { hits: number[] }
-
-const loginStore = new Map<string, WindowEntry>()
 const LOGIN_WINDOW_MS = 10 * 60_000 // 10 minutes
 const LOGIN_MAX = 5
-
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  )
-}
 
 function allowOrigin(req: NextRequest): boolean {
   if (process.env.NODE_ENV === 'development') return true
@@ -51,24 +42,15 @@ function allowOrigin(req: NextRequest): boolean {
   }
 }
 
-function checkLoginRate(key: string): { ok: boolean; retryAfterSec: number } {
-  const now = Date.now()
-  let entry = loginStore.get(key)
-  if (!entry) {
-    entry = { hits: [] }
-    loginStore.set(key, entry)
+async function checkLoginRate(key: string): Promise<{ ok: boolean; retryAfterSec: number }> {
+  const rl = await checkRateLimit(`login-proxy:${key}`, {
+    maxRequests: LOGIN_MAX,
+    windowMs: LOGIN_WINDOW_MS,
+  })
+  return {
+    ok: rl.allowed,
+    retryAfterSec: Math.max(Math.ceil(rl.resetMs / 1000), 1),
   }
-
-  const cutoff = now - LOGIN_WINDOW_MS
-  entry.hits = entry.hits.filter((t) => t > cutoff)
-
-  if (entry.hits.length >= LOGIN_MAX) {
-    const reset = Math.ceil((entry.hits[0] + LOGIN_WINDOW_MS - now) / 1000)
-    return { ok: false, retryAfterSec: Math.max(reset, 1) }
-  }
-
-  entry.hits.push(now)
-  return { ok: true, retryAfterSec: 0 }
 }
 
 function reject(status: number, error: string, extraHeaders?: Record<string, string>) {
@@ -108,7 +90,7 @@ function buildCsp(nonce: string): string {
   ].join('; ')
 }
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
   const method = req.method.toUpperCase()
 
@@ -152,8 +134,8 @@ export function proxy(req: NextRequest) {
 
     // Login-specific rate limiting
     if (path === '/api/admin/login' && method === 'POST') {
-      const ip = getClientIp(req)
-      const rl = checkLoginRate(ip)
+      const ip = getTrustedClientIp(req)
+      const rl = await checkLoginRate(ip)
       if (!rl.ok) {
         return reject(429, 'Demasiados intentos, intenta más tarde', {
           'Retry-After': String(rl.retryAfterSec),

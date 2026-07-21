@@ -7,16 +7,9 @@ import {
 } from '@/lib/security/admin-session'
 import { logSecurityEvent } from '@/lib/security/logger'
 import { runApiGuard } from '@/lib/security/api-guard'
+import { getTrustedClientIp } from '@/lib/security/client-ip'
 
 const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
-
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  )
-}
 
 export async function POST(request: NextRequest) {
   const guard = await runApiGuard(request, {
@@ -36,7 +29,7 @@ export async function POST(request: NextRequest) {
   const record = body as Record<string, unknown>
   const username = String(record.username ?? '').trim().toLowerCase()
   const password = String(record.password ?? '')
-  const ip = getClientIp(request)
+  const ip = getTrustedClientIp(request)
 
   if (!(await verifyAdminCredentials(username, password))) {
     logSecurityEvent({ type: 'LOGIN_FAILED', ip, path: '/api/admin/login', method: 'POST', details: `username: ${username}` })

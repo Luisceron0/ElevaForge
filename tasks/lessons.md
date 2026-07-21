@@ -23,5 +23,14 @@ Confirmado en `lib/site-content.ts` (`SiteContent.packages`, `DEFAULT_PACKAGES`,
 ## `engines` no está fijado en `package.json`
 El entorno de desarrollo real corre Node v24; el SRS pide fijar `engines.node >= 20`. Confirmar esto como parte de la tarea "Base" de Fase 1 antes de asumir compatibilidad de versión en CI/Vercel.
 
+## `npm run lint` está roto en este repo (Next.js 16 quitó `next lint`)
+`package.json` define `"lint": "next lint"`, pero Next.js 16.1.6 ya no tiene ese subcomando (`npx next --help` no lo lista; falla con "Invalid project directory provided, no such directory: .../lint"). Esto es **drift del SRS**: el SRS asume que `npm run lint` funciona como parte del protocolo por tarea. No es algo introducido por F-01 — ya estaba roto en `main` antes de tocar nada. Reportado; queda pendiente de una tarea separada (parte de "Base" en Fase 1) migrar a ESLint standalone (`eslint .`) con el config ya presente (`eslint-config-next`).
+
+## F-01 tocó 7 archivos con el patrón XFF vulnerable, no 3
+Al grepear `x-forwarded-for` en todo el repo aparecieron 7 ocurrencias, no las 3 que el SRS menciona como ejemplo: `proxy.ts`, `lib/security/api-guard.ts`, `lib/security/worker-auth.ts`, `app/api/admin/login/route.ts`, `app/api/admin/uploads/image/route.ts`, `app/api/workers/cleanup/route.ts`, `app/api/workers/process-leads/route.ts`. Cuando el SRS da una lista de ejemplo de dónde corregir algo, grepear el patrón completo en el repo antes de asumir que la lista está completa.
+
+## `npm audit` reporta 21 vulnerabilidades, ninguna introducida por F-01
+Verificado con `npm audit` antes/después de agregar `@upstash/ratelimit`, `@upstash/redis`, `@vercel/functions`: las vulnerabilidades (axios, hono, next, simple-git, etc.) vienen de dependencias transitivas de `@testsprite/testsprite-mcp` y de la propia versión de `next`/tooling, no de las libs nuevas. Está fuera de scope de F-01 (que es sobre IP confiable + rate-limit compartido); queda para la tarea "Base" de Fase 1 (SAST + dependency scanning en CI, SRS §17).
+
 ## Repo tiene ramas remotas activas además de `main`/`develop`
 `origin` incluye `copilot/combine-fix-consumption-and-develop`, `copilot/merge-all-branches`, `fix/mobile-menu-global-border`. Antes de crear una rama nueva, chequear que el nombre no choque con trabajo en curso de otro colaborador/bot.

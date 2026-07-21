@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { isAuthorizedWorker } from '@/lib/security/worker-auth'
 import { logSecurityEvent } from '@/lib/security/logger'
+import { getTrustedClientIp } from '@/lib/security/client-ip'
 
 const MAX_ATTEMPTS = 5
 // When running once per day we can increase the batch size to process backlog.
@@ -128,14 +129,6 @@ async function processBatch() {
   }
 }
 
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  )
-}
-
 async function handleWorkerRequest(req: NextRequest) {
   const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
   // A07: Timing-safe auth check via shared utility
@@ -149,7 +142,7 @@ async function handleWorkerRequest(req: NextRequest) {
     // A10: Never expose internal errors to caller — log and return generic message
     logSecurityEvent({
       type: 'UNHANDLED_ERROR',
-      ip: getClientIp(req),
+      ip: getTrustedClientIp(req),
       path: req.nextUrl.pathname,
       method: req.method,
       details: err instanceof Error ? err.message : 'unknown',

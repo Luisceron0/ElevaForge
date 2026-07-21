@@ -9,7 +9,7 @@ No dupliques el "por qué" acá — eso vive en el SRS. Esto es solo el checklis
 
 ## Fase 1 — Seguridad y base técnica
 Precondición: ninguna, salvo F-02 que necesita el SQL (G1/Anexo B #1).
-- [ ] **F-01** IP confiable (`x-real-ip`/`x-vercel-forwarded-for`); rate-limit de login/contact a store compartido (Vercel KV/Upstash). *(RNF-SEC-01, TC-03/05)*
+- [x] **F-01** IP confiable (`x-real-ip` vía `@vercel/functions#ipAddress`, fallback `x-vercel-forwarded-for`); rate-limit de login/contact migrado a Upstash Redis (shared store) con fallback in-memory + warning si no está configurado. *(RNF-SEC-01, TC-03/05)*. Verificación: `npm run typecheck` y `npm run build` en verde; smoke test manual en dev (`/api/contact`, `/api/admin/login`) confirma IP resuelta correctamente y 429 tras 5 intentos/min. **Pendiente operativo (no bloqueante):** configurar `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` en Vercel para que el store compartido esté activo en producción — sin esas env vars, cae al fallback in-memory (mismo comportamiento que antes) y loguea `RATE_LIMIT_NOT_SHARED` una vez.
 - [ ] **F-02** `[BLOCKED:G1 — falta SQL de policies RLS, Anexo B #1]` RLS deny-by-default en `leads`/`admin_users`/`site_content`; anon key sin `SELECT` sobre `leads`/`admin_users`. *(RNF-SEC-02, TC-06)*
 - [ ] **F-03** `ADMIN_SESSION_SEED` obligatorio, fail-closed si falta; nunca la service key como semilla. *(RNF-SEC-03)*
 - [ ] **F-04** Check de arranque que alerte si coexisten admins en DB y env legacy; documentar remoción. *(RNF-SEC-04)*
