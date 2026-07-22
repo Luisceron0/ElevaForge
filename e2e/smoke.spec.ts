@@ -159,6 +159,35 @@ test.describe('smoke', () => {
     expect(faqData.mainEntity.length).toBeGreaterThan(0)
   })
 
+  test('contact form is a real two-step flow: paso 1 posts immediately, paso 2 is optional (RF-020)', async ({ page }) => {
+    const postedPayloads: Record<string, unknown>[] = []
+    await page.route('**/api/contact', async (route) => {
+      const body = route.request().postDataJSON()
+      postedPayloads.push(body)
+      await route.fulfill({ status: 202, contentType: 'application/json', body: JSON.stringify({ success: true, id: 'test-id' }) })
+    })
+
+    await page.goto('/contacto')
+    await expect(page.getByText('Paso 1 de 2')).toBeVisible()
+
+    await page.locator('#nombre').fill('Ana Test')
+    await page.locator('#email').fill('ana@example.com')
+    await page.locator('#mensaje').fill('Quiero digitalizar mi inventario')
+    await page.locator('input[type="checkbox"]').check()
+    await page.getByRole('button', { name: 'Solicitar diagnóstico' }).click()
+
+    // Paso 1 already posted the lead — before paso 2 is ever touched.
+    await expect.poll(() => postedPayloads.length).toBe(1)
+    expect(postedPayloads[0]).toMatchObject({ nombre: 'Ana Test', email: 'ana@example.com', origen: 'web-contact-main-paso1' })
+
+    await expect(page.getByText('Paso 2 (opcional)')).toBeVisible()
+    await page.getByText('Omitir, ya terminé').click()
+    await expect(page.getByText('Mensaje enviado')).toBeVisible()
+
+    // Skipping paso 2 must NOT fire a second request.
+    expect(postedPayloads.length).toBe(1)
+  })
+
   test('Vercel Analytics script does not trigger a CSP violation (RF-017)', async ({ page }) => {
     const cspViolations: string[] = []
     page.on('console', (msg) => {
