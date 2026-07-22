@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import JsonLd from '@/components/seo/JsonLd'
 import './globals.css'
 
 // Force per-request server rendering so middleware-provided headers
@@ -158,12 +159,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd).replace(/</g, '\u003c'),
-          }}
-        />
+        <JsonLd data={jsonLd} />
       </head>
       <body>
         {/* Skip navigation - accesibilidad */}
