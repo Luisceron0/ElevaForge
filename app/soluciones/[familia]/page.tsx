@@ -105,7 +105,7 @@ export default async function FamiliaPage({
                   {familia.capacidades.join(' · ')}
                 </p>
                 <p className="text-xs text-ef-ink-soft mt-3">
-                  Las capacidades complementan una solución — no son productos independientes.
+                  Las capacidades complementan una solución, no son productos independientes.
                 </p>
               </div>
             )}

@@ -406,7 +406,7 @@ export const DEFAULT_ABOUT: AboutContent = {
     soluciones: {
       eyebrow: 'Familias de soluciones',
       title: 'Resolvemos problemas de negocio, no vendemos tecnología',
-      description: 'Cada familia agrupa soluciones y capacidades configurables según lo que tu negocio necesita — sin paquetes rígidos.',
+      description: 'Cada familia agrupa soluciones y capacidades configurables según lo que tu negocio necesita, sin paquetes rígidos.',
       ctaLabel: 'Solicitar diagnóstico',
     },
     roadmap: {

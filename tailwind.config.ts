@@ -83,7 +83,8 @@ const config: Config = {
         },
       },
       animation: {
-        marquee: 'marquee 30s linear infinite',
+        marquee: 'marquee 38s linear infinite',
+        'marquee-reverse': 'marquee 38s linear infinite reverse',
       },
       boxShadow: {
         'forge-card': '0 1px 3px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.4)',

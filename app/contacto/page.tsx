@@ -7,7 +7,7 @@ import { breadcrumbJsonLd } from '@/lib/seo'
 import { getResolvedSiteContent } from '@/lib/site-content'
 
 export const metadata: Metadata = {
-  title: 'Contacto — Solicitar diagnóstico',
+  title: 'Contacto · Solicitar diagnóstico',
   description: 'Solicitá un diagnóstico gratuito con ElevaForge. Respuesta en menos de 24 horas.',
   alternates: { canonical: '/contacto' },
 }

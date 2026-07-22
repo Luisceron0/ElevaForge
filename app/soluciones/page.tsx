@@ -9,7 +9,7 @@ import { getResolvedSiteContent } from '@/lib/site-content'
 export const metadata: Metadata = {
   title: 'Familias de soluciones',
   description:
-    'Presencia Digital, Sistemas de Gestión y Software Personalizado — resolvemos problemas de negocio, no vendemos tecnología.',
+    'Presencia Digital, Sistemas de Gestión y Software Personalizado. Resolvemos problemas de negocio, no vendemos tecnología.',
   alternates: { canonical: '/soluciones' },
 }
 
@@ -36,7 +36,7 @@ export default async function SolucionesPage() {
               Resolvemos problemas de negocio, <span className="text-ef-orange">no vendemos tecnología</span>
             </h1>
             <p className="text-ef-paper/70 text-lg leading-relaxed">
-              Cada familia agrupa soluciones y capacidades configurables según lo que tu negocio necesita — sin paquetes rígidos ni precios fijos.
+              Cada familia agrupa soluciones y capacidades configurables según lo que tu negocio necesita, sin paquetes rígidos ni precios fijos.
             </p>
           </div>
 

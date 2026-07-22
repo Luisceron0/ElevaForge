@@ -8,7 +8,7 @@ import { getResolvedSiteContent } from '@/lib/site-content'
 
 export const metadata: Metadata = {
   title: 'Proyectos',
-  description: 'Casos reales de ElevaForge — reto, solución y resultado, con métricas Lighthouse verificables.',
+  description: 'Casos reales de ElevaForge: reto, solución y resultado, con métricas Lighthouse verificables.',
   alternates: { canonical: '/proyectos' },
 }
 

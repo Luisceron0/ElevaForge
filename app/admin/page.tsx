@@ -7,7 +7,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 // Prevent search engines from indexing the admin dashboard
 export const metadata: Metadata = {
-  title: 'Panel admin — ElevaForge',
+  title: 'Panel admin · ElevaForge',
   robots: { index: false, follow: false, noarchive: true },
 }
 

@@ -17,12 +17,12 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     question: '¿Qué incluye una solicitud de diagnóstico?',
     answer:
-      'Una conversación inicial sin costo donde entendemos tu problema de negocio, tu contexto y tus objetivos. De ahí sale un alcance preliminar y los próximos pasos concretos — no es una llamada de ventas genérica.',
+      'Una conversación inicial sin costo donde entendemos tu problema de negocio, tu contexto y tus objetivos. De ahí sale un alcance preliminar y los próximos pasos concretos, no es una llamada de ventas genérica.',
   },
   {
     question: '¿Cómo se define la inversión, si no publican precios?',
     answer:
-      'Cada solución es distinta porque cada negocio lo es. El costo se define en la fase de diseño y arquitectura, después de entender el alcance real — no antes. Eso evita cobrar de más por lo que no necesitás y de menos por lo que sí. Vas a conocer el número antes de que empecemos a construir, nunca después.',
+      'Cada solución es distinta porque cada negocio lo es. El costo se define en la fase de diseño y arquitectura, después de entender el alcance real, no antes. Eso evita cobrar de más por lo que no necesitás y de menos por lo que sí. Vas a conocer el número antes de que empecemos a construir, nunca después.',
   },
   {
     question: '¿El código y los accesos son míos?',
@@ -37,10 +37,10 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     question: '¿Cuánto tiempo toma un proyecto?',
     answer:
-      'Depende del alcance — lo definimos juntos en la fase de exploración y queda documentado antes de empezar a desarrollar, con entregas parciales en el camino para que puedas monitorear avances en tiempo real.',
+      'Depende del alcance: lo definimos juntos en la fase de exploración y queda documentado antes de empezar a desarrollar, con entregas parciales en el camino para que puedas monitorear avances en tiempo real.',
   },
   {
-    question: 'Mi negocio recién empieza a digitalizarse — ¿igual pueden ayudarme?',
+    question: 'Mi negocio recién empieza a digitalizarse, ¿igual pueden ayudarme?',
     answer:
       'Sí. Trabajamos con acompañamiento cercano desde el análisis hasta después del lanzamiento, pensado específicamente para negocios que dan sus primeros pasos en digitalización, no solo para equipos técnicos.',
   },

@@ -28,7 +28,7 @@ export default function StatsBand({ lighthouse }: StatsBandProps) {
             Prueba antes que promesa
           </p>
           <p className="text-ef-paper/75 text-base max-w-md md:text-right">
-            Puntajes Lighthouse reales, verificados en producción — no aspiracionales.
+            Puntajes Lighthouse reales, verificados en producción, no aspiracionales.
           </p>
         </Reveal>
 

@@ -18,7 +18,7 @@ export default function StatementBand() {
           </p>
           <p className="mt-8 text-ef-ink text-lg md:text-xl leading-relaxed max-w-2xl">
             No vendemos frameworks, lenguajes ni horas de desarrollo. Empezamos por
-            el problema de tu negocio y diseñamos la solución que lo resuelve —
+            el problema de tu negocio y diseñamos la solución que lo resuelve,
             con ingeniería, documentación y autonomía para tu equipo.
           </p>
         </Reveal>

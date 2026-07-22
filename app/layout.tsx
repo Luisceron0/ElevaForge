@@ -27,7 +27,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://elevaforge.com'
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'ElevaForge — Forjamos tu crecimiento digital',
+    default: 'ElevaForge · Forjamos tu crecimiento digital',
     template: '%s | ElevaForge',
   },
   description:
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'ElevaForge — Forjamos tu crecimiento digital',
+    title: 'ElevaForge · Forjamos tu crecimiento digital',
     description:
       'No solo creamos herramientas; forjamos el motor digital de tu empresa con transparencia total y resultados Lighthouse verificables.',
     type: 'website',
@@ -61,14 +61,14 @@ export const metadata: Metadata = {
         url: '/ElevaIcon.png',
         width: 1200,
         height: 630,
-        alt: 'ElevaForge — Agencia de Desarrollo de Software',
+        alt: 'ElevaForge · Agencia de Desarrollo de Software',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ElevaForge — Forjamos tu crecimiento digital',
+    title: 'ElevaForge · Forjamos tu crecimiento digital',
     description:
       'Agencia de desarrollo de software con transparencia total y resultados Lighthouse verificables.',
     images: ['/ElevaIcon.png'],

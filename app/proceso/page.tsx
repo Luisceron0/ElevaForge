@@ -6,7 +6,7 @@ import { breadcrumbJsonLd } from '@/lib/seo'
 import { getResolvedSiteContent } from '@/lib/site-content'
 
 export const metadata: Metadata = {
-  title: 'Estándar Forge — nuestro proceso de ingeniería',
+  title: 'Estándar Forge · nuestro proceso de ingeniería',
   description:
     'Estándar Forge: el método de ingeniería propio de ElevaForge, de la exploración a la entrega, con visibilidad y control en cada etapa.',
   alternates: { canonical: '/proceso' },

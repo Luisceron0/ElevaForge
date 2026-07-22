@@ -1,24 +1,33 @@
 import Reveal from '@/components/ui/Reveal'
 
-// NF-06: honest tech-stack band as an infinite marquee. These are the real
-// tools ElevaForge builds with — a credibility signal, not partner logos or
-// a claimed alliance. CSS-only scroll; disabled under prefers-reduced-motion.
-const STACK = [
-  'Next.js', 'React', 'TypeScript', 'Supabase', 'PostgreSQL',
-  'Vercel', 'Tailwind CSS', 'GSAP', 'Node.js', 'Playwright',
+// NF-06: honest tech-stack band as two opposing marquees — the real
+// languages and frameworks ElevaForge builds with. A credibility signal,
+// not partner logos or a claimed alliance. CSS-only; paused under
+// prefers-reduced-motion.
+const LENGUAJES = [
+  'C', 'Java', 'Python', 'C#', 'C++', 'JavaScript', 'TypeScript', 'Dart', 'HTML5', 'CSS3',
+]
+const FRAMEWORKS = [
+  'Spring Boot', 'Django', 'React', 'Vue.js', 'Angular', 'Astro', 'Bootstrap', 'Tailwind CSS', 'Next.js', 'Nuxt.js',
 ]
 
-function Row({ ariaHidden = false }: { ariaHidden?: boolean }) {
+function Track({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
+  const anim = reverse ? 'motion-safe:animate-marquee-reverse' : 'motion-safe:animate-marquee'
   return (
-    <div
-      aria-hidden={ariaHidden || undefined}
-      className="flex shrink-0 items-center gap-12 md:gap-20 pr-12 md:pr-20 motion-safe:animate-marquee"
-    >
-      {STACK.map((tech, i) => (
-        <span key={`${tech}-${i}`} className="flex items-center gap-12 md:gap-20 whitespace-nowrap">
-          <span className="font-humanst text-ef-paper/80 text-2xl md:text-4xl">{tech}</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-ef-orange shrink-0" />
-        </span>
+    <div className="flex w-full overflow-hidden">
+      {[0, 1].map((copy) => (
+        <div
+          key={copy}
+          aria-hidden={copy === 1 || undefined}
+          className={`flex shrink-0 items-center gap-10 md:gap-16 pr-10 md:pr-16 ${anim}`}
+        >
+          {items.map((tech, i) => (
+            <span key={`${tech}-${i}`} className="flex items-center gap-10 md:gap-16 whitespace-nowrap">
+              <span className="font-humanst text-ef-paper/85 text-xl md:text-3xl">{tech}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-ef-orange shrink-0" />
+            </span>
+          ))}
+        </div>
       ))}
     </div>
   )
@@ -35,9 +44,20 @@ export default function TechMarquee() {
           </p>
         </Reveal>
       </div>
-      <div className="relative flex w-full overflow-hidden">
-        <Row />
-        <Row ariaHidden />
+
+      <div className="space-y-6 md:space-y-8">
+        <div>
+          <p className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 text-xs font-semibold tracking-[0.2em] uppercase text-ef-paper/55 mb-4">
+            Lenguajes
+          </p>
+          <Track items={LENGUAJES} />
+        </div>
+        <div>
+          <p className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 text-xs font-semibold tracking-[0.2em] uppercase text-ef-paper/55 mb-4">
+            Frameworks
+          </p>
+          <Track items={FRAMEWORKS} reverse />
+        </div>
       </div>
     </section>
   )

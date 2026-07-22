@@ -24,7 +24,6 @@ export default function Footer() {
             <li><Link href="/soluciones" className="text-base text-ef-paper/60 hover:text-ef-paper transition-colors">Soluciones</Link></li>
             <li><Link href="/proyectos" className="text-base text-ef-paper/60 hover:text-ef-paper transition-colors">Proyectos</Link></li>
             <li><Link href="/proceso" className="text-base text-ef-paper/60 hover:text-ef-paper transition-colors">Proceso</Link></li>
-            <li><Link href="/#autonomia" className="text-base text-ef-paper/60 hover:text-ef-paper transition-colors">Diferencial</Link></li>
             <li><Link href="/nosotros" className="text-base text-ef-paper/60 hover:text-ef-paper transition-colors">Quiénes somos</Link></li>
             <li><Link href="/contacto" className="text-base text-ef-paper/60 hover:text-ef-paper transition-colors">Contacto</Link></li>
             <li><Link href="/preguntas-frecuentes" className="text-base text-ef-paper/60 hover:text-ef-paper transition-colors">Preguntas frecuentes</Link></li>
