@@ -288,4 +288,37 @@ test.describe('smoke', () => {
     const tagName = await focused.evaluate((el) => el.tagName.toLowerCase())
     expect(['a', 'button']).toContain(tagName)
   })
+
+  // SEO-05: every page needs exactly one <h1>. /contacto rendered zero
+  // (ContactSection only ever emitted an <h2>) until it got a headingLevel
+  // prop.
+  test('/contacto has exactly one <h1> (SEO-05)', async ({ page }) => {
+    await page.goto('/contacto')
+    await expect(page.locator('h1')).toHaveCount(1)
+  })
+
+  // ADR-003: no explicit price signal anywhere, including structured data.
+  // A leftover `priceRange` in the Organization JSON-LD contradicted the
+  // decision to remove price comparisons from the site.
+  test('Organization JSON-LD carries no priceRange field (ADR-003)', async ({ page }) => {
+    await page.goto('/')
+    const jsonLdScripts = await page.locator('script[type="application/ld+json"]').allTextContents()
+    const orgScript = jsonLdScripts.find((s) => s.includes('ProfessionalService'))
+    expect(orgScript).toBeTruthy()
+    const orgData = JSON.parse(orgScript!)
+    expect(orgData.priceRange).toBeUndefined()
+  })
+
+  // RF-004: the visible WhatsApp number must come from
+  // NEXT_PUBLIC_WHATSAPP_NUMBER via formatWhatsAppDisplay(), not a
+  // hardcoded literal independent of the actual link target.
+  test('/contacto: visible WhatsApp number matches the wa.me link target (RF-004)', async ({ page }) => {
+    await page.goto('/contacto')
+    const link = page.getByRole('link', { name: /^WhatsApp:/ })
+    const href = await link.getAttribute('href')
+    const linkDigits = href!.match(/wa\.me\/(\d+)/)![1]
+    const visibleText = await link.innerText()
+    const visibleDigits = visibleText.replace(/\D/g, '')
+    expect(visibleDigits).toBe(linkDigits)
+  })
 })

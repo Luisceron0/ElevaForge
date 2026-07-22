@@ -68,6 +68,15 @@ Precondición: resuelta por el usuario (2026-07-22, "haz lo más óptimo y apega
 
 DoD Fase 6: si entra, cada artículo indexable y con datos estructurados; si no, marcado fuera de scope v1 en este archivo.
 
+## Auditoría post-Fase 6 — 4 gaps encontrados por chequeo línea-a-línea contra el SRS (2026-07-22)
+Tras `tasks/audit-2026-07-22.md` (auditoría de seguridad/performance/funcionalidad/recursos), un segundo pase — releer el SRS artículo por artículo contra el código real, no solo correr herramientas — encontró 4 gaps adicionales que las herramientas (Lighthouse/axe/npm audit) no detectan porque no son ese tipo de bug:
+- [x] **RF-015** `app/api/admin/login/route.ts` logueaba `details: "username: ${username}"` en claro en `LOGIN_FAILED`/`LOGIN_SUCCESS` — violaba "identificador no se loggea en claro". Fix: `hashIdentifier()` (SHA-256, primeros 16 hex) nuevo en `lib/security/logger.ts`; ambos eventos ahora loguean `user_hash` en vez del username. Sigue siendo correlacionable (mismo hash = mismo intento repetido) sin exponer la identidad. Test: `lib/security/logger.test.ts`.
+- [x] **RF-004** `ContactSection.tsx` tenía "+57 315 081 2166" hardcodeado, independiente de `NEXT_PUBLIC_WHATSAPP_NUMBER` — dos fuentes de verdad que podían divergir. Fix: `formatWhatsAppDisplay()` nuevo en `lib/whatsapp.ts`, deriva el texto visible del mismo env var que ya usaban los links `wa.me/...`. Test unitario (`lib/whatsapp.test.ts`) + e2e que confirma que el número visible coincide con el dígitos del `href` real.
+- [x] **SEO-05** `/contacto` no tenía ningún `<h1>` (`ContactSection` solo emite `<h2>`, pensado para embeberse en la home donde el Hero ya tiene el h1). Fix: prop `headingLevel?: 'h1'|'h2'` (default `'h2'`, preserva el comportamiento en `/`), `/contacto` pasa `'h1'`. Test e2e: `/contacto` tiene exactamente un `<h1>`.
+- [x] **ADR-003 (JSON-LD residual)** `app/layout.tsx` tenía `priceRange: '$$'` en el `ProfessionalService` de schema.org — una señal de precio (aunque simbólica) que contradice la decisión ya tomada de no dar ninguna señal de precio (ver también CRO-05/FAQ). No es una decisión de negocio nueva, es limpiar un residuo que contradice una ya tomada. Fix: campo eliminado. Test e2e: el JSON-LD de Organization no trae `priceRange`.
+
+Verificación conjunta: `npm run typecheck && npm run lint && npm test` (39 unit, antes 32) `&& npm run build` en verde; `npx playwright test` 35/35 (antes 32) en verde.
+
 ---
 
 ## Gates abiertos ahora mismo (Anexo B del SRS)

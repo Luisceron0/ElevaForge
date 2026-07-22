@@ -109,7 +109,6 @@ export default async function RootLayout({
     url: SITE_URL,
     logo: `${SITE_URL}/ElevaIcon.png`,
     image: `${SITE_URL}/ElevaIcon.png`,
-    priceRange: '$$',
     foundingDate: '2024',
     contactPoint: {
       '@type': 'ContactPoint',

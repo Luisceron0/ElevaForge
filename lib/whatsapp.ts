@@ -26,3 +26,16 @@ export function buildWhatsAppURL(message?: string): string {
   if (!message) return WHATSAPP_URLS.hero
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
 }
+
+// RF-004: el número visible debe derivarse siempre de NEXT_PUBLIC_WHATSAPP_NUMBER,
+// nunca hardcodearse en un componente — así solo hay una fuente de verdad.
+export function formatWhatsAppDisplay(number: string = WHATSAPP_NUMBER): string {
+  const digits = number.replace(/\D/g, '')
+  if (digits.startsWith('57') && digits.length === 12) {
+    const rest = digits.slice(2)
+    return `+57 ${rest.slice(0, 3)} ${rest.slice(3, 6)} ${rest.slice(6)}`
+  }
+  return `+${digits}`
+}
+
+export const WHATSAPP_DISPLAY = formatWhatsAppDisplay()

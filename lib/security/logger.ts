@@ -12,6 +12,18 @@
  *  - Use deterministic event types for easy alerting rules.
  */
 
+import { createHash } from 'crypto'
+
+/**
+ * RF-015: "identificador de usuario no se loggea en claro en LOGIN_FAILED".
+ * A short SHA-256 prefix keeps events for the same username correlatable
+ * (e.g. "5 failed attempts for the same hash" is a useful alert signal)
+ * without ever writing the actual username to logs.
+ */
+export function hashIdentifier(value: string): string {
+  return createHash('sha256').update(value).digest('hex').slice(0, 16)
+}
+
 export type SecurityEventType =
   | 'CSRF_VIOLATION'
   | 'RATE_LIMIT_EXCEEDED'

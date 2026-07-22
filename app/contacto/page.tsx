@@ -30,6 +30,7 @@ export default async function ContactoPage() {
           title={contact.title}
           description={contact.description}
           responseTime={contact.responseTime}
+          headingLevel="h1"
         />
       </main>
       <Footer />

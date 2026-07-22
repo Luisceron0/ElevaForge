@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
-import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import { WHATSAPP_URLS, WHATSAPP_DISPLAY } from '@/lib/whatsapp'
 import { trackWhatsAppClick, trackFormStart, trackFormSubmitOk, trackFormError } from '@/lib/analytics'
 
 const FORM_TYPE = 'contact-main'
@@ -15,6 +15,7 @@ interface ContactSectionProps {
   title?: string
   description?: string
   responseTime?: string
+  headingLevel?: 'h1' | 'h2'
 }
 
 type Step = 'uno' | 'dos' | 'listo'
@@ -28,7 +29,8 @@ const EMPTY_STEP_DOS = {
   servicio: '',
 }
 
-export default function ContactSection({ title, description, responseTime }: ContactSectionProps) {
+export default function ContactSection({ title, description, responseTime, headingLevel = 'h2' }: ContactSectionProps) {
+  const Heading = headingLevel
   const [step, setStep] = useState<Step>('uno')
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -169,9 +171,9 @@ export default function ContactSection({ title, description, responseTime }: Con
     <section id="contacto" aria-label="Contacto" className="py-24 md:py-32 bg-forge-bg-dark">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 items-start">
         <div>
-          <h2 className="font-humanst text-fluid-h2 text-white leading-tight mb-4">
+          <Heading className="font-humanst text-fluid-h2 text-white leading-tight mb-4">
             {title || 'Hablemos de tu proyecto'}
-          </h2>
+          </Heading>
           <p className="text-forge-text-body text-lg leading-relaxed max-w-xl mb-8">
             {description || 'Te ayudamos a aterrizar tu idea con alcance claro, tiempos realistas y una propuesta transparente.'}
           </p>
@@ -184,7 +186,7 @@ export default function ContactSection({ title, description, responseTime }: Con
               onClick={() => trackWhatsAppClick('contact-section')}
               className="block text-forge-blue-light hover:text-white transition-colors duration-200"
             >
-              WhatsApp: +57 315 081 2166
+              WhatsApp: {WHATSAPP_DISPLAY}
             </a>
             <a href="mailto:contacto@elevaforge.com" className="block text-forge-blue-light hover:text-white transition-colors duration-200">
               Email: contacto@elevaforge.com
