@@ -72,7 +72,7 @@ export default async function FamiliaPage({
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
             Familias de soluciones
           </p>
-          <h1 className="font-humanst text-white leading-tight mb-6" style={{ fontSize: 'clamp(2.4rem, 7vw, 4.5rem)' }}>
+          <h1 className="font-humanst text-fluid-h1 text-white leading-tight mb-6">
             {familia.nombre}
           </h1>
           <p className="text-forge-text-body text-lg leading-relaxed mb-10">
@@ -81,7 +81,7 @@ export default async function FamiliaPage({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
             <div>
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
                 Soluciones principales
               </h2>
               <ul className="space-y-3">
@@ -98,13 +98,13 @@ export default async function FamiliaPage({
 
             {familia.capacidades.length > 0 && (
               <div>
-                <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid/70 mb-4">
+                <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
                   Capacidades configurables
                 </h2>
                 <p className="text-sm text-forge-text-muted leading-relaxed">
                   {familia.capacidades.join(' · ')}
                 </p>
-                <p className="text-xs text-forge-text-muted/60 mt-3">
+                <p className="text-xs text-forge-text-muted mt-3">
                   Las capacidades complementan una solución — no son productos independientes.
                 </p>
               </div>
@@ -116,7 +116,7 @@ export default async function FamiliaPage({
             source={`soluciones-detalle-${familia.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold bg-forge-orange-main hover:bg-forge-orange-gold text-white shadow-forge-cta transition-colors duration-200"
+            className="inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold bg-forge-orange-main hover:bg-forge-orange-gold text-forge-bg-dark shadow-forge-cta transition-colors duration-200"
           >
             Solicitar diagnóstico
           </WhatsAppLink>

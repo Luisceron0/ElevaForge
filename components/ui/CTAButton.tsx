@@ -35,10 +35,13 @@ export default function CTAButton({
   const baseClasses =
     'inline-flex items-center justify-center text-center gap-2.5 font-semibold px-6 py-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark text-base leading-none cursor-pointer'
   const variantClasses = {
+    // Dark text on the vivid orange fill — white-on-orange-main is 2.8:1
+    // (fails WCAG AA's 4.5:1 for normal text); forge-bg-dark on orange-main
+    // is 6.13:1, and on the orange-gold hover state it's 8.79:1.
     primary:
-      'bg-forge-orange-main hover:bg-forge-orange-gold text-white shadow-forge-cta hover:shadow-forge-hover hover:scale-[1.02] active:scale-[0.98]',
+      'bg-forge-orange-main hover:bg-forge-orange-gold text-forge-bg-dark shadow-forge-cta hover:shadow-forge-hover hover:scale-[1.02] active:scale-[0.98]',
     outline:
-      'border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white hover:border-forge-orange-main',
+      'border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-forge-bg-dark hover:border-forge-orange-main',
     'outline-light':
       'border border-forge-blue-mid text-forge-blue-deep hover:bg-forge-blue-deep hover:text-white focus-visible:ring-offset-forge-bg-light',
     ghost:

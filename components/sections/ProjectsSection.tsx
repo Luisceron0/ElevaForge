@@ -33,10 +33,7 @@ export default function ProjectsSection({
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
             {eyebrow}
           </p>
-          <h2
-            className="font-humanst text-forge-bg-dark leading-tight mb-4"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
-          >
+          <h2 className="font-humanst text-fluid-h2 text-forge-bg-dark leading-tight mb-4">
             {title}
           </h2>
           <p className="text-forge-blue-deep text-lg leading-relaxed">
@@ -47,7 +44,7 @@ export default function ProjectsSection({
         {deliveredProjects.length > 0 && (
           <div className="mb-10">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-humanst text-forge-bg-dark text-[clamp(1.3rem,2vw,1.8rem)]">{deliveredLabel}</h3>
+              <h3 className="font-humanst text-fluid-h3 text-forge-bg-dark">{deliveredLabel}</h3>
               <span className="rounded-full border border-emerald-600/30 bg-emerald-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-700">
                 {deliveredProjects.length}
               </span>
@@ -63,8 +60,8 @@ export default function ProjectsSection({
         {inProgressProjects.length > 0 && (
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-humanst text-forge-bg-dark text-[clamp(1.3rem,2vw,1.8rem)]">{inProgressLabel}</h3>
-              <span className="rounded-full border border-forge-orange-main/30 bg-forge-orange-main/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-forge-orange-main">
+              <h3 className="font-humanst text-fluid-h3 text-forge-bg-dark">{inProgressLabel}</h3>
+              <span className="rounded-full border border-forge-orange-deep/30 bg-forge-orange-main/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-forge-orange-deep">
                 {inProgressProjects.length}
               </span>
             </div>

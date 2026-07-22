@@ -24,10 +24,7 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
             {eyebrow}
           </p>
-          <h2
-            className="font-humanst text-forge-bg-dark leading-tight mb-4"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
-          >
+          <h2 className="font-humanst text-fluid-h2 text-forge-bg-dark leading-tight mb-4">
             {title}
           </h2>
           <p className="text-forge-blue-deep text-lg leading-relaxed">
@@ -74,7 +71,7 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
 
                 {familia.capacidades.length > 0 && (
                   <>
-                    <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid/70 mb-2">
+                    <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-2">
                       Capacidades configurables
                     </p>
                     <p className="text-sm text-forge-bg-dark/60 leading-relaxed">

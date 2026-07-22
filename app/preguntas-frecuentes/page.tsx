@@ -62,7 +62,7 @@ export default function PreguntasFrecuentesPage() {
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
             Preguntas frecuentes
           </p>
-          <h1 className="font-humanst text-white leading-tight mb-10" style={{ fontSize: 'clamp(2.8rem, 8vw, 6rem)' }}>
+          <h1 className="font-humanst text-fluid-display text-white leading-tight mb-10">
             Antes de escribirnos
           </h1>
 

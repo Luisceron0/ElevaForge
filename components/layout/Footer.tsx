@@ -17,7 +17,7 @@ export default function Footer() {
         </div>
 
         <nav aria-label="Links del footer">
-          <p className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">
+          <p className="text-xs font-semibold tracking-widest uppercase text-forge-text-muted mb-4">
             Navegación
           </p>
           <ul className="space-y-3">
@@ -32,7 +32,7 @@ export default function Footer() {
         </nav>
 
         <div>
-          <p className="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">
+          <p className="text-xs font-semibold tracking-widest uppercase text-forge-text-muted mb-4">
             Contacto
           </p>
           <WhatsAppLink
@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-forge-blue-mid/15 mt-8 pt-8 pb-10 max-w-7xl mx-auto px-4 md:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/30">
+      <div className="border-t border-forge-blue-mid/15 mt-8 pt-8 pb-10 max-w-7xl mx-auto px-4 md:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-forge-text-muted">
         <p>© {year} ElevaForge. Todos los derechos reservados.</p>
         <div className="flex gap-6">
           <Link href="/privacidad" className="hover:text-white transition-colors">Privacidad</Link>

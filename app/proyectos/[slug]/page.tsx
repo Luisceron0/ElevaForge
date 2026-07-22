@@ -59,12 +59,12 @@ export default async function ProyectoDetallePage({
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
             {project.sector}
           </p>
-          <h1 className="font-humanst text-white leading-tight mb-6" style={{ fontSize: 'clamp(2.4rem, 7vw, 4.5rem)' }}>
+          <h1 className="font-humanst text-fluid-h1 text-white leading-tight mb-6">
             {project.title}
           </h1>
 
           <section className="mb-10">
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-3">
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-3">
               Reto y solución
             </h2>
             <p className="text-forge-text-body text-lg leading-relaxed">{project.summary}</p>
@@ -72,7 +72,7 @@ export default async function ProyectoDetallePage({
 
           {project.results.length > 0 && (
             <section className="mb-10">
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
                 Resultado
               </h2>
               <ul className="space-y-3">
@@ -90,7 +90,7 @@ export default async function ProyectoDetallePage({
 
           {lighthouseEntries.length > 0 && (
             <section className="mb-10">
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
                 Métricas Lighthouse verificadas
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

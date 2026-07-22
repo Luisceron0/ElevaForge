@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
-import { gsap } from '@/lib/gsap'
+import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
 import type { AboutPhase } from '@/lib/site-content'
 
@@ -25,6 +25,18 @@ export default function RoadmapSection({ phases, eyebrow, title, description, ct
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      // DIS-03: under prefers-reduced-motion, jump straight to the final
+      // state instead of animating. `.timeline-line` starts collapsed via
+      // a static `scale-y-0` Tailwind class (not GSAP), so skipping the
+      // tween entirely — unlike HeroSection's plain `.from()` calls —
+      // would leave it permanently invisible; gsap.set() fixes both in one
+      // frame, no animation, no motion.
+      if (prefersReducedMotion()) {
+        gsap.set('.timeline-line', { scaleY: 1, transformOrigin: 'top center' })
+        gsap.set('.timeline-step', { opacity: 1, x: 0 })
+        return
+      }
+
       gsap.to('.timeline-line', {
         scaleY: 1,
         transformOrigin: 'top center',
@@ -65,10 +77,7 @@ export default function RoadmapSection({ phases, eyebrow, title, description, ct
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
             {eyebrow || 'Proceso transparente'}
           </p>
-          <h2
-            className="font-humanst text-white leading-tight mb-4"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
-          >
+          <h2 className="font-humanst text-fluid-h2 text-white leading-tight mb-4">
             {title || 'De la idea a la entrega sin zonas grises'}
           </h2>
           <p className="text-forge-text-body text-lg leading-relaxed">
@@ -98,7 +107,7 @@ export default function RoadmapSection({ phases, eyebrow, title, description, ct
                   <span className="inline-flex items-center rounded-full border border-forge-orange-main/30 px-3 py-1 text-xs font-semibold tracking-widest uppercase text-forge-orange-main mb-3">
                     Paso {step.number}
                   </span>
-                  <h3 className="font-humanst text-[clamp(1.2rem,2vw,1.6rem)] text-white mb-3">
+                  <h3 className="font-humanst text-fluid-h3 text-white mb-3">
                     {step.title}
                   </h3>
                   <p className="text-forge-text-body text-lg leading-relaxed">
@@ -111,7 +120,7 @@ export default function RoadmapSection({ phases, eyebrow, title, description, ct
         </div>
 
         <div className="bg-forge-blue-deep/20 rounded-2xl p-8 mt-12 border border-forge-blue-mid/30">
-          <p className="font-humanst text-white text-[clamp(1.5rem,3vw,2.2rem)] mb-6">
+          <p className="font-humanst text-white text-fluid-h2 mb-6">
             {ctaTitle || '¿Listo para el paso 01?'}
           </p>
           <CTAButton href={WHATSAPP_URLS.roadmap} label={ctaLabel || 'Solicitar asesoría gratuita'} />

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
 test.describe('smoke', () => {
   test('homepage loads with the expected title and no console errors', async ({ page }) => {
@@ -200,5 +201,60 @@ test.describe('smoke', () => {
     // Give the client-boundary <Analytics /> effect a beat to inject its script.
     await page.waitForTimeout(1000)
     expect(cspViolations).toEqual([])
+  })
+
+  // A11Y-01/DIS-04: WCAG 2.2 AA, automated via axe-core. This is exactly the
+  // class of bug Fase 5 fixed (color-contrast on the primary CTA button and
+  // several muted-text tokens) — locks the fix in so it can't silently
+  // regress. Covers every public page; /admin is an internal tool, out of
+  // scope here.
+  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proyectos', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
+    test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
+      await page.goto(path)
+      // HeroSection/RoadmapSection run a GSAP entrance animation on mount;
+      // scanning mid-fade can catch a transiently low-contrast blended
+      // color that was never the page's real, settled state. Let it finish.
+      await page.waitForTimeout(1500)
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag22aa']).analyze()
+      expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
+    })
+  }
+
+  // DIS-03: gsap.globalTimeline.timeScale(0) — the previous approach to
+  // prefers-reduced-motion — froze .from() entrance animations at their
+  // opacity:0 starting state forever. Confirms the actual fix: content
+  // stays fully visible immediately, no animation, under reduced motion.
+  test('prefers-reduced-motion: hero and roadmap content is visible immediately, never stuck at opacity:0', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/')
+
+    await expect(page.locator('[data-hero-badge]')).toBeVisible()
+    await expect(page.locator('[data-hero-title]')).toHaveCSS('opacity', '1')
+    await expect(page.locator('[data-hero-subtitle]')).toHaveCSS('opacity', '1')
+
+    await page.locator('.timeline-container').scrollIntoViewIfNeeded()
+    await expect(page.locator('.timeline-step').first()).toHaveCSS('opacity', '1')
+  })
+
+  // A11Y-02: axe-core checks static markup, not actual tab order — this
+  // exercises real keyboard navigation on the two things a keyboard user
+  // hits first on every page (skip-link, primary nav).
+  test('keyboard: skip-link and header nav are reachable via Tab with a visible focus ring', async ({ page }) => {
+    await page.goto('/')
+
+    await page.keyboard.press('Tab')
+    const skipLink = page.getByText('Saltar al contenido principal')
+    await expect(skipLink).toBeFocused()
+
+    // Tab through the header nav links + persistent CTA; each stop must be
+    // a real link/button (not e.g. a div swallowing focus) and keep an
+    // outline/ring on :focus-visible.
+    for (let i = 0; i < 7; i++) {
+      await page.keyboard.press('Tab')
+    }
+    const focused = page.locator(':focus')
+    await expect(focused).toBeVisible()
+    const tagName = await focused.evaluate((el) => el.tagName.toLowerCase())
+    expect(['a', 'button']).toContain(tagName)
   })
 })

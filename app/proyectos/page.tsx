@@ -32,7 +32,7 @@ export default async function ProyectosPage() {
             <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
               Proyectos
             </p>
-            <h1 className="font-humanst text-white leading-tight mb-4" style={{ fontSize: 'clamp(2.8rem, 8vw, 6rem)' }}>
+            <h1 className="font-humanst text-fluid-display text-white leading-tight mb-4">
               Casos reales que respaldan nuestro estándar
             </h1>
             <p className="text-forge-text-body text-lg leading-relaxed">
@@ -42,7 +42,7 @@ export default async function ProyectosPage() {
 
           {entregados.length > 0 && (
             <div className="mb-12">
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
                 Proyectos entregados
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -63,7 +63,7 @@ export default async function ProyectosPage() {
 
           {enCurso.length > 0 && (
             <div>
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid/70 mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
                 Proyectos en curso
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

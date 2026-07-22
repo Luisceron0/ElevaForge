@@ -45,7 +45,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </span>
           </div>
 
-          <h3 className="mb-3 font-humanst text-[clamp(1.2rem,2vw,1.7rem)] leading-tight text-white break-words">
+          <h3 className="mb-3 font-humanst text-fluid-h3 leading-tight text-white break-words">
             {project.title}
           </h3>
 
@@ -65,7 +65,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               href={project.externalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center justify-center rounded-lg border border-forge-orange-main/45 px-4 py-2 text-sm font-semibold text-forge-orange-main transition-colors duration-200 hover:bg-forge-orange-main hover:text-white"
+              className="mt-4 inline-flex items-center justify-center rounded-lg border border-forge-orange-main/45 px-4 py-2 text-sm font-semibold text-forge-orange-main transition-colors duration-200 hover:bg-forge-orange-main hover:text-forge-bg-dark"
             >
               Visitar sitio
             </a>

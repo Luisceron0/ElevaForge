@@ -31,7 +31,7 @@ export default function AutonomySection({ eyebrow, title, description, cards }: 
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
             {eyebrow || 'Diferencial ElevaForge'}
           </p>
-          <h2 className="font-humanst text-forge-bg-dark leading-tight mb-4" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
+          <h2 className="font-humanst text-fluid-h2 text-forge-bg-dark leading-tight mb-4">
             {title || 'Autonomía y formación desde el día uno'}
           </h2>
           <p className="text-forge-blue-deep text-lg leading-relaxed">
@@ -50,12 +50,12 @@ export default function AutonomySection({ eyebrow, title, description, cards }: 
                   {icons[index] || icons[0]}
                 </div>
 
-                <span className="inline-flex items-center rounded-full border border-forge-orange-main/30 px-3 py-1.5 text-xs font-semibold tracking-widest uppercase text-forge-orange-main">
+                <span className="inline-flex items-center rounded-full border border-forge-orange-deep/30 px-3 py-1.5 text-xs font-semibold tracking-widest uppercase text-forge-orange-deep">
                   {item.badge}
                 </span>
               </div>
 
-              <h3 className="font-humanst text-[clamp(1.1rem,2vw,1.4rem)] text-forge-bg-dark">
+              <h3 className="font-humanst text-fluid-h4 text-forge-bg-dark">
                 {item.title}
               </h3>
               <p className="text-forge-bg-dark/65 leading-relaxed text-base">

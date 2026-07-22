@@ -64,6 +64,9 @@ testem.log
 /blob-report/
 /playwright/.cache/
 
+# Lighthouse CWV reports (local proxy measurements — see tasks/fase5-cwv-baseline.md)
+/lighthouse-reports/
+
 # System files
 .DS_Store
 Thumbs.db

@@ -30,7 +30,7 @@ export default async function ProcesoPage() {
           <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
             Nuestro método
           </p>
-          <h1 className="font-humanst text-white leading-tight mb-6" style={{ fontSize: 'clamp(2.8rem, 8vw, 6rem)' }}>
+          <h1 className="font-humanst text-fluid-display text-white leading-tight mb-6">
             Estándar Forge
           </h1>
           <p className="text-forge-text-body text-lg leading-relaxed mb-14">

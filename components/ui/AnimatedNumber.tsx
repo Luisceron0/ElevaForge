@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useLayoutEffect } from 'react'
-import { gsap } from '@/lib/gsap'
+import { gsap, prefersReducedMotion } from '@/lib/gsap'
 
 interface AnimatedNumberProps {
   target: number
@@ -23,7 +23,7 @@ export function AnimatedNumber({
     // real value is already in the SSR markup below, so a user with
     // prefers-reduced-motion (or JS disabled/slow) never sees anything but
     // the final number.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (prefersReducedMotion()) return
 
     const ctx = gsap.context(() => {
       const obj = { val: 0 }

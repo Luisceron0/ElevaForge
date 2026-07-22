@@ -17,6 +17,13 @@ const config: Config = {
           'blue-mid': '#306A9C',
           'orange-main': '#F97300',
           'orange-gold': '#FBA81E',
+          // WCAG AA-safe counterpart to orange-main for text/icons on light
+          // backgrounds — #F97300 as foreground on white is 2.8:1 (fails
+          // the 4.5:1 minimum for normal text). Verified: #B85700 on
+          // #FFFFFF is 4.77:1. Never used as a background fill (orange-main
+          // stays the brand fill color); only as a foreground color where
+          // orange-main would fail contrast.
+          'orange-deep': '#B85700',
           'card-bg': '#1F1F3A',
           surface: '#242442',
           border: 'rgba(49,133,197,0.15)',
@@ -27,6 +34,17 @@ const config: Config = {
       fontFamily: {
         humanst: ['var(--font-humanst)', 'sans-serif'],
         inter: ['var(--font-inter)', 'sans-serif'],
+      },
+      // DIS-01: escala tipográfica fluida consolidada — reemplaza ~20
+      // valores clamp() divergentes repartidos por los componentes
+      // (algunos eran duplicados casi idénticos) por 6 pasos con nombre.
+      fontSize: {
+        'fluid-display': ['clamp(2.8rem, 8vw, 6rem)', { lineHeight: '1' }],
+        'fluid-h1': ['clamp(2.4rem, 7vw, 4.5rem)', { lineHeight: '1.05' }],
+        'fluid-h2': ['clamp(2rem, 5vw, 3.5rem)', { lineHeight: '1.1' }],
+        'fluid-h3': ['clamp(1.3rem, 2vw, 1.8rem)', { lineHeight: '1.2' }],
+        'fluid-h4': ['clamp(1.1rem, 2vw, 1.4rem)', { lineHeight: '1.3' }],
+        'fluid-stat': ['clamp(1.8rem, 5vw, 2.4rem)', { lineHeight: '1' }],
       },
       boxShadow: {
         'forge-card': '0 1px 3px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.4)',

@@ -32,7 +32,7 @@ export default async function SolucionesPage() {
             <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
               Familias de soluciones
             </p>
-            <h1 className="font-humanst text-white leading-tight mb-4" style={{ fontSize: 'clamp(2.8rem, 8vw, 6rem)' }}>
+            <h1 className="font-humanst text-fluid-display text-white leading-tight mb-4">
               Resolvemos problemas de negocio, no vendemos tecnología
             </h1>
             <p className="text-forge-text-body text-lg leading-relaxed">

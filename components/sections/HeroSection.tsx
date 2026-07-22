@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
-import { gsap } from '@/lib/gsap'
+import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
 import type { LighthouseScores } from '@/lib/site-content'
 
@@ -33,6 +33,12 @@ export default function HeroSection({
   const containerRef = useRef<HTMLElement>(null)
 
   useLayoutEffect(() => {
+    // DIS-03: skip building the entrance timeline entirely under
+    // prefers-reduced-motion — elements then simply render at their
+    // natural, already-visible state instead of getting stuck at the
+    // `.from()` starting state (opacity: 0).
+    if (prefersReducedMotion()) return
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         defaults: { ease: 'power2.out', duration: 0.6 },
@@ -82,8 +88,7 @@ export default function HeroSection({
 
           <h1
             data-hero-title
-            className="font-humanst leading-none text-white mb-6"
-            style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)' }}
+            className="font-humanst text-fluid-display leading-none text-white mb-6"
           >
             {title || 'Forjamos el motor digital'}
             <span className="block text-forge-orange-main">{highlight || 'de tu empresa'}</span>
@@ -100,7 +105,7 @@ export default function HeroSection({
             <CTAButton href={WHATSAPP_URLS.hero} size="lg" label={primaryCtaLabel || 'Iniciar proyecto'} />
             <a
               href="#proyectos"
-              className="inline-flex items-center justify-center text-center gap-2.5 font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-white hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
+              className="inline-flex items-center justify-center text-center gap-2.5 font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-forge-bg-dark hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
             >
               {secondaryCtaLabel || 'Ver proyectos'}
             </a>
@@ -126,10 +131,10 @@ export default function HeroSection({
                 <div key={item.label} className="rounded-xl border border-forge-blue-mid/20 bg-forge-bg-dark/50 p-4 hover:border-forge-orange-main/30 transition-colors">
                   <AnimatedNumber
                     target={item.metric.score}
-                    className="font-humanst text-forge-orange-main leading-none text-[clamp(1.8rem,5vw,2.4rem)] block"
+                    className="font-humanst text-forge-orange-main leading-none text-fluid-stat block"
                   />
                   <p className="text-xs text-forge-text-muted mt-2 font-semibold">{item.label}</p>
-                  <p className="text-xs text-forge-text-muted/70 mt-2 leading-snug line-clamp-2">
+                  <p className="text-xs text-forge-text-muted mt-2 leading-snug line-clamp-2">
                     {item.metric.description}
                   </p>
                 </div>
