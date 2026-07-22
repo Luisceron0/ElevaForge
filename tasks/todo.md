@@ -1,4 +1,4 @@
-# todo.md — Plan de ejecución (derivado de SRS-ElevaForge-v0.2.md)
+# todo.md — Plan de ejecución (derivado de SRS-ElevaForge-v0.3.md)
 
 Estado: `[ ]` no iniciada · `[~]` en curso · `[x]` hecha (con verificación) · `[BLOCKED:Gx]` bloqueada por gate.
 
@@ -68,6 +68,16 @@ Precondición: resuelta por el usuario (2026-07-22, "haz lo más óptimo y apega
 - [x] **RF-016 — DECISIÓN: fuera de scope de v1, diferido a v1.1.** Fundamento: no hay capacidad editorial confirmada (quién escribe/con qué frecuencia) y la **regla de escala honesta** del §29 es explícita — "un blog con 2 posts viejos daña más que no tenerlo". Construir un motor de contenido vacío contradice el objetivo de generar confianza. Alineado con ADR-009 (recomendaba v1 mínima *condicional* a capacidad editorial real, que no existe hoy). Cuando ElevaForge tenga un responsable editorial y cadencia sostenible, se retoma en v1.1 con el alcance ya especificado en el SRS (URL propia, metadata, JSON-LD `Article`, sitemap, escaping por defecto).
 
 DoD Fase 6: si entra, cada artículo indexable y con datos estructurados; si no, marcado fuera de scope v1 en este archivo.
+
+## Fase 7 — Rediseño visual (SRS v0.3, RF-026)
+Precondición: `SRS-ElevaForge-v0.3.md` (2026-07-22) redactado a partir de 4 capturas reales de `ciandt.com/co` aportadas por el cliente. **Bloqueado hasta que el cliente confirme ADR-010** (paleta expandida — Anexo A del SRS v0.3).
+- [ ] **ADR-010** Confirmar con el cliente la paleta expandida propuesta (reutiliza `forge-blue-deep`/`forge-bg-light`/`forge-orange-main` como fondos de panel + 1 token nuevo `forge-peach-tint`) antes de tocar código.
+- [ ] **RF-026 / DIS-05..08** Implementar patrón de paneles de sección alternados en Home/`/soluciones`/`/nosotros`/`/proceso`, tipografía `fluid-mega`, bloque de cifra/autoridad rediseñado (NF-07), iconografía en círculo para capacidades, botones tipo píldora.
+- [ ] **NF-06** Sección de stack tecnológico honesto (Next.js/Supabase/Vercel/TypeScript/Tailwind).
+- [ ] **RF-022/023/024/025** Revisar copy del catálogo expandido contra la política del catálogo (nada de capacidades/actividades de proceso con CTA de compra propio).
+- [ ] Verificación: axe-core en todas las páginas rediseñadas (RNF-DIS-01/TC-11), Lighthouse vs. línea base de Fase 5 (TC-14), `npm run typecheck/lint/test/build` + `npx playwright test` en verde.
+
+DoD Fase 7: paneles de color implementados con tokens (sin arbitrary values); 0 violaciones de contraste; CWV no degrada; contenido del catálogo sin cambios de dato, solo de presentación.
 
 ## Auditoría post-Fase 6 — 4 gaps encontrados por chequeo línea-a-línea contra el SRS (2026-07-22)
 Tras `tasks/audit-2026-07-22.md` (auditoría de seguridad/performance/funcionalidad/recursos), un segundo pase — releer el SRS artículo por artículo contra el código real, no solo correr herramientas — encontró 4 gaps adicionales que las herramientas (Lighthouse/axe/npm audit) no detectan porque no son ese tipo de bug:

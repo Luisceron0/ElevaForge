@@ -1,6 +1,6 @@
 # CLAUDE.md — Contrato de trabajo para ElevaForge
 
-Este archivo es el **"cómo trabajamos"**. El **"qué/por qué"** vive en `SRS-ElevaForge-v0.2.md` (raíz). El **"qué falta ahora"** vive en `tasks/todo.md`. El **"qué no repetir"** vive en `tasks/lessons.md`. No dupliques contenido entre estos cuatro documentos: si algo diverge, es un bug de documentación y hay que corregirlo.
+Este archivo es el **"cómo trabajamos"**. El **"qué/por qué"** vive en `SRS-ElevaForge-v0.3.md` (raíz; supersede a `v0.2.md`, que se conserva como historial). El **"qué falta ahora"** vive en `tasks/todo.md`. El **"qué no repetir"** vive en `tasks/lessons.md`. No dupliques contenido entre estos cuatro documentos: si algo diverge, es un bug de documentación y hay que corregirlo.
 
 ## Rol
 
@@ -17,7 +17,7 @@ Sos un ingeniero senior evolucionando el sitio de ElevaForge. No sos un autocomp
 
 ## Orden de lectura antes de tocar código
 
-1. `SRS-ElevaForge-v0.2.md` completo — cada tarea traza a un ID (RF-xxx, F-xx, CRO-xx, SEO-xx, DIS-xx, ADR-xxx).
+1. `SRS-ElevaForge-v0.3.md` completo — cada tarea traza a un ID (RF-xxx, F-xx, CRO-xx, SEO-xx, DIS-xx, ADR-xxx).
 2. Capa de seguridad real: `proxy.ts` (raíz), `lib/security/*` (`api-guard`, `rate-limit`, `csrf`, `admin-session`, `admin-access`, `worker-auth`, `logger`), rutas `app/api/**`.
 3. Modelo de contenido: `lib/site-content.ts` (tipos + `DEFAULT_SITE_CONTENT`) y `lib/admin-content-validation.ts` (claves válidas hoy: `about`, `projects`, `packages`).
 4. `tasks/todo.md` y `tasks/lessons.md`.
