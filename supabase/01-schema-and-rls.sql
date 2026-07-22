@@ -110,9 +110,12 @@ alter table public.site_content enable row level security;
 --   curl "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/leads?select=*" \
 --     -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
 --
--- Resultado esperado (RLS deny-by-default funcionando): [] (array vacío),
--- NO un error de permisos y NO filas reales. Idem para admin_users y
--- site_content. Si devuelve filas → RLS NO está habilitado y F-02 sigue
--- abierto: re-ejecutá este archivo (los ENABLE son idempotentes) y volvé a
--- probar. Confirmá el resultado para poder marcar TC-06 en verde.
+-- Resultado esperado (RLS deny-by-default funcionando): [] (array vacío)
+-- O un 401/403 de permisos — ambos significan cero filas expuestas a
+-- `anon`. Lo único que reabre F-02 es que devuelva FILAS reales.
+--
+-- CORRIDO 2026-07-22 contra el proyecto real — F-02 CERRADO:
+--   leads          → 200 []                              (RLS filtra)
+--   admin_users    → 401 permission denied for table      (sin GRANT a anon)
+--   site_content   → 401 permission denied for table      (sin GRANT a anon)
 -- ═══════════════════════════════════════════════════════════════════════
