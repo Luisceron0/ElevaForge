@@ -39,4 +39,25 @@ export function serviceJsonLd(input: { nombre: string; descripcion: string; path
   }
 }
 
+export interface FaqItem {
+  question: string
+  answer: string
+}
+
+/** FAQPage JSON-LD (RF-019). */
+export function faqJsonLd(items: FaqItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  }
+}
+
 export { SITE_URL }

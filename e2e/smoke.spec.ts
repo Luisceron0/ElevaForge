@@ -145,6 +145,20 @@ test.describe('smoke', () => {
     expect(page.url()).toContain('/soluciones')
   })
 
+  test('/preguntas-frecuentes answers "cómo se define la inversión" with FAQPage schema (RF-019/CRO-05)', async ({ page }) => {
+    const response = await page.goto('/preguntas-frecuentes')
+    expect(response?.status()).toBeLessThan(400)
+
+    const bodyText = await page.locator('main').innerText()
+    expect(bodyText).toContain('inversión')
+
+    const jsonLdScripts = await page.locator('script[type="application/ld+json"]').allTextContents()
+    const faqScript = jsonLdScripts.find((s) => s.includes('FAQPage'))
+    expect(faqScript).toBeTruthy()
+    const faqData = JSON.parse(faqScript!)
+    expect(faqData.mainEntity.length).toBeGreaterThan(0)
+  })
+
   test('Vercel Analytics script does not trigger a CSP violation (RF-017)', async ({ page }) => {
     const cspViolations: string[] = []
     page.on('console', (msg) => {

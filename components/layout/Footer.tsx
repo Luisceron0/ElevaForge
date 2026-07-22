@@ -27,6 +27,7 @@ export default function Footer() {
             <li><Link href="/#autonomia" className="text-base text-forge-text-muted hover:text-white transition-colors">Diferencial</Link></li>
             <li><Link href="/nosotros" className="text-base text-forge-text-muted hover:text-white transition-colors">Quiénes somos</Link></li>
             <li><Link href="/contacto" className="text-base text-forge-text-muted hover:text-white transition-colors">Contacto</Link></li>
+            <li><Link href="/preguntas-frecuentes" className="text-base text-forge-text-muted hover:text-white transition-colors">Preguntas frecuentes</Link></li>
           </ul>
         </nav>
 

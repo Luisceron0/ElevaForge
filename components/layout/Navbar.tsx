@@ -11,6 +11,7 @@ const links = [
   { href: '/proceso', label: 'Proceso' },
   { href: '/#autonomia', label: 'Diferencial' },
   { href: '/nosotros', label: 'Quiénes somos' },
+  { href: '/preguntas-frecuentes', label: 'FAQ' },
 ]
 
 export default function Navbar() {
