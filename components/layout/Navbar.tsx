@@ -42,9 +42,12 @@ export default function Navbar() {
     }
   }, [])
 
-  const headerClass = isOpen || isScrolled
-    ? 'bg-forge-bg-dark/95 backdrop-blur-md border-b border-forge-blue-mid/15 shadow-forge-card'
-    : 'bg-forge-bg-dark/95 lg:bg-transparent'
+  // A solid-ink header always: it sits above alternating cream/teal/ink
+  // panels, so a translucent adaptive bar would risk unreadable states.
+  // Ink + cream text is legible over anything.
+  const headerClass = isScrolled || isOpen
+    ? 'bg-ef-ink/95 backdrop-blur-md border-b border-ef-paper/10'
+    : 'bg-ef-ink/80 backdrop-blur-sm border-b border-transparent'
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${headerClass}`}>
@@ -60,12 +63,12 @@ export default function Navbar() {
           />
         </Link>
 
-        <ul className="hidden lg:flex items-center gap-6" role="list">
+        <ul className="hidden lg:flex items-center gap-7" role="list">
           {links.map((link) => (
             <li key={link.label}>
               <Link
                 href={link.href}
-                className="text-base font-medium text-white/65 hover:text-white transition-colors duration-200"
+                className="text-sm font-medium tracking-wide text-ef-paper/70 hover:text-ef-paper transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -79,22 +82,22 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="lg:hidden text-white p-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main"
+          className="lg:hidden text-ef-paper p-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ef-orange"
           aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={isOpen}
           onClick={() => setIsOpen((prev) => !prev)}
         >
           <span className="sr-only">Menu</span>
           <div className="w-6 h-6 relative">
-            <span className={`absolute left-0 top-1 h-0.5 w-6 bg-white transition-all ${isOpen ? 'rotate-45 top-3' : ''}`} />
-            <span className={`absolute left-0 top-3 h-0.5 w-6 bg-white transition-all ${isOpen ? 'opacity-0' : ''}`} />
-            <span className={`absolute left-0 top-5 h-0.5 w-6 bg-white transition-all ${isOpen ? '-rotate-45 top-3' : ''}`} />
+            <span className={`absolute left-0 top-1 h-0.5 w-6 bg-ef-paper transition-all ${isOpen ? 'rotate-45 top-3' : ''}`} />
+            <span className={`absolute left-0 top-3 h-0.5 w-6 bg-ef-paper transition-all ${isOpen ? 'opacity-0' : ''}`} />
+            <span className={`absolute left-0 top-5 h-0.5 w-6 bg-ef-paper transition-all ${isOpen ? '-rotate-45 top-3' : ''}`} />
           </div>
         </button>
       </nav>
 
       <div
-        className={`lg:hidden fixed inset-0 z-[100] bg-forge-bg-dark flex flex-col justify-center items-center gap-8 transform transition-transform duration-300 ${
+        className={`lg:hidden fixed inset-0 z-[100] bg-ef-ink flex flex-col justify-center items-center gap-8 transform transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -103,7 +106,7 @@ export default function Navbar() {
             key={link.label}
             href={link.href}
             onClick={() => setIsOpen(false)}
-            className="font-humanst text-3xl text-white hover:text-forge-orange-main transition-colors"
+            className="font-humanst text-3xl text-ef-paper hover:text-ef-orange transition-colors"
           >
             {link.label}
           </Link>

@@ -1,4 +1,5 @@
 import WhatsAppLink from '@/components/ui/WhatsAppLink'
+import Reveal from '@/components/ui/Reveal'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
 import type { FamiliaDeSolucion } from '@/lib/site-content'
 
@@ -26,55 +27,47 @@ const panelStyles: Record<string, {
   iconColor: string
   cta: string
 }> = {
+  // ADR-011: teal / clay / ink panels, contraste verificado por par.
   'presencia-digital': {
-    section: 'bg-forge-blue-deep',
-    // forge-blue-light sobre blue-deep da 4.23:1 (falla 4.5:1 en texto
-    // pequeño) — se descarta en vez de dejarlo "casi bien"; white/70 ya
-    // está verificado en este mismo panel (6.08:1).
-    eyebrow: 'text-white/70',
-    heading: 'text-white',
-    body: 'text-white/80',
-    divider: 'bg-white/15',
-    pillBorder: 'border-white/30',
-    pillText: 'text-white',
-    capacidadText: 'text-white/70',
-    iconWrap: 'bg-white/10',
-    iconColor: 'text-white',
-    cta: 'border-white/40 text-white hover:bg-white hover:text-forge-blue-deep',
+    section: 'bg-ef-teal',
+    eyebrow: 'text-ef-paper/75',
+    heading: 'text-ef-paper',
+    body: 'text-ef-paper/85',
+    divider: 'bg-ef-paper/15',
+    pillBorder: 'border-ef-paper/30',
+    pillText: 'text-ef-paper',
+    capacidadText: 'text-ef-paper/75',
+    iconWrap: 'bg-ef-paper/10',
+    iconColor: 'text-ef-paper',
+    cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-teal',
   },
   'sistemas-de-gestion': {
-    section: 'bg-forge-orange-main',
-    // orange-main tiene mucho menos margen de contraste que blue-deep/
-    // peach-tint (6.13:1 a opacidad completa vs. 10-14:1 de los otros) — a
-    // 70-80% de opacidad cae por debajo de 4.5:1 (verificado: 3.8:1/4.58:1).
-    // Por eso este panel usa forge-bg-dark a opacidad completa en todo su
-    // texto, sin variantes atenuadas.
-    eyebrow: 'text-forge-bg-dark',
-    heading: 'text-forge-bg-dark',
-    body: 'text-forge-bg-dark',
-    divider: 'bg-forge-bg-dark/15',
-    pillBorder: 'border-forge-bg-dark/30',
-    pillText: 'text-forge-bg-dark',
-    capacidadText: 'text-forge-bg-dark',
-    iconWrap: 'bg-forge-bg-dark/10',
-    iconColor: 'text-forge-bg-dark',
-    cta: 'border-forge-bg-dark/40 text-forge-bg-dark hover:bg-forge-bg-dark hover:text-forge-orange-main',
+    // clay panel: SOLO texto ink (cream/white falla contraste). Sin
+    // variantes de opacidad reducida — clay tiene poco margen, ink pleno.
+    section: 'bg-ef-clay',
+    eyebrow: 'text-ef-ink',
+    heading: 'text-ef-ink',
+    body: 'text-ef-ink',
+    divider: 'bg-ef-ink/20',
+    pillBorder: 'border-ef-ink/30',
+    pillText: 'text-ef-ink',
+    capacidadText: 'text-ef-ink',
+    iconWrap: 'bg-ef-ink/10',
+    iconColor: 'text-ef-ink',
+    cta: 'border-ef-ink/40 text-ef-ink hover:bg-ef-ink hover:text-ef-clay',
   },
   'software-personalizado': {
-    section: 'bg-forge-peach-tint',
-    // forge-orange-deep sobre este fondo solo pasa AA en texto grande/negrita
-    // (3.74:1) — el eyebrow es texto pequeño (12px), así que usa bg-dark/70
-    // (13.51:1 de base, con margen de sobra incluso con la opacidad).
-    eyebrow: 'text-forge-bg-dark/70',
-    heading: 'text-forge-bg-dark',
-    body: 'text-forge-bg-dark/80',
-    divider: 'bg-forge-bg-dark/15',
-    pillBorder: 'border-forge-bg-dark/30',
-    pillText: 'text-forge-bg-dark',
-    capacidadText: 'text-forge-bg-dark/70',
-    iconWrap: 'bg-forge-bg-dark/10',
-    iconColor: 'text-forge-bg-dark',
-    cta: 'border-forge-bg-dark/40 text-forge-bg-dark hover:bg-forge-bg-dark hover:text-forge-peach-tint',
+    section: 'bg-ef-ink',
+    eyebrow: 'text-ef-paper/75',
+    heading: 'text-ef-paper',
+    body: 'text-ef-paper/85',
+    divider: 'bg-ef-paper/15',
+    pillBorder: 'border-ef-paper/30',
+    pillText: 'text-ef-paper',
+    capacidadText: 'text-ef-paper/75',
+    iconWrap: 'bg-ef-paper/10',
+    iconColor: 'text-ef-paper',
+    cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-ink',
   },
 }
 
@@ -106,28 +99,28 @@ interface SolucionesSectionProps {
 
 export default function SolucionesSection({ familias, eyebrow, title, description, ctaLabel }: SolucionesSectionProps) {
   return (
-    <section id="soluciones" aria-label="Familias de soluciones" className="py-24 md:py-32 bg-forge-bg-light">
+    <section id="soluciones" aria-label="Familias de soluciones" className="py-24 md:py-32 bg-ef-paper-dim">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-        <div className="max-w-3xl mb-10">
-          <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+        <Reveal className="max-w-3xl mb-12">
+          <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
             {eyebrow}
           </p>
-          <h2 className="font-humanst text-fluid-h2 text-forge-bg-dark leading-tight mb-4">
+          <h2 className="font-humanst text-fluid-h2 text-ef-ink leading-tight mb-4">
             {title}
           </h2>
-          <p className="text-forge-blue-deep text-lg leading-relaxed">
+          <p className="text-ef-ink-soft text-lg leading-relaxed">
             {description}
           </p>
-        </div>
+        </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Reveal stagger className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {familias.map((familia) => {
             const style = panelStyles[familia.id] ?? panelStyles['presencia-digital']
 
             return (
               <article
                 key={familia.id}
-                className={`${style.section} rounded-2xl p-8 shadow-forge-card flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1`}
+                className={`${style.section} rounded-3xl p-8 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1`}
               >
                 <div>
                   <div className={`w-12 h-12 rounded-full ${style.iconWrap} ${style.iconColor} flex items-center justify-center mb-5`}>
@@ -181,7 +174,7 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
               </article>
             )
           })}
-        </div>
+        </Reveal>
       </div>
     </section>
   )

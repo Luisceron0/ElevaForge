@@ -168,13 +168,13 @@ export default function ContactSection({ title, description, responseTime, headi
   }
 
   return (
-    <section id="contacto" aria-label="Contacto" className="py-24 md:py-32 bg-forge-bg-dark">
+    <section id="contacto" aria-label="Contacto" className="py-24 md:py-32 bg-ef-ink">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 items-start">
         <div>
-          <Heading className="font-humanst text-fluid-h2 text-white leading-tight mb-4">
+          <Heading className="font-humanst text-fluid-h2 text-ef-paper leading-tight mb-4">
             {title || 'Hablemos de tu proyecto'}
           </Heading>
-          <p className="text-forge-text-body text-lg leading-relaxed max-w-xl mb-8">
+          <p className="text-ef-paper/70 text-lg leading-relaxed max-w-xl mb-8">
             {description || 'Te ayudamos a aterrizar tu idea con alcance claro, tiempos realistas y una propuesta transparente.'}
           </p>
 
@@ -184,23 +184,23 @@ export default function ContactSection({ title, description, responseTime, headi
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackWhatsAppClick('contact-section')}
-              className="block text-forge-blue-light hover:text-white transition-colors duration-200"
+              className="block text-ef-paper/80 hover:text-ef-orange transition-colors duration-200"
             >
               WhatsApp: {WHATSAPP_DISPLAY}
             </a>
-            <a href="mailto:contacto@elevaforge.com" className="block text-forge-blue-light hover:text-white transition-colors duration-200">
+            <a href="mailto:contacto@elevaforge.com" className="block text-ef-paper/80 hover:text-ef-orange transition-colors duration-200">
               Email: contacto@elevaforge.com
             </a>
-            <p className="text-forge-text-body">Tiempo de respuesta: {responseTime || 'Menos de 24 horas'}</p>
+            <p className="text-ef-paper/70">Tiempo de respuesta: {responseTime || 'Menos de 24 horas'}</p>
           </div>
         </div>
 
-        <div className="bg-forge-card-bg rounded-2xl border border-forge-blue-mid/25 p-6 md:p-8 shadow-forge-card">
+        <div className="bg-ef-paper/[0.04] rounded-3xl border border-ef-paper/12 p-6 md:p-8 backdrop-blur-sm">
           {step !== 'listo' && (
-            <div className="flex items-center gap-3 mb-6 text-xs font-semibold uppercase tracking-widest text-forge-text-muted">
-              <span className={step === 'uno' ? 'text-forge-orange-main' : ''}>Paso 1 de 2</span>
-              <span className="h-px flex-1 bg-white/10" />
-              <span className={step === 'dos' ? 'text-forge-orange-main' : ''}>Paso 2 (opcional)</span>
+            <div className="flex items-center gap-3 mb-6 text-xs font-semibold uppercase tracking-widest text-ef-paper/60">
+              <span className={step === 'uno' ? 'text-ef-orange' : ''}>Paso 1 de 2</span>
+              <span className="h-px flex-1 bg-ef-paper/15" />
+              <span className={step === 'dos' ? 'text-ef-orange' : ''}>Paso 2 (opcional)</span>
             </div>
           )}
 
@@ -212,22 +212,22 @@ export default function ContactSection({ title, description, responseTime, headi
               </div>
 
               <div>
-                <label htmlFor="nombre" className="block text-sm font-semibold text-white/70 mb-2">Nombre *</label>
-                <input id="nombre" name="nombre" required aria-required="true" aria-invalid={errorField === 'nombre'} aria-describedby={errorField === 'nombre' ? 'contact-error' : undefined} value={stepUno.nombre} onChange={handleStepUnoChange} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base placeholder:text-white/55 focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200" placeholder="Tu nombre" />
+                <label htmlFor="nombre" className="block text-sm font-semibold text-ef-paper/70 mb-2">Nombre *</label>
+                <input id="nombre" name="nombre" required aria-required="true" aria-invalid={errorField === 'nombre'} aria-describedby={errorField === 'nombre' ? 'contact-error' : undefined} value={stepUno.nombre} onChange={handleStepUnoChange} className="w-full bg-ef-ink/60 border border-ef-paper/15 rounded-xl px-4 py-3 text-ef-paper text-base placeholder:text-ef-paper/45 focus:outline-none focus:ring-2 focus:ring-ef-orange/60 focus:border-ef-orange/60 transition-all duration-200" placeholder="Tu nombre" />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-white/70 mb-2">Email *</label>
-                <input id="email" name="email" type="email" required aria-required="true" aria-invalid={errorField === 'email'} aria-describedby={errorField === 'email' ? 'contact-error' : undefined} value={stepUno.email} onChange={handleStepUnoChange} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base placeholder:text-white/55 focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200" placeholder="tu@email.com" />
+                <label htmlFor="email" className="block text-sm font-semibold text-ef-paper/70 mb-2">Email *</label>
+                <input id="email" name="email" type="email" required aria-required="true" aria-invalid={errorField === 'email'} aria-describedby={errorField === 'email' ? 'contact-error' : undefined} value={stepUno.email} onChange={handleStepUnoChange} className="w-full bg-ef-ink/60 border border-ef-paper/15 rounded-xl px-4 py-3 text-ef-paper text-base placeholder:text-ef-paper/45 focus:outline-none focus:ring-2 focus:ring-ef-orange/60 focus:border-ef-orange/60 transition-all duration-200" placeholder="tu@email.com" />
               </div>
 
               <div>
-                <label htmlFor="mensaje" className="block text-sm font-semibold text-white/70 mb-2">Contame tu problema</label>
-                <textarea id="mensaje" name="mensaje" value={stepUno.mensaje} onChange={handleStepUnoChange} maxLength={500} rows={4} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base placeholder:text-white/55 focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200" placeholder="Describe brevemente qué necesitás resolver" />
+                <label htmlFor="mensaje" className="block text-sm font-semibold text-ef-paper/70 mb-2">Contame tu problema</label>
+                <textarea id="mensaje" name="mensaje" value={stepUno.mensaje} onChange={handleStepUnoChange} maxLength={500} rows={4} className="w-full bg-ef-ink/60 border border-ef-paper/15 rounded-xl px-4 py-3 text-ef-paper text-base placeholder:text-ef-paper/45 focus:outline-none focus:ring-2 focus:ring-ef-orange/60 focus:border-ef-orange/60 transition-all duration-200" placeholder="Describe brevemente qué necesitás resolver" />
               </div>
 
-              <label className="flex items-start gap-3 text-base text-white/80">
-                <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1 accent-forge-orange-main" required aria-required="true" aria-invalid={errorField === 'consent'} aria-describedby={errorField === 'consent' ? 'contact-error' : undefined} />
+              <label className="flex items-start gap-3 text-base text-ef-paper/80">
+                <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1 accent-ef-orange" required aria-required="true" aria-invalid={errorField === 'consent'} aria-describedby={errorField === 'consent' ? 'contact-error' : undefined} />
                 Acepto la política de privacidad.
               </label>
 
@@ -251,32 +251,32 @@ export default function ContactSection({ title, description, responseTime, headi
 
               <form onSubmit={handleSubmitStepDos} noValidate className="space-y-5">
                 <div>
-                  <label htmlFor="telefono" className="block text-sm font-semibold text-white/70 mb-2">Teléfono / WhatsApp</label>
-                  <input id="telefono" name="telefono" value={stepDos.telefono} onChange={handleStepDosChange} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base placeholder:text-white/55 focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200" placeholder="+57..." />
+                  <label htmlFor="telefono" className="block text-sm font-semibold text-ef-paper/70 mb-2">Teléfono / WhatsApp</label>
+                  <input id="telefono" name="telefono" value={stepDos.telefono} onChange={handleStepDosChange} className="w-full bg-ef-ink/60 border border-ef-paper/15 rounded-xl px-4 py-3 text-ef-paper text-base placeholder:text-ef-paper/45 focus:outline-none focus:ring-2 focus:ring-ef-orange/60 focus:border-ef-orange/60 transition-all duration-200" placeholder="+57..." />
                 </div>
 
                 <fieldset>
-                  <legend className="block text-sm font-semibold text-white/70 mb-2">Preferencia de contacto</legend>
+                  <legend className="block text-sm font-semibold text-ef-paper/70 mb-2">Preferencia de contacto</legend>
                   <div className="flex gap-4">
-                    <label className="text-base text-white/80 inline-flex items-center gap-2">
-                      <input type="radio" name="contacto_pref" value="email" checked={stepDos.contacto_pref === 'email'} onChange={handleStepDosChange} className="accent-forge-orange-main" />
+                    <label className="text-base text-ef-paper/80 inline-flex items-center gap-2">
+                      <input type="radio" name="contacto_pref" value="email" checked={stepDos.contacto_pref === 'email'} onChange={handleStepDosChange} className="accent-ef-orange" />
                       Email
                     </label>
-                    <label className="text-base text-white/80 inline-flex items-center gap-2">
-                      <input type="radio" name="contacto_pref" value="whatsapp" checked={stepDos.contacto_pref === 'whatsapp'} onChange={handleStepDosChange} className="accent-forge-orange-main" />
+                    <label className="text-base text-ef-paper/80 inline-flex items-center gap-2">
+                      <input type="radio" name="contacto_pref" value="whatsapp" checked={stepDos.contacto_pref === 'whatsapp'} onChange={handleStepDosChange} className="accent-ef-orange" />
                       WhatsApp
                     </label>
                   </div>
                 </fieldset>
 
                 <div>
-                  <label htmlFor="empresa" className="block text-sm font-semibold text-white/70 mb-2">Empresa</label>
-                  <input id="empresa" name="empresa" value={stepDos.empresa} onChange={handleStepDosChange} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base placeholder:text-white/55 focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200" placeholder="Nombre de tu empresa" />
+                  <label htmlFor="empresa" className="block text-sm font-semibold text-ef-paper/70 mb-2">Empresa</label>
+                  <input id="empresa" name="empresa" value={stepDos.empresa} onChange={handleStepDosChange} className="w-full bg-ef-ink/60 border border-ef-paper/15 rounded-xl px-4 py-3 text-ef-paper text-base placeholder:text-ef-paper/45 focus:outline-none focus:ring-2 focus:ring-ef-orange/60 focus:border-ef-orange/60 transition-all duration-200" placeholder="Nombre de tu empresa" />
                 </div>
 
                 <div>
-                  <label htmlFor="presupuesto" className="block text-sm font-semibold text-white/70 mb-2">Presupuesto estimado</label>
-                  <select id="presupuesto" name="presupuesto" value={stepDos.presupuesto} onChange={handleStepDosChange} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200">
+                  <label htmlFor="presupuesto" className="block text-sm font-semibold text-ef-paper/70 mb-2">Presupuesto estimado</label>
+                  <select id="presupuesto" name="presupuesto" value={stepDos.presupuesto} onChange={handleStepDosChange} className="w-full bg-ef-ink/60 border border-ef-paper/15 rounded-xl px-4 py-3 text-ef-paper text-base focus:outline-none focus:ring-2 focus:ring-ef-orange/60 focus:border-ef-orange/60 transition-all duration-200">
                     <option value="">Seleccionar</option>
                     <option value="hasta-500">Hasta 500 USD</option>
                     <option value="500-1500">500 a 1500 USD</option>
@@ -286,8 +286,8 @@ export default function ContactSection({ title, description, responseTime, headi
                 </div>
 
                 <div>
-                  <label htmlFor="servicio" className="block text-sm font-semibold text-white/70 mb-2">Servicio de interés</label>
-                  <select id="servicio" name="servicio" value={stepDos.servicio} onChange={handleStepDosChange} className="w-full bg-forge-surface border border-forge-blue-mid/25 rounded-lg px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-forge-orange-main/50 focus:border-forge-orange-main/50 transition-all duration-200">
+                  <label htmlFor="servicio" className="block text-sm font-semibold text-ef-paper/70 mb-2">Servicio de interés</label>
+                  <select id="servicio" name="servicio" value={stepDos.servicio} onChange={handleStepDosChange} className="w-full bg-ef-ink/60 border border-ef-paper/15 rounded-xl px-4 py-3 text-ef-paper text-base focus:outline-none focus:ring-2 focus:ring-ef-orange/60 focus:border-ef-orange/60 transition-all duration-200">
                     <option value="">Seleccionar</option>
                     <option value="presencia-digital">Presencia Digital (landing / sitio web)</option>
                     <option value="sistemas-de-gestion">Sistemas de Gestión (CRM, ERP, PoS, Help Desk)</option>
@@ -302,7 +302,7 @@ export default function ContactSection({ title, description, responseTime, headi
                   <button
                     type="button"
                     onClick={() => setStep('listo')}
-                    className="text-sm text-white/50 hover:text-white transition-colors underline shrink-0"
+                    className="text-sm text-ef-paper/60 hover:text-ef-paper transition-colors underline shrink-0"
                   >
                     Omitir, ya terminé
                   </button>

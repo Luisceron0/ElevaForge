@@ -239,17 +239,24 @@ test.describe('smoke', () => {
   // several muted-text tokens) — locks the fix in so it can't silently
   // regress. Covers every public page; /admin is an internal tool, out of
   // scope here.
-  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proyectos', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
-    test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
-      await page.goto(path)
-      // HeroSection/RoadmapSection run a GSAP entrance animation on mount;
-      // scanning mid-fade can catch a transiently low-contrast blended
-      // color that was never the page's real, settled state. Let it finish.
-      await page.waitForTimeout(1500)
-      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag22aa']).analyze()
-      expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
-    })
-  }
+  //
+  // Runs under prefers-reduced-motion for two reasons: (1) the Reveal
+  // scroll-animations leave below-the-fold content at opacity:0 until
+  // scrolled, which axe skips — reduced-motion renders every panel visible
+  // immediately, so the whole colored-panel system actually gets checked;
+  // (2) it eliminates the mid-fade blended-color false positives that a
+  // running GSAP tween produces (see tasks/lessons.md).
+  test.describe(() => {
+    test.use({ reducedMotion: 'reduce' })
+    for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proyectos', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
+      test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
+        await page.goto(path)
+        await page.waitForTimeout(600)
+        const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag22aa']).analyze()
+        expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
+      })
+    }
+  })
 
   // DIS-03: gsap.globalTimeline.timeScale(0) — the previous approach to
   // prefers-reduced-motion — froze .from() entrance animations at their

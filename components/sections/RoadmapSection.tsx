@@ -70,24 +70,24 @@ export default function RoadmapSection({ phases, eyebrow, title, description, ct
       ref={containerRef}
       id="proceso"
       aria-label="Proceso"
-      className="py-24 md:py-32 bg-forge-bg-dark"
+      className="py-24 md:py-32 bg-ef-teal"
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
         <div className="max-w-3xl mb-12">
-          <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
+          <p className="text-xs font-semibold tracking-widest uppercase text-ef-paper/70 mb-4">
             {eyebrow || 'Proceso transparente'}
           </p>
-          <h2 className="font-humanst text-fluid-h2 text-white leading-tight mb-4">
+          <h2 className="font-humanst text-fluid-h2 text-ef-paper leading-tight mb-4">
             {title || 'De la idea a la entrega sin zonas grises'}
           </h2>
-          <p className="text-forge-text-body text-lg leading-relaxed">
+          <p className="text-ef-paper/85 text-lg leading-relaxed">
             {description || 'Cada fase está definida para que sepas qué estamos haciendo, por qué lo hacemos y qué sigue después.'}
           </p>
         </div>
 
         <div className="timeline-container relative">
           <div
-            className="timeline-line absolute left-6 top-0 bottom-0 w-0.5 bg-forge-blue-mid/30 scale-y-0 origin-top"
+            className="timeline-line absolute left-6 top-0 bottom-0 w-0.5 bg-ef-paper/25 scale-y-0 origin-top"
             aria-hidden="true"
           />
 
@@ -97,20 +97,20 @@ export default function RoadmapSection({ phases, eyebrow, title, description, ct
                 key={step.number}
                 className="timeline-step relative flex gap-8 pb-16 last:pb-0"
               >
-                <div className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-forge-bg-dark border-2 border-forge-orange-main flex items-center justify-center">
-                  <span className="font-humanst text-forge-orange-main text-sm">
+                <div className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-ef-orange flex items-center justify-center">
+                  <span className="font-humanst text-ef-ink text-sm">
                     {step.number}
                   </span>
                 </div>
 
                 <div className="pt-2 pb-2">
-                  <span className="inline-flex items-center rounded-full border border-forge-orange-main/30 px-3 py-1 text-xs font-semibold tracking-widest uppercase text-forge-orange-main mb-3">
+                  <span className="inline-flex items-center rounded-full border border-ef-paper/30 px-3 py-1 text-xs font-semibold tracking-widest uppercase text-ef-paper/80 mb-3">
                     Paso {step.number}
                   </span>
-                  <h3 className="font-humanst text-fluid-h3 text-white mb-3">
+                  <h3 className="font-humanst text-fluid-h3 text-ef-paper mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-forge-text-body text-lg leading-relaxed">
+                  <p className="text-ef-paper/85 text-lg leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -119,11 +119,11 @@ export default function RoadmapSection({ phases, eyebrow, title, description, ct
           </ol>
         </div>
 
-        <div className="bg-forge-blue-deep/20 rounded-2xl p-8 mt-12 border border-forge-blue-mid/30">
-          <p className="font-humanst text-white text-fluid-h2 mb-6">
+        <div className="bg-ef-ink/25 rounded-3xl p-8 mt-12 border border-ef-paper/15">
+          <p className="font-humanst text-ef-paper text-fluid-h2 mb-6">
             {ctaTitle || '¿Listo para el paso 01?'}
           </p>
-          <CTAButton href={WHATSAPP_URLS.roadmap} label={ctaLabel || 'Solicitar asesoría gratuita'} />
+          <CTAButton href={WHATSAPP_URLS.roadmap} variant="outline" label={ctaLabel || 'Solicitar asesoría gratuita'} />
         </div>
       </div>
     </section>
