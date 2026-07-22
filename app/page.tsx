@@ -1,5 +1,6 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import LegacyAnchorRedirect from '@/components/seo/LegacyAnchorRedirect'
 import HeroSection from '@/components/sections/HeroSection'
 import ProjectsSection from '@/components/sections/ProjectsSection'
 import SolucionesSection from '@/components/sections/SolucionesSection'
@@ -22,6 +23,7 @@ export default async function Home() {
 
   return (
     <>
+      <LegacyAnchorRedirect />
       <Navbar />
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
         <HeroSection

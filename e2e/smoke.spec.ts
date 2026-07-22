@@ -111,6 +111,40 @@ test.describe('smoke', () => {
     expect(navText).not.toContain('Paquetes')
   })
 
+  test('multipage IA: /soluciones, /proyectos, /proceso, /contacto all resolve (§14)', async ({ request }) => {
+    for (const path of ['/soluciones', '/proyectos', '/proceso', '/contacto']) {
+      const response = await request.get(path)
+      expect(response.status(), `${path} should resolve`).toBeLessThan(400)
+    }
+  })
+
+  test('/soluciones/[familia]: all 3 fixed familias resolve, unknown slug 404s', async ({ request }) => {
+    for (const id of ['presencia-digital', 'sistemas-de-gestion', 'software-personalizado']) {
+      const response = await request.get(`/soluciones/${id}`)
+      expect(response.status(), `${id} should resolve`).toBe(200)
+    }
+    const notFound = await request.get('/soluciones/no-existe')
+    expect(notFound.status()).toBe(404)
+  })
+
+  test('/proyectos/[slug]: delivered project resolves with BreadcrumbList JSON-LD', async ({ page, request }) => {
+    const listResponse = await request.get('/proyectos')
+    expect(listResponse.status()).toBe(200)
+
+    // AVC is the seeded "entregado" project in DEFAULT_PROJECTS.
+    const response = await page.goto('/proyectos/avc')
+    expect(response?.status()).toBeLessThan(400)
+    const jsonLdScripts = await page.locator('script[type="application/ld+json"]').allTextContents()
+    const hasBreadcrumb = jsonLdScripts.some((s) => s.includes('BreadcrumbList'))
+    expect(hasBreadcrumb).toBe(true)
+  })
+
+  test('legacy #precios anchor redirects client-side to /soluciones (SEO-11)', async ({ page }) => {
+    await page.goto('/#precios')
+    await page.waitForURL('**/soluciones')
+    expect(page.url()).toContain('/soluciones')
+  })
+
   test('Vercel Analytics script does not trigger a CSP violation (RF-017)', async ({ page }) => {
     const cspViolations: string[] = []
     page.on('console', (msg) => {

@@ -1,5 +1,6 @@
 import type { ProjectItem } from '@/lib/site-content'
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface ProjectCardProps {
   project: ProjectItem
@@ -49,6 +50,15 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </h3>
 
           <p className="text-sm leading-relaxed text-forge-text-body break-words">{project.summary}</p>
+
+          {isDelivered && (
+            <Link
+              href={`/proyectos/${project.id}`}
+              className="mt-4 inline-flex items-center justify-center rounded-lg border border-forge-blue-mid/40 px-4 py-2 text-sm font-semibold text-forge-blue-light transition-colors duration-200 hover:bg-forge-blue-deep hover:text-white mr-2"
+            >
+              Ver caso completo
+            </Link>
+          )}
 
           {project.externalUrl && (
             <a

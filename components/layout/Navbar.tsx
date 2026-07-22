@@ -4,12 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import CTAButton from '@/components/ui/CTAButton'
-import { WHATSAPP_URLS } from '@/lib/whatsapp'
 
 const links = [
-  { href: '/#soluciones', label: 'Soluciones' },
-  { href: '/#proyectos', label: 'Proyectos' },
-  { href: '/#proceso', label: 'Proceso' },
+  { href: '/soluciones', label: 'Soluciones' },
+  { href: '/proyectos', label: 'Proyectos' },
+  { href: '/proceso', label: 'Proceso' },
   { href: '/#autonomia', label: 'Diferencial' },
   { href: '/nosotros', label: 'Quiénes somos' },
 ]
@@ -74,7 +73,7 @@ export default function Navbar() {
         </ul>
 
         <div className="hidden lg:block">
-          <CTAButton href={WHATSAPP_URLS.hero} size="sm" label="Iniciar proyecto" />
+          <CTAButton href="/contacto" size="sm" label="Solicitar diagnóstico" />
         </div>
 
         <button
@@ -110,7 +109,7 @@ export default function Navbar() {
         )}
 
         <div className="w-full px-8 max-w-sm">
-          <CTAButton href={WHATSAPP_URLS.hero} size="full" label="Iniciar proyecto" />
+          <CTAButton href="/contacto" size="full" label="Solicitar diagnóstico" />
         </div>
       </div>
     </header>
