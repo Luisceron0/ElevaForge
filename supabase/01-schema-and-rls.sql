@@ -1,34 +1,38 @@
 -- ═══════════════════════════════════════════════════════════════════════
 -- ElevaForge — esquema + RLS deny-by-default (RNF-SEC-02 / F-02 / TC-06)
 --
--- CONTEXTO: este archivo no existía en el repo pese a que README.md lo
--- referenciaba ("Ejecuta supabase-migrations.sql en SQL Editor") — de ahí
--- que el SRS marcara "RLS no verificable" como PENDIENTE bloqueante.
+-- ESTADO CONFIRMADO (introspección del usuario, 2026-07-22):
+-- La query #3 de 00-introspect-current-state.sql confirmó que las policies
+-- deny-by-default YA EXISTEN en la base real. Para cada una de las 3 tablas
+-- (leads, admin_users, site_content) hay exactamente 4 policies, todas
+-- restringidas al rol {service_role}:
+--     <tabla>_service_role_select / _insert / _update / _delete
+-- NO existe ninguna policy para 'anon' ni 'authenticated' → esos roles
+-- quedan denegados por defecto (RLS enabled + sin policy = deny). Este es
+-- exactamente el diseño correcto. NO agregues policies para anon/authenticated
+-- sin volver a auditar el código primero.
 --
--- DISEÑO: se auditó el código real (todas las rutas app/api/**) y NINGUNA
--- ruta de servidor usa la anon key para leer/escribir estas tablas — todo
--- pasa por SUPABASE_SERVICE_ROLE_KEY (que bypassa RLS por diseño de
--- Supabase). El cliente anon-key (lib/supabase/client.ts) existe en el
--- repo pero no lo importa ningún componente ni página. Esta app tampoco
--- usa Supabase Auth (la sesión admin es una cookie HMAC propia, no
--- auth.users) — por lo tanto ni 'anon' ni 'authenticated' necesitan NINGÚN
--- acceso a estas tablas. La política correcta es deny-by-default total:
--- activar RLS y no crear ninguna policy de lectura/escritura para esos
--- roles. Esto es intencional, no un olvido — no "arregles" esto agregando
--- una policy permisiva sin volver a auditar el código primero.
+-- LO ÚNICO NO CONFIRMADO: la query #2 (relrowsecurity) no se aportó, así que
+-- no hay confirmación explícita de que RLS esté *habilitado* en cada tabla.
+-- Policies sin RLS habilitado = policies ignoradas (todo permitido). Los
+-- statements `alter table ... enable row level security` de abajo son
+-- IDEMPOTENTES: correrlos de nuevo no rompe nada y GARANTIZA que RLS quede
+-- habilitado. Es seguro re-ejecutar este archivo completo.
 --
--- CÓMO EJECUTAR:
---   1. Corré antes 00-introspect-current-state.sql (solo lectura) y
---      confirmá si las tablas ya existen con datos reales.
---   2. Si las tablas YA EXISTEN con datos: los CREATE TABLE de abajo son
---      no-destructivos (IF NOT EXISTS), pero revisá que los tipos de
---      columna coincidan con lo que trajo el paso 1 antes de aplicar la
---      parte de RLS.
---   3. Si es una base nueva o preferís partir de cero (como preguntaste):
---      corré este archivo completo tal cual en el SQL Editor de Supabase.
---   4. Verificá con TC-06: con la anon key, `select * from leads` debe
---      devolver 0 filas (no un error — RLS deniega silenciosamente, lo
---      cual es el comportamiento esperado y correcto).
+-- POR QUÉ deny-by-default es correcto acá: se auditó todo app/api/** y
+-- NINGUNA ruta usa la anon key sobre estas tablas — todo pasa por
+-- SUPABASE_SERVICE_ROLE_KEY (que bypassa RLS). lib/supabase/client.ts
+-- (anon key) existe pero no lo importa ningún componente. La app no usa
+-- Supabase Auth (la sesión admin es cookie HMAC propia).
+--
+-- CÓMO EJECUTAR (reconciliación, no destructivo):
+--   1. Este archivo NO crea policies → no toca ni pisa las 4 policies
+--      service_role que ya existen por tabla. Solo asegura tablas + índices
+--      (IF NOT EXISTS) y RLS habilitado (idempotente).
+--   2. Corré el archivo completo en el SQL Editor de Supabase.
+--   3. Verificá TC-06 con la ANON key (ver bloque al final): un
+--      `select * from leads` debe devolver 0 filas (deny silencioso), no
+--      un error ni filas reales.
 -- ═══════════════════════════════════════════════════════════════════════
 
 -- ── leads ──────────────────────────────────────────────────────────────
@@ -97,8 +101,18 @@ alter table public.site_content enable row level security;
 --   delete from public.site_content where key = 'packages';
 
 -- ═══════════════════════════════════════════════════════════════════════
--- Verificación TC-06 (correr con la ANON key, no con la service-role key):
---   select count(*) from public.leads;        -- debe dar 0 filas, no error
---   select count(*) from public.admin_users;   -- debe dar 0 filas, no error
---   select count(*) from public.site_content;  -- debe dar 0 filas, no error
+-- Verificación TC-06 — CIERRA el hallazgo F-02 (potencialmente CRÍTICO).
+-- Correr con la ANON key (NEXT_PUBLIC_SUPABASE_ANON_KEY), NO con la
+-- service-role key. Opción A: desde el SQL Editor con `set role anon;`.
+-- Opción B (más fiel, prueba el borde real): desde curl contra la REST API
+-- de Supabase con el header apikey = anon key:
+--
+--   curl "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/leads?select=*" \
+--     -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
+--
+-- Resultado esperado (RLS deny-by-default funcionando): [] (array vacío),
+-- NO un error de permisos y NO filas reales. Idem para admin_users y
+-- site_content. Si devuelve filas → RLS NO está habilitado y F-02 sigue
+-- abierto: re-ejecutá este archivo (los ENABLE son idempotentes) y volvé a
+-- probar. Confirmá el resultado para poder marcar TC-06 en verde.
 -- ═══════════════════════════════════════════════════════════════════════

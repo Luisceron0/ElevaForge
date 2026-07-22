@@ -10,7 +10,7 @@ No dupliques el "por qué" acá — eso vive en el SRS. Esto es solo el checklis
 ## Fase 1 — Seguridad y base técnica
 Precondición: ninguna, salvo F-02 que necesita el SQL (G1/Anexo B #1).
 - [x] **F-01** IP confiable (`x-real-ip` vía `@vercel/functions#ipAddress`, fallback `x-vercel-forwarded-for`); rate-limit de login/contact migrado a Upstash Redis (shared store) con fallback in-memory + warning si no está configurado. *(RNF-SEC-01, TC-03/05)*. Verificación: `npm run typecheck` y `npm run build` en verde; smoke test manual en dev (`/api/contact`, `/api/admin/login`) confirma IP resuelta correctamente y 429 tras 5 intentos/min. **Pendiente operativo (no bloqueante):** configurar `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` en Vercel para que el store compartido esté activo en producción — sin esas env vars, cae al fallback in-memory (mismo comportamiento que antes) y loguea `RATE_LIMIT_NOT_SHARED` una vez.
-- [~] **F-02** Propuesta redactada en `supabase/01-schema-and-rls.sql` (+ `supabase/00-introspect-current-state.sql` de solo lectura) — **pendiente de que el usuario la ejecute y confirme en su Supabase real**, no se puede marcar `[x]` sin esa confirmación. Base del diseño: ningún código usa la anon key sobre estas tablas (verificado — `lib/supabase/client.ts` no se importa en ningún lado), así que deny-by-default total (sin policies) es correcto y no requiere excepciones. *(RNF-SEC-02, TC-06)*
+- [~] **F-02** Introspección aportada por el usuario (2026-07-22) confirmó que las policies deny-by-default **ya existen** en la base real: 4 policies por tabla, todas `{service_role}` (`<tabla>_service_role_select/insert/update/delete`), sin ninguna policy para `anon`/`authenticated`. Diseño correcto y coincide con lo propuesto. `supabase/01-schema-and-rls.sql` reconciliado (no crea/pisa policies; solo asegura tablas/índices/RLS habilitado, idempotente). **Único paso restante para cerrar F-02:** la introspección no incluyó `relrowsecurity` (si RLS está *habilitado*), así que falta correr TC-06 con la anon key (curl a la REST API → debe devolver `[]`) para confirmar. Instrucciones exactas en el bloque final del SQL. *(RNF-SEC-02, TC-06)*
 - [x] **F-03** `ADMIN_SESSION_SEED` obligatorio, fail-closed si falta; nunca la service key como semilla. *(RNF-SEC-03)*. Verificación: `getSessionSeed()` sin fallback (`lib/security/admin-session.ts`); `npm run typecheck`/`build` en verde. **Impacto operativo:** confirmar que `ADMIN_SESSION_SEED` ya existe en Vercel antes de mergear — si no, las sesiones admin fallan al desplegar.
 - [x] **F-04** Check de arranque que alerte si coexisten admins en DB y env legacy; documentar remoción. *(RNF-SEC-04)*. Verificación: `instrumentation.ts` + `lib/security/admin-bootstrap-check.ts` (evento `LEGACY_ADMIN_CREDENTIAL_ACTIVE`), smoke test confirma que no rompe el arranque sin Supabase configurado; `npm run build` en verde.
 - [~] **SEC-05** `X-XSS-Protection: 0` hecho (`next.config.ts`, verificado con curl). Headers ya están consolidados en una sola fuente por tipo (CSP dinámica en `proxy.ts`, resto estático en `next.config.ts`, sin duplicados). **Pendiente, fuera de scope de este cambio:** `style-src 'unsafe-inline'` no se puede reducir sin refactor — 10 archivos usan `style={{...}}` de React, que requiere `unsafe-inline` en `style-src` salvo que se migre a nonces/hash para estilos (parte de la decisión ADR-004, no confirmada). Migración CSP nonce→hash sigue `[BLOCKED:G4 — ADR-004 "Recomendada — confirmar", no ejecutar sin decisión]`.
@@ -31,9 +31,9 @@ DoD Fase 2: funnel visita→interacción→lead consultable (mecanismo listo, de
 Precondición: Fase 2 desplegada.
 - [x] **F-08 / RF-018** Cifras reales en SSR (métricas Lighthouse, contadores); animación como enhancement; `prefers-reduced-motion`; fix "1 proyectos entregados" (concordancia). `components/ui/AnimatedNumber.tsx` ahora renderiza `{target}{suffix}` en el JSX inicial (antes era literal `0{suffix}`) y solo anima el conteo si `prefers-reduced-motion` no está activo; `HeroSection.tsx` usa singular/plural correcto según `deliveredProjects === 1`. Verificación: `curl`/Playwright contra el HTML servido confirma valores reales (99/97/100/100, no "0") y concordancia gramatical; 9/9 e2e en verde.
 - [x] **F-07** Eliminar enlaces de nav duplicados (`#autonomia` x2); regla de nav de §14. Se eliminó "Garantía" (duplicaba el destino de "Diferencial", que coincide con el eyebrow/contenido real de `AutonomySection.tsx`) de `Navbar.tsx` y `Footer.tsx` — quedan 5 ítems en el header (≤6, cumple §14). Verificación: `npx playwright test` con un chequeo nuevo que falla si dos `<a>` del nav apuntan al mismo `href`.
-- [ ] **RF-021** Correo en dominio propio (`contacto@elevaforge.com`); quitar todo `@gmail.com`. SPF/DKIM/DMARC → `[BLOCKED:G1 — Anexo B #13, proveedor de correo]`.
+- [x] **RF-021** Correo en dominio propio confirmado por el usuario (Zoho Mail, 2026-07-22): `elevaforge@gmail.com` → `contacto@elevaforge.com` en Footer, ContactSection (mensaje de error + bloque de contacto) y páginas legales; el JSON-LD de `layout.tsx` ya lo usaba. Cero `@gmail.com` en el árbol. **Pendiente operativo (no de código):** configurar SPF/DKIM/DMARC en el DNS del dominio para Zoho — es config de DNS, no toca el repo.
 - [x] **SEO-01** Geo confirmado como es-CO (usuario, 2026-07-21): `locale: 'es_CO'`, `areaServed: Colombia`, keyword "México"→"Colombia" en `app/layout.tsx`. Verificación: e2e nuevo confirma `es_CO` presente y `es_MX`/`México` ausentes.
-- [ ] **RF-007 / SEO-02** Legales revisados (Ley 1581/2012 → `[BLOCKED:G1 — Anexo B #3, revisión legal]`); `sitemap` incluye `/nosotros` (hecho, ver tarea Base). Geo ya no bloquea (ver SEO-01 arriba).
+- [x] **RF-007 / SEO-02** El usuario delegó la revisión legal (2026-07-22). `app/privacidad/page.tsx` reescrito para cumplir estructuralmente la Ley 1581/2012 + Decreto 1074/2015: responsable del tratamiento, datos recolectados, finalidad, autorización previa/expresa/informada, datos sensibles y menores (no se tratan), encargados/transferencia internacional, retención (depuración a 30 días), derechos completos del titular (conocer/actualizar/rectificar/revocar/suprimir/prueba de autorización/queja ante SIC), procedimiento de consultas (10 días háb.) y reclamos (15 días háb.), SIC como autoridad de control. `app/terminos/page.tsx` alineado (fecha + referencia a Decreto 1074/2015). **Nota:** revisión estructural de ingeniería aplicando los requisitos de la ley, no sustituye una revisión de abogado antes de v1.0 productiva. `sitemap` incluye `/nosotros` (tarea Base). Geo es-CO (SEO-01).
 
 DoD Fase 3: HTML servido contiene los valores reales (test de CI que assertee que no aparece "0" en la sección de métricas); cero `@gmail.com`; cero enlaces duplicados en nav.
 
@@ -46,7 +46,7 @@ Precondición: naming de `/proceso` confirmado por el usuario (2026-07-21, deleg
 - [x] **RF-019** `/preguntas-frecuentes` con `FAQPage` schema (`lib/seo.ts#faqJsonLd`). 6 preguntas, incluye explícitamente "¿Cómo se define la inversión, si no publican precios?" (CRO-05, mitiga el riesgo de ADR-003) con respuesta fundada en contenido ya existente (fase de diseño define el alcance antes del costo), sin inventar política de precios nueva. Contenido hardcodeado en la página (no editable desde el admin todavía — decisión de scope para no abrir otro editor CMS en esta tarea; documentado como posible follow-up). Agregado a nav (Navbar 6/6 ítems, dentro del límite; Footer) y a `sitemap.ts`.
 - [x] **RF-020** `ContactSection.tsx` reescrito como flujo de 2 pasos reales. Paso 1 (nombre, email, mensaje, consent — 4 campos) hace `POST /api/contact` inmediatamente al enviarse y ya crea el lead `pending`. Paso 2 (teléfono, preferencia, empresa, presupuesto, servicio) es opcional, con botón "Omitir, ya terminé". **Decisión de diseño documentada** (el SRS marcaba esto `[Confirmar]`): el paso 2, si se completa, hace un SEGUNDO insert (con `origen: 'web-contact-main-paso2'`) en vez de actualizar el lead del paso 1 por id — porque "actualizar" requeriría un endpoint público nuevo para editar un lead ajeno sin autenticación (superficie de ataque nueva: adivinar IDs, rate-limit propio, etc.) que nadie evaluó todavía. `/api/contact` no se tocó. Verificación: `npx playwright test` con un test que mockea `/api/contact` y confirma que el paso 1 postea solo con esos 4 campos, y que omitir el paso 2 NO dispara un segundo request.
   - **Hallazgo de accesibilidad corregido en el camino:** los botones de submit tenían un `aria-label` que no coincidía con el texto visible ("Solicitar diagnóstico" visible vs. "Enviar y continuar" como nombre accesible) — viola el criterio WCAG "Label in Name". Se quitó el `aria-label` custom para que el nombre accesible coincida con el texto real del botón.
-- [ ] **RF-012 / §12** Deprecar `POST /api/leads` (dejar solo redirect) tras confirmar compat externa → `[BLOCKED:G1 — Anexo B #8]`.
+- [x] **RF-012 / §12** El usuario definió la dirección (2026-07-22): dejar de mandar los leads a Discord; que se queden en el admin para revisión y a Discord solo llegue el aviso de lead nuevo. **Implementado:** `app/api/workers/process-leads/route.ts` ahora manda una notificación **sin PII** ("🔔 N nuevos leads en ElevaForge. Revisalos en el panel: {SITE_URL}/admin/leads") en vez de volcar nombre/email/presupuesto de cada lead a Discord — mejora de privacidad/seguridad (minimización Ley 1581, no exponer PII a un tercero) además de cumplir la directiva. `POST /api/leads` deprecado: la lógica de insert duplicada se eliminó, ahora GET y POST hacen `308` a `/api/contact` (308 preserva método+body → cualquier integración externa que aún postee se reenvía sin romperse). Una sola fuente de verdad del insert.
 
 DoD Fase 4: cada familia y caso con URL, `<h1>` y metadata propios; `packages` no existe en DB ni en código; ningún precio en el sitio público; redirects verificados; TC-10 en verde.
 
@@ -63,8 +63,8 @@ Precondición: Fase 4 estable (✓). Paleta confirmada por el usuario (2026-07-2
 DoD Fase 5: CWV ≥ línea base (✓, verificado local); A11Y AA (✓, axe-core 0 violaciones en 8 páginas); comparación de conversión vs. línea base — **pendiente, no es tarea de desarrollo**: requiere tráfico real post-deploy con RF-017 ya activo.
 
 ## Fase 6 — Motor de contenido (condicional)
-Precondición: `[BLOCKED:G4 — Anexo B #12, v1 vs v1.1 y capacidad editorial real]`.
-- [ ] **RF-016** `/insights` mínimo (solo artículos): URL propia, metadata, JSON-LD `Article`, en sitemap; render con escaping por defecto. Sin podcast/webinars/whitepapers.
+Precondición: resuelta por el usuario (2026-07-22, "haz lo más óptimo y apegado al brief/SRS").
+- [x] **RF-016 — DECISIÓN: fuera de scope de v1, diferido a v1.1.** Fundamento: no hay capacidad editorial confirmada (quién escribe/con qué frecuencia) y la **regla de escala honesta** del §29 es explícita — "un blog con 2 posts viejos daña más que no tenerlo". Construir un motor de contenido vacío contradice el objetivo de generar confianza. Alineado con ADR-009 (recomendaba v1 mínima *condicional* a capacidad editorial real, que no existe hoy). Cuando ElevaForge tenga un responsable editorial y cadencia sostenible, se retoma en v1.1 con el alcance ya especificado en el SRS (URL propia, metadata, JSON-LD `Article`, sitemap, escaping por defecto).
 
 DoD Fase 6: si entra, cada artículo indexable y con datos estructurados; si no, marcado fuera de scope v1 en este archivo.
 
@@ -72,20 +72,23 @@ DoD Fase 6: si entra, cada artículo indexable y con datos estructurados; si no,
 
 ## Gates abiertos ahora mismo (Anexo B del SRS)
 
-| # | Qué falta | Bloquea | Pregunta para desbloquear |
-|---|---|---|---|
-| 1 | SQL de migración + policies RLS de Supabase | F-02, TC-06, G2 (deploy) | ¿Podés aportar el SQL actual de las policies de `leads`/`admin_users`/`site_content`, o autorizás que se redacte una propuesta de policies deny-by-default para tu revisión antes de aplicarla? |
-| 2 | Geo confirmado (es-CO vs MX vs LATAM) | SEO-01, hreflang, Fase 4 | ¿Confirmás es-CO como único mercado/geo para v1 (ADR-002), o hay otro mercado a cubrir? |
-| 3 | Revisión legal Ley 1581/2012 | RF-007 | ¿Quién revisa legalmente Privacidad/Términos antes de publicarlos? |
-| 4 | Scope de blog/documentación v1 | RF-016, Fase 6 | ¿Entra `/insights` en v1 (ADR-009) o se pospone a v1.1? |
-| 5 | Herramienta y alcance de analítica | RF-017, NF-05, Fase 2 | ¿Vercel Analytics o Plausible (ADR-008)? |
-| 6 | SLA/RTO/RPO objetivo y cobertura mínima de tests | §17 | ¿Hay un SLA formal a cumplir, o "mejor esfuerzo" es aceptable para v1? |
-| 7 | Nombres de personas en copy y veracidad de métricas Lighthouse | RF-005/006 | ¿Los nombres actuales (Miguel, Luis, Jhonatan, Santiago) y los scores Lighthouse mostrados son los reales/autorizados para publicar? |
-| 8 | Compatibilidad de deprecar `/api/leads` POST | §12, RF-012 | ¿Hay integraciones externas activas llamando a `/api/leads` que se romperían al quitar el POST? |
-| 9 | Métrica objetivo de conversión | CRO-07 | ¿Cuál es el número objetivo (ej. ≥X solicitudes/mes o tasa visita→lead ≥Y%)? |
-| 10 | Herramienta de analítica (duplicado de #5) | ADR-008 | (mismo que #5) |
-| 11 | ~~Naming del método propio para `/proceso`~~ — **resuelto 2026-07-21: "Estándar Forge"** (usuario delegó la elección explícitamente; ya existía informalmente en el copy) | §29, Fase 4 | — |
-| 12 | Capacidad editorial real para `/insights` | ADR-009 (duplicado de #4) | ¿Quién escribe artículos y con qué frecuencia sostenible? |
-| 13 | Proveedor de correo en dominio propio | RF-021 | ¿Qué proveedor de correo se usará para `contacto@elevaforge.com` (para configurar SPF/DKIM/DMARC)? |
+Estado tras la ronda de respuestas del usuario (2026-07-22): los 13 quedaron resueltos o reducidos a tareas operativas fuera del código.
+
+| # | Qué era | Estado |
+|---|---|---|
+| 1 | SQL/policies RLS | ✅ Introspección confirma policies deny-by-default ya existentes. Falta solo correr TC-06 con anon key (instrucciones en el SQL). Ver F-02. |
+| 2 | Geo es-CO | ✅ Confirmado es-CO (SEO-01 hecho). |
+| 3 | Revisión legal 1581/2012 | ✅ Delegada al equipo; privacidad reescrita para cumplimiento estructural. Recomendado un pase de abogado antes de v1.0. |
+| 4 | Scope blog v1 | ✅ `/insights` fuera de v1, diferido a v1.1 (regla de escala honesta). |
+| 5/10 | Analítica | ✅ Vercel Analytics (RF-017 hecho). |
+| 6 | SLA/RTO/RPO + cobertura tests | ✅ "Cumplir el SRS", sin SLA formal. Cobertura de tests: 31 unit + e2e con axe/keyboard/reduced-motion + CI. |
+| 7 | Nombres + Lighthouse | ✅ Equipo real: Luis Cerón, Jhonatan Diaz, Santiago Reyes (3, sin Miguel). Scores Lighthouse confirmados reales. |
+| 8 | Compat `/api/leads` POST | ✅ Deprecado con 308 (preserva método+body → sin romper integraciones aunque existan). |
+| 9 | Métrica conversión CRO-07 | ⏸️ "Aún no necesaria" — se define post-deploy con datos reales. No bloquea código. |
+| 11 | Naming `/proceso` | ✅ "Estándar Forge". |
+| 12 | Capacidad editorial `/insights` | ✅ Sin capacidad editorial → diferido (ver #4). |
+| 13 | Proveedor de correo | ✅ Zoho Mail. Código migrado a `contacto@elevaforge.com`; SPF/DKIM/DMARC = config DNS (operativo, no repo). |
+
+Pendientes operativos (fuera del repo, para el deploy): SPF/DKIM/DMARC de Zoho en DNS; correr TC-06 con anon key; opcional Upstash KV vars; pase legal de abogado.
 
 Un `[PENDIENTE]` resuelto por suposición es peor que uno abierto. No se rellenan por inferencia.

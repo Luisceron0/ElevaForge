@@ -40,7 +40,7 @@ export default function TerminosPage() {
 
         <div className="prose prose-lg max-w-none text-forge-bg-dark/80 space-y-6">
           <p>
-            <strong>Última actualización:</strong> Febrero 2026
+            <strong>Última actualización:</strong> Julio 2026
           </p>
 
           <section>
@@ -150,7 +150,7 @@ export default function TerminosPage() {
               Estos términos se regirán e interpretarán de acuerdo con las
               leyes de la República de Colombia, en especial la normativa
               relacionada con protección de datos personales (Ley 1581 de
-              2012 y Decreto 1377 de 2013), en la medida en que aplique.
+              2012 y Decreto 1074 de 2015), en la medida en que aplique.
             </p>
           </section>
 

@@ -90,6 +90,37 @@ test.describe('smoke', () => {
     expect(html).not.toContain('México')
   })
 
+  test('no @gmail.com anywhere in the public site (RF-021)', async ({ request }) => {
+    for (const path of ['/', '/contacto', '/privacidad', '/terminos', '/nosotros']) {
+      const html = await (await request.get(path)).text()
+      expect(html, `${path} must not contain a gmail address`).not.toContain('@gmail.com')
+    }
+  })
+
+  test('/api/leads is deprecated: GET and POST both 308-redirect to /api/contact (§12)', async ({ request }) => {
+    const get = await request.get('/api/leads', { maxRedirects: 0 })
+    expect(get.status()).toBe(308)
+    expect(get.headers()['location']).toContain('/api/contact')
+
+    const post = await request.post('/api/leads', {
+      maxRedirects: 0,
+      headers: { 'Content-Type': 'application/json' },
+      data: { nombre: 'x', email: 'x@x.com', consent: true },
+    })
+    expect(post.status()).toBe(308)
+    expect(post.headers()['location']).toContain('/api/contact')
+  })
+
+  test('/nosotros shows the 3 real engineers, not Miguel, no "4 ingenieros" (RF-005/006)', async ({ request }) => {
+    const html = await (await request.get('/nosotros')).text()
+    expect(html).toContain('Luis Cerón')
+    expect(html).toContain('Jhonatan Diaz')
+    expect(html).toContain('Santiago Reyes')
+    expect(html).not.toContain('Miguel')
+    expect(html).not.toContain('4 ingenieros')
+    expect(html).not.toContain('cuatro ingenieros')
+  })
+
   test('no prices anywhere in the public HTML (ADR-003)', async ({ request }) => {
     const response = await request.get('/')
     const html = await response.text()

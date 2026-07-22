@@ -242,7 +242,7 @@ export const DEFAULT_ABOUT: AboutContent = {
     {
       title: 'Fase 4 - Pruebas y Optimización',
       description:
-        'Ejecutamos pruebas funcionales, de rendimiento, seguridad y compatibilidad. Miguel revisa optimización y cuellos de botella; también configuramos SEO técnico.',
+        'Ejecutamos pruebas funcionales, de rendimiento, seguridad y compatibilidad. Revisamos optimización y cuellos de botella; también configuramos SEO técnico.',
     },
     {
       title: 'Fase 5 - Lanzamiento y Transferencia',
@@ -302,30 +302,23 @@ export const DEFAULT_ABOUT: AboutContent = {
   team: [
     {
       area: 'Arquitectura y Seguridad',
-      owner: 'Luis',
+      owner: 'Luis Cerón',
       description:
         'Diseño de sistemas, requisitos, documentación, pruebas de calidad y seguridad de aplicaciones.',
       imageUrl: '',
     },
     {
       area: 'Backend, Bases de Datos y Nube',
-      owner: 'Jhonatan',
+      owner: 'Jhonatan Diaz',
       description:
         'Desarrollo backend, modelado de datos e infraestructura cloud alineada al negocio.',
       imageUrl: '',
     },
     {
-      area: 'Optimización y Rendimiento',
-      owner: 'Miguel',
+      area: 'Frontend, Rendimiento y Pruebas',
+      owner: 'Santiago Reyes',
       description:
-        'Detección y eliminación de cuellos de botella para asegurar tiempos de respuesta óptimos.',
-      imageUrl: '',
-    },
-    {
-      area: 'Frontend y Pruebas',
-      owner: 'Santiago',
-      description:
-        'Construcción de interfaces, pruebas funcionales y optimización de recursos del cliente.',
+        'Construcción de interfaces, pruebas funcionales, eliminación de cuellos de botella y optimización de recursos del cliente.',
       imageUrl: '',
     },
   ],

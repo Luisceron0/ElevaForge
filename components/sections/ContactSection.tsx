@@ -137,7 +137,7 @@ export default function ContactSection({ title, description, responseTime }: Con
     } catch {
       setStatus('error')
       setErrorField('')
-      setErrorMsg('Hubo un error. Escríbenos directamente a elevaforge@gmail.com')
+      setErrorMsg('Hubo un error. Escríbenos directamente a contacto@elevaforge.com')
       trackFormError(FORM_TYPE, 'server')
     }
   }
@@ -186,8 +186,8 @@ export default function ContactSection({ title, description, responseTime }: Con
             >
               WhatsApp: +57 315 081 2166
             </a>
-            <a href="mailto:elevaforge@gmail.com" className="block text-forge-blue-light hover:text-white transition-colors duration-200">
-              Email: elevaforge@gmail.com
+            <a href="mailto:contacto@elevaforge.com" className="block text-forge-blue-light hover:text-white transition-colors duration-200">
+              Email: contacto@elevaforge.com
             </a>
             <p className="text-forge-text-body">Tiempo de respuesta: {responseTime || 'Menos de 24 horas'}</p>
           </div>

@@ -112,7 +112,7 @@ export default function HeroSection({
           </div>
 
           <div className="flex flex-wrap gap-x-4 md:gap-x-8 gap-y-2 text-base text-forge-text-muted">
-            <span>4 ingenieros graduados</span>
+            <span>3 ingenieros de software</span>
             <span className="text-forge-blue-mid/50">·</span>
             <span>{deliveredProjects} {deliveredProjects === 1 ? 'proyecto entregado' : 'proyectos entregados'}</span>
             <span className="text-forge-blue-mid/50">·</span>

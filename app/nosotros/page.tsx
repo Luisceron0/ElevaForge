@@ -5,40 +5,32 @@ import Footer from '@/components/layout/Footer'
 export const metadata: Metadata = {
   title: 'Quiénes somos · ElevaForge',
   description:
-    'Equipo de 4 ingenieros de software colombianos enfocados en arquitectura, rendimiento, backend y experiencia de usuario.',
+    'Equipo de 3 ingenieros de software colombianos enfocados en arquitectura, seguridad, backend, frontend y rendimiento.',
 }
 
 const team = [
   {
-    initials: 'LU',
-    name: 'Luis',
+    initials: 'LC',
+    name: 'Luis Cerón',
     role: 'Arquitectura y Seguridad',
     description:
       'Define arquitectura de sistemas, requisitos funcionales y buenas prácticas de seguridad desde el inicio del proyecto.',
     area: 'Ingeniería de software',
   },
   {
-    initials: 'JH',
-    name: 'Jhonatan',
-    role: 'Backend y Datos',
+    initials: 'JD',
+    name: 'Jhonatan Diaz',
+    role: 'Backend, Datos y Nube',
     description:
       'Construye servicios robustos, modela base de datos y configura infraestructura cloud orientada a continuidad operativa.',
     area: 'Ingeniería de software',
   },
   {
-    initials: 'MI',
-    name: 'Miguel',
-    role: 'Optimización y Rendimiento',
+    initials: 'SR',
+    name: 'Santiago Reyes',
+    role: 'Frontend, Rendimiento y Pruebas',
     description:
-      'Detecta cuellos de botella y mejora tiempos de respuesta para mantener una experiencia rápida en todos los dispositivos.',
-    area: 'Ingeniería de software',
-  },
-  {
-    initials: 'SA',
-    name: 'Santiago',
-    role: 'Frontend y Pruebas',
-    description:
-      'Diseña interfaces claras, valida flujos críticos y ejecuta pruebas para garantizar estabilidad antes de cada entrega.',
+      'Diseña interfaces claras, valida flujos críticos, ejecuta pruebas y elimina cuellos de botella para garantizar estabilidad y velocidad en cada entrega.',
     area: 'Ingeniería de software',
   },
 ]
@@ -57,7 +49,7 @@ export default function NosotrosPage() {
               Equipo de ingeniería orientado a resultados
             </h1>
             <p className="text-forge-text-body text-lg leading-relaxed">
-              Somos cuatro ingenieros de software colombianos enfocados en
+              Somos tres ingenieros de software colombianos enfocados en
               construir tecnología útil, clara y sostenible para empresas.
             </p>
           </div>

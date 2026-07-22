@@ -95,5 +95,14 @@ La sesión encontró 96/100 de Accessibility en TODAS las páginas públicas por
 ## axe-core puede atrapar un frame intermedio de una animación GSAP y reportarlo como fallo real
 Un test de contraste falló de forma intermitente reportando un color (`#4090c8`) que no coincidía con ningún token del sistema — resultó ser el badge del Hero capturado a mitad de su fade-in de entrada (`gsap.from({opacity:0})`), con axe.analyze() corriendo antes de que la animación terminara. La solución no es "arreglar un color que no existe" sino esperar a que las animaciones de entrada se asienten (`page.waitForTimeout` después de `page.goto()`) antes de correr el audit — de lo contrario los tests de contraste son flaky sin que haya ningún bug real de contraste.
 
+## F-02/RLS estaba menos roto de lo que el SRS temía — las policies ya existían
+La introspección real (2026-07-22) mostró que las 3 tablas ya tenían 4 policies cada una, todas `{service_role}`, sin ninguna para `anon`/`authenticated` = deny-by-default correcto. El SRS lo marcaba "RLS no verificable / potencialmente CRÍTICO" por falta de evidencia, no porque estuviera mal. Lección: "no verificable" ≠ "roto"; cuando un hallazgo es por falta de evidencia, conseguir la evidencia puede cerrarlo sin cambios de código. Lo único que la introspección NO trajo fue `relrowsecurity` (si RLS está *habilitado*) — policies sin RLS habilitado se ignoran, así que el cierre real de F-02 depende de TC-06 (anon key → `[]`).
+
+## El worker de leads filtraba PII a Discord — la notificación no necesita el contenido
+El `process-leads` volcaba nombre+email+presupuesto+contacto_pref de cada lead al webhook de Discord. Eso es PII saliendo a un tercero, innecesariamente: los leads ya se revisan en `/admin/leads` (fuente de verdad). Cambiado a una notificación sin PII ("N nuevos leads, revisá el panel"). Mejora de privacidad (minimización Ley 1581, Information Disclosure de STRIDE) que además simplificó el código (se fue todo el chunking de 2000 chars de Discord). Lección: una "notificación de X nuevo" casi nunca necesita el contenido de X — mandar solo el aviso + un link al panel es más seguro y más simple.
+
+## Deprecar un endpoint con 308 (no 410/404) evita romper integraciones desconocidas
+Para `/api/leads` POST (§12) no había confirmación de si alguna integración externa lo usaba. Un `308 Permanent Redirect` a `/api/contact` preserva método Y body, así que un caller externo se reenvía transparentemente al endpoint canónico — cero riesgo de romper algo que no sabíamos que existía, y cero lógica de insert duplicada. Mejor que 410 Gone (rompería al caller) o mantener el duplicado (dos fuentes de verdad).
+
 ## Repo tiene ramas remotas activas además de `main`/`develop`
 `origin` incluye `copilot/combine-fix-consumption-and-develop`, `copilot/merge-all-branches`, `fix/mobile-menu-global-border`. Antes de crear una rama nueva, chequear que el nombre no choque con trabajo en curso de otro colaborador/bot.
