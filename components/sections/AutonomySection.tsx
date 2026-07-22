@@ -26,16 +26,17 @@ const icons = [
 export default function AutonomySection({ eyebrow, title, description, cards }: AutonomySectionProps) {
 
   return (
-    <section id="autonomia" aria-label="Autonomía y formación" className="py-24 md:py-32 bg-ef-paper">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-        <Reveal className="max-w-3xl mb-12">
-          <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
+    <section id="autonomia" aria-label="Autonomía y formación" className="py-24 md:py-32 bg-ef-paper-dim">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
+        <Reveal className="max-w-3xl mb-14">
+          <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-teal mb-6">
+            <span>(08)</span>
             {eyebrow || 'Diferencial ElevaForge'}
           </p>
-          <h2 className="font-humanst text-fluid-h2 text-ef-ink leading-tight mb-4">
+          <h2 className="font-humanst text-fluid-display text-ef-ink mb-5">
             {title || 'Autonomía y formación desde el día uno'}
           </h2>
-          <p className="text-ef-ink-soft text-lg leading-relaxed">
+          <p className="text-ef-ink-soft text-lg md:text-xl leading-relaxed">
             {description || 'Entregamos tecnología útil, documentada y operable por tu equipo.'}
           </p>
         </Reveal>

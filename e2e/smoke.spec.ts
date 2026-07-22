@@ -267,9 +267,11 @@ test.describe('smoke', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
 
-    await expect(page.locator('[data-hero-badge]')).toBeVisible()
-    await expect(page.locator('[data-hero-title]')).toHaveCSS('opacity', '1')
-    await expect(page.locator('[data-hero-subtitle]')).toHaveCSS('opacity', '1')
+    // Hero headline lines are masked/translated in via GSAP; under reduced
+    // motion they must render at their natural visible state.
+    await expect(page.locator('[data-hero-eyebrow]')).toBeVisible()
+    await expect(page.locator('[data-hero-line]').first()).toHaveCSS('opacity', '1')
+    await expect(page.locator('[data-hero-sub]')).toHaveCSS('opacity', '1')
 
     await page.locator('.timeline-container').scrollIntoViewIfNeeded()
     await expect(page.locator('.timeline-step').first()).toHaveCSS('opacity', '1')

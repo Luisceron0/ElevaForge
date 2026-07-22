@@ -2,9 +2,12 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import LegacyAnchorRedirect from '@/components/seo/LegacyAnchorRedirect'
 import HeroSection from '@/components/sections/HeroSection'
+import StatsBand from '@/components/sections/StatsBand'
+import StatementBand from '@/components/sections/StatementBand'
 import ProjectsSection from '@/components/sections/ProjectsSection'
 import SolucionesSection from '@/components/sections/SolucionesSection'
 import RoadmapSection from '@/components/sections/RoadmapSection'
+import TechMarquee from '@/components/sections/TechMarquee'
 import AutonomySection from '@/components/sections/AutonomySection'
 import ContactSection from '@/components/sections/ContactSection'
 import { getResolvedSiteContent } from '@/lib/site-content'
@@ -27,7 +30,6 @@ export default async function Home() {
       <Navbar />
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
         <HeroSection
-          lighthouse={lighthouse}
           deliveredProjects={deliveredProjects}
           inProgressProjects={inProgressProjects}
           subtitle={content.about.heroSubtitle}
@@ -37,16 +39,8 @@ export default async function Home() {
           primaryCtaLabel={homeContent.hero.primaryCta}
           secondaryCtaLabel={homeContent.hero.secondaryCta}
         />
-        <ProjectsSection
-          projects={content.projects}
-          inProgressNotes={projectsInProgress}
-          eyebrow={homeContent.projects.eyebrow}
-          title={homeContent.projects.title}
-          description={homeContent.projects.description}
-          deliveredLabel={homeContent.projects.deliveredLabel}
-          inProgressLabel={homeContent.projects.inProgressLabel}
-          notesTitle={homeContent.projects.notesTitle}
-        />
+        <StatsBand lighthouse={lighthouse} />
+        <StatementBand />
         <SolucionesSection
           familias={content.soluciones}
           eyebrow={homeContent.soluciones.eyebrow}
@@ -61,6 +55,17 @@ export default async function Home() {
           description={homeContent.roadmap.description}
           ctaTitle={homeContent.roadmap.ctaTitle}
           ctaLabel={homeContent.roadmap.ctaButton}
+        />
+        <TechMarquee />
+        <ProjectsSection
+          projects={content.projects}
+          inProgressNotes={projectsInProgress}
+          eyebrow={homeContent.projects.eyebrow}
+          title={homeContent.projects.title}
+          description={homeContent.projects.description}
+          deliveredLabel={homeContent.projects.deliveredLabel}
+          inProgressLabel={homeContent.projects.inProgressLabel}
+          notesTitle={homeContent.projects.notesTitle}
         />
         <AutonomySection
           eyebrow={homeContent.autonomy.eyebrow}

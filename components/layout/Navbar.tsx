@@ -68,7 +68,7 @@ export default function Navbar() {
             <li key={link.label}>
               <Link
                 href={link.href}
-                className="text-sm font-medium tracking-wide text-ef-paper/70 hover:text-ef-paper transition-colors duration-200"
+                className="inline-flex items-center min-h-[24px] py-1 text-sm font-medium tracking-wide text-ef-paper/70 hover:text-ef-paper transition-colors duration-200"
               >
                 {link.label}
               </Link>

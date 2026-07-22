@@ -64,16 +64,29 @@ const config: Config = {
       // valores clamp() divergentes repartidos por los componentes
       // (algunos eran duplicados casi idénticos) por 6 pasos con nombre.
       fontSize: {
-        // RF-026/DIS-05 (SRS v0.3 §29): paso adicional para el titular
-        // principal de Home y de cada familia — quiebre de línea deliberado,
-        // tracking ajustado. Extiende fluid-display, no lo reemplaza.
-        'fluid-mega': ['clamp(3.2rem, 10vw, 8rem)', { lineHeight: '0.95', letterSpacing: '-0.02em' }],
-        'fluid-display': ['clamp(2.8rem, 8vw, 6rem)', { lineHeight: '1' }],
+        // ADR-011 editorial: tipografía display a gran escala. `fluid-giant`
+        // para cifras de autoridad (banda de stats); `fluid-mega` para el
+        // titular del hero. Leading muy ajustado y tracking negativo — se
+        // leen como declaraciones, no como texto.
+        'fluid-giant': ['clamp(4.5rem, 18vw, 15rem)', { lineHeight: '0.85', letterSpacing: '-0.03em' }],
+        'fluid-mega': ['clamp(3rem, 11vw, 9rem)', { lineHeight: '0.92', letterSpacing: '-0.025em' }],
+        'fluid-display': ['clamp(2.6rem, 8vw, 6rem)', { lineHeight: '0.98', letterSpacing: '-0.015em' }],
         'fluid-h1': ['clamp(2.4rem, 7vw, 4.5rem)', { lineHeight: '1.05' }],
         'fluid-h2': ['clamp(2rem, 5vw, 3.5rem)', { lineHeight: '1.1' }],
         'fluid-h3': ['clamp(1.3rem, 2vw, 1.8rem)', { lineHeight: '1.2' }],
         'fluid-h4': ['clamp(1.1rem, 2vw, 1.4rem)', { lineHeight: '1.3' }],
         'fluid-stat': ['clamp(1.8rem, 5vw, 2.4rem)', { lineHeight: '1' }],
+      },
+      keyframes: {
+        // ADR-011 tech-stack marquee. Two identical rows translate -100%
+        // in lockstep for a seamless infinite loop.
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+      },
+      animation: {
+        marquee: 'marquee 30s linear infinite',
       },
       boxShadow: {
         'forge-card': '0 1px 3px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.4)',

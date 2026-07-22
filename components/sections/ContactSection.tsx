@@ -171,7 +171,11 @@ export default function ContactSection({ title, description, responseTime, headi
     <section id="contacto" aria-label="Contacto" className="py-24 md:py-32 bg-ef-ink">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 items-start">
         <div>
-          <Heading className="font-humanst text-fluid-h2 text-ef-paper leading-tight mb-4">
+          <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-paper/60 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-ef-orange" aria-hidden="true" />
+            Solicitá tu diagnóstico
+          </p>
+          <Heading className="font-humanst text-fluid-display text-ef-paper leading-[0.95] mb-5">
             {title || 'Hablemos de tu proyecto'}
           </Heading>
           <p className="text-ef-paper/70 text-lg leading-relaxed max-w-xl mb-8">
