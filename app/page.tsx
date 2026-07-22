@@ -36,11 +36,20 @@ export default async function Home() {
           badge={homeContent.hero.badge}
           title={homeContent.hero.title}
           highlight={homeContent.hero.highlight}
+          statement={homeContent.hero.statement}
           primaryCtaLabel={homeContent.hero.primaryCta}
           secondaryCtaLabel={homeContent.hero.secondaryCta}
         />
-        <StatsBand lighthouse={lighthouse} />
-        <StatementBand />
+        <StatsBand
+          lighthouse={lighthouse}
+          eyebrow={homeContent.stats.eyebrow}
+          title={homeContent.stats.title}
+        />
+        <StatementBand
+          eyebrow={homeContent.statement.eyebrow}
+          title={homeContent.statement.title}
+          body={homeContent.statement.body}
+        />
         <SolucionesSection
           familias={content.soluciones}
           eyebrow={homeContent.soluciones.eyebrow}
@@ -56,7 +65,13 @@ export default async function Home() {
           ctaTitle={homeContent.roadmap.ctaTitle}
           ctaLabel={homeContent.roadmap.ctaButton}
         />
-        <TechMarquee />
+        <TechMarquee
+          eyebrow={homeContent.techStack.eyebrow}
+          languagesLabel={homeContent.techStack.languagesLabel}
+          frameworksLabel={homeContent.techStack.frameworksLabel}
+          languages={homeContent.techStack.languages}
+          frameworks={homeContent.techStack.frameworks}
+        />
         <ProjectsSection
           projects={content.projects}
           inProgressNotes={projectsInProgress}

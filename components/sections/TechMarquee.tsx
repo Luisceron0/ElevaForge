@@ -2,12 +2,20 @@ import Reveal from '@/components/ui/Reveal'
 
 // NF-06: honest tech-stack band as two opposing marquees — the real
 // languages and frameworks ElevaForge builds with. A credibility signal,
-// not partner logos or a claimed alliance. CSS-only; paused under
-// prefers-reduced-motion.
-const LENGUAJES = [
+// not partner logos or a claimed alliance. All copy/lists are editable from
+// the admin (homeContent.techStack). CSS-only; paused under reduced-motion.
+interface TechMarqueeProps {
+  eyebrow?: string
+  languagesLabel?: string
+  frameworksLabel?: string
+  languages?: string[]
+  frameworks?: string[]
+}
+
+const DEFAULT_LENGUAJES = [
   'C', 'Java', 'Python', 'C#', 'C++', 'JavaScript', 'TypeScript', 'Dart', 'HTML5', 'CSS3',
 ]
-const FRAMEWORKS = [
+const DEFAULT_FRAMEWORKS = [
   'Spring Boot', 'Django', 'React', 'Vue.js', 'Angular', 'Astro', 'Bootstrap', 'Tailwind CSS', 'Next.js', 'Nuxt.js',
 ]
 
@@ -33,14 +41,23 @@ function Track({ items, reverse = false }: { items: string[]; reverse?: boolean 
   )
 }
 
-export default function TechMarquee() {
+export default function TechMarquee({
+  eyebrow,
+  languagesLabel,
+  frameworksLabel,
+  languages,
+  frameworks,
+}: TechMarqueeProps) {
+  const langs = languages && languages.length > 0 ? languages : DEFAULT_LENGUAJES
+  const fws = frameworks && frameworks.length > 0 ? frameworks : DEFAULT_FRAMEWORKS
+
   return (
     <section aria-label="Stack tecnológico" className="bg-ef-ink py-20 md:py-28 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 mb-10">
         <Reveal>
           <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-paper/60">
             <span className="text-ef-orange">(06)</span>
-            Construimos con herramientas modernas y probadas
+            {eyebrow || 'Construimos con herramientas modernas y probadas'}
           </p>
         </Reveal>
       </div>
@@ -48,15 +65,15 @@ export default function TechMarquee() {
       <div className="space-y-6 md:space-y-8">
         <div>
           <p className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 text-xs font-semibold tracking-[0.2em] uppercase text-ef-paper/55 mb-4">
-            Lenguajes
+            {languagesLabel || 'Lenguajes'}
           </p>
-          <Track items={LENGUAJES} />
+          <Track items={langs} />
         </div>
         <div>
           <p className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 text-xs font-semibold tracking-[0.2em] uppercase text-ef-paper/55 mb-4">
-            Frameworks
+            {frameworksLabel || 'Frameworks'}
           </p>
-          <Track items={FRAMEWORKS} reverse />
+          <Track items={fws} reverse />
         </div>
       </div>
     </section>

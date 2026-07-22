@@ -65,7 +65,9 @@ const config: Config = {
         // para cifras de autoridad (banda de stats); `fluid-mega` para el
         // titular del hero. Leading muy ajustado y tracking negativo — se
         // leen como declaraciones, no como texto.
-        'fluid-giant': ['clamp(4.5rem, 18vw, 15rem)', { lineHeight: '0.85', letterSpacing: '-0.03em' }],
+        // Sized to fit a 4-across stat grid without 3-digit numbers (100)
+        // overflowing their column into the next one.
+        'fluid-giant': ['clamp(2.75rem, 6vw, 6.5rem)', { lineHeight: '0.9', letterSpacing: '-0.02em' }],
         'fluid-mega': ['clamp(3rem, 11vw, 9rem)', { lineHeight: '0.92', letterSpacing: '-0.025em' }],
         'fluid-display': ['clamp(2.6rem, 8vw, 6rem)', { lineHeight: '0.98', letterSpacing: '-0.015em' }],
         'fluid-h1': ['clamp(2.4rem, 7vw, 4.5rem)', { lineHeight: '1.05' }],

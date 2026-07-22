@@ -63,8 +63,18 @@ export interface HomeContent {
     badge: string
     title: string
     highlight: string
+    statement: string
     primaryCta: string
     secondaryCta: string
+  }
+  stats: {
+    eyebrow: string
+    title: string
+  }
+  statement: {
+    eyebrow: string
+    title: string
+    body: string
   }
   projects: HomeSectionCopy & {
     deliveredLabel: string
@@ -77,6 +87,13 @@ export interface HomeContent {
   roadmap: HomeSectionCopy & {
     ctaTitle: string
     ctaButton: string
+  }
+  techStack: {
+    eyebrow: string
+    languagesLabel: string
+    frameworksLabel: string
+    languages: string[]
+    frameworks: string[]
   }
   autonomy: HomeSectionCopy
   contact: {
@@ -392,8 +409,18 @@ export const DEFAULT_ABOUT: AboutContent = {
       badge: 'Agencia de software · Colombia',
       title: 'Forjamos el motor digital',
       highlight: 'de tu empresa',
+      statement: 'No vendemos tecnología.',
       primaryCta: 'Iniciar proyecto',
       secondaryCta: 'Ver proyectos',
+    },
+    stats: {
+      eyebrow: 'Prueba antes que promesa',
+      title: 'Puntajes Lighthouse reales, verificados en producción, no aspiracionales.',
+    },
+    statement: {
+      eyebrow: 'Cómo pensamos',
+      title: 'El software es un medio. La solución es el producto.',
+      body: 'No vendemos frameworks, lenguajes ni horas de desarrollo. Empezamos por el problema de tu negocio y diseñamos la solución que lo resuelve, con ingeniería, documentación y autonomía para tu equipo.',
     },
     projects: {
       eyebrow: 'Proyectos y resultados',
@@ -415,6 +442,13 @@ export const DEFAULT_ABOUT: AboutContent = {
       description: 'Cada fase está definida para que sepas qué estamos haciendo, por qué lo hacemos y qué sigue después.',
       ctaTitle: '¿Listo para el paso 01?',
       ctaButton: 'Solicitar asesoría gratuita',
+    },
+    techStack: {
+      eyebrow: 'Construimos con herramientas modernas y probadas',
+      languagesLabel: 'Lenguajes',
+      frameworksLabel: 'Frameworks',
+      languages: ['C', 'Java', 'Python', 'C#', 'C++', 'JavaScript', 'TypeScript', 'Dart', 'HTML5', 'CSS3'],
+      frameworks: ['Spring Boot', 'Django', 'React', 'Vue.js', 'Angular', 'Astro', 'Bootstrap', 'Tailwind CSS', 'Next.js', 'Nuxt.js'],
     },
     autonomy: {
       eyebrow: 'Diferencial ElevaForge',
@@ -526,18 +560,38 @@ function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeConten
 
   const projects = isRecord(merged.projects) ? merged.projects : {}
   const hero = isRecord(merged.hero) ? merged.hero : {}
+  const stats = isRecord(merged.stats) ? merged.stats : {}
+  const statement = isRecord(merged.statement) ? merged.statement : {}
   const soluciones = isRecord(merged.soluciones) ? merged.soluciones : {}
   const roadmap = isRecord(merged.roadmap) ? merged.roadmap : {}
+  const techStack = isRecord(merged.techStack) ? merged.techStack : {}
   const contact = isRecord(merged.contact) ? merged.contact : {}
+
+  const normalizeList = (value: unknown, fb: string[]): string[] => {
+    const list = Array.isArray(value)
+      ? value.map((v) => String(v ?? '').trim()).filter(Boolean)
+      : []
+    return list.length > 0 ? list : fb
+  }
 
   return {
     hero: {
       badge: String(hero.badge ?? fallback.hero.badge).trim() || fallback.hero.badge,
       title: String(hero.title ?? fallback.hero.title).trim() || fallback.hero.title,
       highlight: String(hero.highlight ?? fallback.hero.highlight).trim() || fallback.hero.highlight,
+      statement: String(hero.statement ?? fallback.hero.statement).trim() || fallback.hero.statement,
       primaryCta: String(hero.primaryCta ?? fallback.hero.primaryCta).trim() || fallback.hero.primaryCta,
       secondaryCta:
         String(hero.secondaryCta ?? fallback.hero.secondaryCta).trim() || fallback.hero.secondaryCta,
+    },
+    stats: {
+      eyebrow: String(stats.eyebrow ?? fallback.stats.eyebrow).trim() || fallback.stats.eyebrow,
+      title: String(stats.title ?? fallback.stats.title).trim() || fallback.stats.title,
+    },
+    statement: {
+      eyebrow: String(statement.eyebrow ?? fallback.statement.eyebrow).trim() || fallback.statement.eyebrow,
+      title: String(statement.title ?? fallback.statement.title).trim() || fallback.statement.title,
+      body: String(statement.body ?? fallback.statement.body).trim() || fallback.statement.body,
     },
     projects: {
       ...normalizeSection(projects, fallback.projects),
@@ -559,6 +613,15 @@ function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeConten
       ...normalizeSection(roadmap, fallback.roadmap),
       ctaTitle: String(roadmap.ctaTitle ?? fallback.roadmap.ctaTitle).trim() || fallback.roadmap.ctaTitle,
       ctaButton: String(roadmap.ctaButton ?? fallback.roadmap.ctaButton).trim() || fallback.roadmap.ctaButton,
+    },
+    techStack: {
+      eyebrow: String(techStack.eyebrow ?? fallback.techStack.eyebrow).trim() || fallback.techStack.eyebrow,
+      languagesLabel:
+        String(techStack.languagesLabel ?? fallback.techStack.languagesLabel).trim() || fallback.techStack.languagesLabel,
+      frameworksLabel:
+        String(techStack.frameworksLabel ?? fallback.techStack.frameworksLabel).trim() || fallback.techStack.frameworksLabel,
+      languages: normalizeList(techStack.languages, fallback.techStack.languages),
+      frameworks: normalizeList(techStack.frameworks, fallback.techStack.frameworks),
     },
     autonomy: normalizeSection(merged.autonomy, fallback.autonomy),
     contact: {

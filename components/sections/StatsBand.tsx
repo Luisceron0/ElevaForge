@@ -4,6 +4,8 @@ import type { LighthouseScores } from '@/lib/site-content'
 
 interface StatsBandProps {
   lighthouse: LighthouseScores
+  eyebrow?: string
+  title?: string
 }
 
 // Editorial authority band (ADR-011 / RF-018): the Lighthouse scores as
@@ -11,7 +13,7 @@ interface StatsBandProps {
 // pattern. Orange numerals read as large text (>24px) so 3.51:1 clears the
 // AA large-text threshold; labels stay cream. Real values render in SSR
 // (RF-018), the count-up is progressive enhancement.
-export default function StatsBand({ lighthouse }: StatsBandProps) {
+export default function StatsBand({ lighthouse, eyebrow, title }: StatsBandProps) {
   const scores = [
     { label: 'Performance', metric: lighthouse.performance },
     { label: 'Accessibility', metric: lighthouse.accessibility },
@@ -25,19 +27,19 @@ export default function StatsBand({ lighthouse }: StatsBandProps) {
         <Reveal className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
           <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-paper/70">
             <span className="text-ef-paper">(02)</span>
-            Prueba antes que promesa
+            {eyebrow || 'Prueba antes que promesa'}
           </p>
           <p className="text-ef-paper/75 text-base max-w-md md:text-right">
-            Puntajes Lighthouse reales, verificados en producción, no aspiracionales.
+            {title || 'Puntajes Lighthouse reales, verificados en producción, no aspiracionales.'}
           </p>
         </Reveal>
 
         <Reveal stagger className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 border-t border-ef-paper/20 pt-12">
           {scores.map((item) => (
-            <div key={item.label}>
+            <div key={item.label} className="min-w-0">
               <AnimatedNumber
                 target={item.metric.score}
-                className="font-humanst text-ef-orange text-fluid-giant block leading-[0.85]"
+                className="font-humanst text-ef-orange text-fluid-giant block leading-none"
               />
               <p className="mt-3 font-humanst text-ef-paper text-lg md:text-xl">{item.label}</p>
               <p className="mt-1 text-sm text-ef-paper/65 leading-snug max-w-[22ch]">

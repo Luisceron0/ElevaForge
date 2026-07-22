@@ -11,6 +11,7 @@ interface HeroSectionProps {
   badge?: string
   title?: string
   highlight?: string
+  statement?: string
   primaryCtaLabel?: string
   secondaryCtaLabel?: string
 }
@@ -22,6 +23,7 @@ export default function HeroSection({
   badge,
   title,
   highlight,
+  statement,
   primaryCtaLabel,
   secondaryCtaLabel,
 }: HeroSectionProps) {
@@ -78,7 +80,7 @@ export default function HeroSection({
               without adding to the visual line spacing. */}
           <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]"><span data-hero-line className="block">{line1}</span></span>
           <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]"><span data-hero-line className="block text-ef-orange">{line2}</span></span>
-          <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]"><span data-hero-line className="block text-ef-paper/45">No vendemos tecnología.</span></span>
+          <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]"><span data-hero-line className="block text-ef-paper/45">{statement || 'No vendemos tecnología.'}</span></span>
         </h1>
 
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:items-end">

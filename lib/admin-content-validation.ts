@@ -67,8 +67,18 @@ const aboutSchema = z.object({
       badge: text(120),
       title: text(160),
       highlight: text(120),
+      statement: text(160),
       primaryCta: text(60),
       secondaryCta: text(60),
+    }),
+    stats: z.object({
+      eyebrow: text(120),
+      title: text(240),
+    }),
+    statement: z.object({
+      eyebrow: text(120),
+      title: text(240),
+      body: text(700),
     }),
     projects: homeSectionSchema.extend({
       deliveredLabel: text(120),
@@ -81,6 +91,13 @@ const aboutSchema = z.object({
     roadmap: homeSectionSchema.extend({
       ctaTitle: text(140),
       ctaButton: text(80),
+    }),
+    techStack: z.object({
+      eyebrow: text(160),
+      languagesLabel: text(60),
+      frameworksLabel: text(60),
+      languages: z.array(text(40)).max(40),
+      frameworks: z.array(text(60)).max(40),
     }),
     autonomy: homeSectionSchema,
     contact: z.object({
