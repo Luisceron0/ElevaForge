@@ -27,7 +27,7 @@ type PanelStyle = {
 
 const panelStyles: Record<string, PanelStyle> = {
   'presencia-digital': {
-    section: 'bg-ef-teal',
+    section: 'bg-ef-blue-deep',
     index: 'text-ef-paper/55',
     eyebrow: 'text-ef-paper/70',
     heading: 'text-ef-paper',
@@ -35,12 +35,12 @@ const panelStyles: Record<string, PanelStyle> = {
     pill: 'border-ef-paper/35 text-ef-paper',
     capLabel: 'text-ef-paper/70',
     capText: 'text-ef-paper/75',
-    cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-teal',
+    cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-blue-deep',
   },
   'sistemas-de-gestion': {
     // clay panel: SOLO texto ink pleno — clay tiene poco margen, incluso
     // opacidades reducidas de ink caen bajo AA (ver lessons.md).
-    section: 'bg-ef-clay',
+    section: 'bg-ef-orange',
     index: 'text-ef-ink/75',
     eyebrow: 'text-ef-ink',
     heading: 'text-ef-ink',
@@ -48,7 +48,7 @@ const panelStyles: Record<string, PanelStyle> = {
     pill: 'border-ef-ink/35 text-ef-ink',
     capLabel: 'text-ef-ink',
     capText: 'text-ef-ink',
-    cta: 'border-ef-ink/40 text-ef-ink hover:bg-ef-ink hover:text-ef-clay',
+    cta: 'border-ef-ink/40 text-ef-ink hover:bg-ef-ink hover:text-ef-orange',
   },
   'software-personalizado': {
     section: 'bg-ef-ink',
@@ -78,7 +78,7 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
       <div className="bg-ef-paper-dim pt-24 md:pt-32 pb-16">
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
           <Reveal className="max-w-3xl">
-            <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-teal mb-6">
+            <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-blue-deep mb-6">
               <span>(04)</span>
               {eyebrow}
             </p>

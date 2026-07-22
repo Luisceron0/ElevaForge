@@ -59,7 +59,7 @@ export default function PreguntasFrecuentesPage() {
       <Navbar />
       <main id="main-content" className="min-h-screen bg-ef-paper pt-32 pb-24 md:pb-32">
         <section aria-label="Preguntas frecuentes" className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12">
-          <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
+          <p className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep mb-4">
             Preguntas frecuentes
           </p>
           <h1 className="font-humanst text-fluid-display text-ef-ink leading-[0.98] mb-10">

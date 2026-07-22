@@ -73,10 +73,12 @@ export default function HeroSection({
           {badge || 'Estudio de ingeniería de software · Colombia'}
         </p>
 
-        <h1 className="font-humanst text-fluid-mega text-ef-paper max-w-[16ch]">
-          <span className="block overflow-hidden"><span data-hero-line className="block">{line1}</span></span>
-          <span className="block overflow-hidden"><span data-hero-line className="block text-ef-orange">{line2}</span></span>
-          <span className="block overflow-hidden"><span data-hero-line className="block text-ef-paper/45">No vendemos tecnología.</span></span>
+        <h1 className="font-humanst text-fluid-mega leading-[1.02] text-ef-paper max-w-[16ch]">
+          {/* pb/-mb pair keeps descenders (g, j, p) inside each overflow mask
+              without adding to the visual line spacing. */}
+          <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]"><span data-hero-line className="block">{line1}</span></span>
+          <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]"><span data-hero-line className="block text-ef-orange">{line2}</span></span>
+          <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]"><span data-hero-line className="block text-ef-paper/45">No vendemos tecnología.</span></span>
         </h1>
 
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:items-end">

@@ -20,7 +20,7 @@ export default function StatsBand({ lighthouse }: StatsBandProps) {
   ]
 
   return (
-    <section aria-label="Métricas verificadas" className="bg-ef-teal py-20 md:py-28 overflow-hidden">
+    <section aria-label="Métricas verificadas" className="bg-ef-blue-deep py-20 md:py-28 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
         <Reveal className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
           <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-paper/70">

@@ -16,7 +16,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <article
-      className="group relative rounded-3xl overflow-hidden bg-white border border-ef-ink/10 w-full min-h-[320px] transition-all duration-300 hover:border-ef-teal/40 hover:shadow-[0_12px_40px_rgba(23,23,28,0.10)]"
+      className="group relative rounded-3xl overflow-hidden bg-white border border-ef-ink/10 w-full min-h-[320px] transition-all duration-300 hover:border-ef-blue-deep/40 hover:shadow-[0_12px_40px_rgba(23,23,28,0.10)]"
       aria-label={`Proyecto ${project.title}`}
     >
       <div className="p-6 md:p-8 h-full flex flex-col">
@@ -41,7 +41,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <span
               className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-widest ${
                 isDelivered
-                  ? 'border border-ef-teal/30 bg-ef-teal/10 text-ef-teal'
+                  ? 'border border-ef-blue-deep/30 bg-ef-blue-deep/10 text-ef-blue-deep'
                   : 'border border-ef-orange/50 bg-ef-orange/10 text-ef-ink'
               }`}
             >
@@ -80,7 +80,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="mt-6 grid grid-cols-2 gap-2 border-t border-ef-ink/10 pt-4">
             {project.lighthouse.performance && (
               <div className="rounded-xl bg-ef-paper p-2 text-center">
-                <p className="font-humanst text-base leading-none text-ef-teal">
+                <p className="font-humanst text-base leading-none text-ef-blue-deep">
                   {project.lighthouse.performance.score}
                 </p>
                 <p className="mt-1 text-xs text-ef-ink-soft">Performance</p>
@@ -88,7 +88,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             )}
             {project.lighthouse.accessibility && (
               <div className="rounded-xl bg-ef-paper p-2 text-center">
-                <p className="font-humanst text-base leading-none text-ef-teal">
+                <p className="font-humanst text-base leading-none text-ef-blue-deep">
                   {project.lighthouse.accessibility.score}
                 </p>
                 <p className="mt-1 text-xs text-ef-ink-soft">Accessibility</p>
@@ -96,7 +96,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             )}
             {project.lighthouse.bestPractices && (
               <div className="rounded-xl bg-ef-paper p-2 text-center">
-                <p className="font-humanst text-base leading-none text-ef-teal">
+                <p className="font-humanst text-base leading-none text-ef-blue-deep">
                   {project.lighthouse.bestPractices.score}
                 </p>
                 <p className="mt-1 text-xs text-ef-ink-soft">Practices</p>
@@ -104,7 +104,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             )}
             {project.lighthouse.seo && (
               <div className="rounded-xl bg-ef-paper p-2 text-center">
-                <p className="font-humanst text-base leading-none text-ef-teal">
+                <p className="font-humanst text-base leading-none text-ef-blue-deep">
                   {project.lighthouse.seo.score}
                 </p>
                 <p className="mt-1 text-xs text-ef-ink-soft">SEO</p>

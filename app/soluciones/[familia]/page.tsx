@@ -69,7 +69,7 @@ export default async function FamiliaPage({
       <Navbar />
       <main id="main-content" className="min-h-screen bg-ef-paper pt-32 pb-24 md:pb-32">
         <section aria-label={familia.nombre} className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12">
-          <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
+          <p className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep mb-4">
             Familias de soluciones
           </p>
           <h1 className="font-humanst text-fluid-h1 text-ef-ink leading-tight mb-6">
@@ -81,13 +81,13 @@ export default async function FamiliaPage({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
             <div>
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep mb-4">
                 Soluciones principales
               </h2>
               <ul className="space-y-3">
                 {familia.soluciones.map((solucion) => (
                   <li key={solucion} className="flex items-start gap-3 text-base text-ef-ink">
-                    <svg aria-hidden="true" className="h-5 w-5 text-ef-teal mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <svg aria-hidden="true" className="h-5 w-5 text-ef-blue-deep mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                     <span>{solucion}</span>
@@ -98,7 +98,7 @@ export default async function FamiliaPage({
 
             {familia.capacidades.length > 0 && (
               <div>
-                <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
+                <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep mb-4">
                   Capacidades configurables
                 </h2>
                 <p className="text-sm text-ef-ink-soft leading-relaxed">

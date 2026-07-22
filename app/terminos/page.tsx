@@ -14,7 +14,7 @@ export default function TerminosPage() {
       <article className="container mx-auto px-4 max-w-3xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-ef-teal hover:underline text-sm font-semibold mb-8"
+          className="inline-flex items-center gap-2 text-ef-blue-deep hover:underline text-sm font-semibold mb-8"
         >
           <svg
             className="w-4 h-4"
@@ -35,7 +35,7 @@ export default function TerminosPage() {
 
         <h1 className="font-humanst text-3xl md:text-4xl font-bold text-ef-ink mb-8">
           Términos y{' '}
-          <span className="text-ef-teal">Condiciones</span>
+          <span className="text-ef-blue-deep">Condiciones</span>
         </h1>
 
         <div className="prose prose-lg max-w-none text-ef-ink/80 space-y-6">
@@ -162,7 +162,7 @@ export default function TerminosPage() {
               Para cualquier consulta sobre estos términos, contáctanos en{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-ef-teal hover:underline"
+                className="text-ef-blue-deep hover:underline"
               >
                 contacto@elevaforge.com
               </a>

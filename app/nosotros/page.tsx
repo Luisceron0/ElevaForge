@@ -42,7 +42,7 @@ export default function NosotrosPage() {
       <main id="main-content" className="min-h-screen bg-ef-paper pt-32 pb-24 md:pb-32">
         <section aria-label="Equipo ElevaForge" className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
           <div className="max-w-3xl mb-12">
-            <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
+            <p className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep mb-4">
               Quiénes somos
             </p>
             <h1 className="font-humanst text-fluid-display text-ef-ink leading-[0.98] mb-6">
@@ -61,7 +61,7 @@ export default function NosotrosPage() {
                 className="bg-white rounded-3xl p-6 border border-ef-ink/10"
               >
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-2xl bg-ef-teal flex items-center justify-center text-ef-paper font-humanst text-xl">
+                  <div className="w-16 h-16 rounded-2xl bg-ef-blue-deep flex items-center justify-center text-ef-paper font-humanst text-xl">
                     {member.initials}
                   </div>
                   <div>
@@ -77,7 +77,7 @@ export default function NosotrosPage() {
                 </p>
 
                 <div className="mt-4 pt-4 border-t border-ef-ink/10">
-                  <span className="text-xs text-ef-teal">
+                  <span className="text-xs text-ef-blue-deep">
                     {member.area}
                   </span>
                 </div>

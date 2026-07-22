@@ -25,7 +25,7 @@ export default async function ProcesoPage() {
         ])}
       />
       <Navbar />
-      <main id="main-content" className="min-h-screen bg-ef-teal pt-32 pb-24 md:pb-32">
+      <main id="main-content" className="min-h-screen bg-ef-blue-deep pt-32 pb-24 md:pb-32">
         <section aria-label="Estándar Forge" className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12">
           <p className="text-xs font-semibold tracking-widest uppercase text-ef-paper/70 mb-4">
             Nuestro método

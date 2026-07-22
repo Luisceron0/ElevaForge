@@ -5,7 +5,7 @@ import Reveal from '@/components/ui/Reveal'
 // producto") — not an invented business claim.
 export default function StatementBand() {
   return (
-    <section aria-label="Nuestra filosofía" className="bg-ef-clay py-24 md:py-36">
+    <section aria-label="Nuestra filosofía" className="bg-ef-orange py-24 md:py-36">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
         <Reveal>
           <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-ink mb-10">

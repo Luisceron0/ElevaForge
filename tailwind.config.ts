@@ -8,23 +8,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Sistema editorial nuevo (SRS v0.3 ADR-011, rebuild frontend) ──
-        // Paleta menos saturada, orange secundario, base nueva. Contraste
-        // de cada par verificado por cálculo (fórmula de luminancia WCAG),
-        // no a ojo. Reglas de uso comentadas por token. Los tokens `forge-*`
-        // de abajo se conservan solo para el panel /admin (no se rediseña).
+        // ── Sistema editorial (ADR-011) con la PALETA OFICIAL de marca ──
+        // Colores oficiales: #3185C5, #174166, #F97300, #FBA81E, #E9EAF5,
+        // #19192E. Contraste de cada par verificado por cálculo (luminancia
+        // WCAG). Reglas de uso por token. Los `forge-*` de abajo quedan solo
+        // para /admin.
         ef: {
-          ink: '#17171C',        // base oscura / texto principal. Sobre cream: 15.99:1
-          'ink-soft': '#3B3A42', // texto secundario sobre cream: 10.05:1
-          paper: '#F5F2EC',      // base clara cálida (cream editorial)
-          'paper-dim': '#E7E1D5',// panel cream más profundo
-          teal: '#1F4A47',       // PRIMARIO nuevo (petrol/teal desaturado). Texto cream/white: 8.8-9.9:1
-          'teal-mid': '#2E6E64', // acento teal (solo texto grande sobre ink: 3.0:1)
-          clay: '#C67B54',       // panel cálido desaturado — SOLO texto ink (5.41:1); nunca blanco
-          orange: '#F97300',     // SECUNDARIO: fill de CTA/acento, con texto ink encima (6.36:1). Nunca texto blanco.
-          'orange-deep': '#B85700', // orange como texto: solo texto grande sobre cream (4.27:1)
-          sage: '#8FA08C',       // acento muted sobre ink: 6.44:1
-          'dust-blue': '#7E97A8',// acento muted sobre ink: 5.85:1
+          ink: '#19192E',        // base oscura / texto principal. Sobre light: 14.4:1
+          'ink-soft': '#33334A', // texto secundario sobre light (alto contraste)
+          paper: '#E9EAF5',      // base clara oficial
+          'paper-dim': '#D8DBEC',// panel claro un poco más profundo
+          blue: '#3185C5',       // PRIMARIO oficial — mid blue: solo texto grande/fills (≤4:1)
+          'blue-deep': '#174166',// panel primario + acento sobre claro. Texto light: 8.85:1
+          orange: '#F97300',     // acento/fill/panel — SOLO texto ink encima (6.13:1), nunca blanco
+          gold: '#FBA81E',       // acento/fill — texto ink (8.79:1)
         },
         forge: {
           'bg-dark': '#19192E',

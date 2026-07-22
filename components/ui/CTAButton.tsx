@@ -48,7 +48,7 @@ export default function CTAButton({
     'outline-light':
       'border border-ef-ink/25 text-ef-ink hover:bg-ef-ink hover:text-ef-paper focus-visible:ring-offset-ef-paper',
     ghost:
-      'text-ef-teal hover:text-ef-ink hover:bg-ef-ink/5',
+      'text-ef-blue-deep hover:text-ef-ink hover:bg-ef-ink/5',
   }
 
   const sizeClasses = {

@@ -14,7 +14,7 @@ export default function PrivacidadPage() {
       <article className="container mx-auto px-4 max-w-3xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-ef-teal hover:underline text-sm font-semibold mb-8"
+          className="inline-flex items-center gap-2 text-ef-blue-deep hover:underline text-sm font-semibold mb-8"
         >
           <svg
             className="w-4 h-4"
@@ -35,7 +35,7 @@ export default function PrivacidadPage() {
 
         <h1 className="font-humanst text-3xl md:text-4xl font-bold text-ef-ink mb-8">
           Política de Tratamiento de{' '}
-          <span className="text-ef-teal">Datos Personales</span>
+          <span className="text-ef-blue-deep">Datos Personales</span>
         </h1>
 
         <div className="prose prose-lg max-w-none text-ef-ink/80 space-y-6">
@@ -61,7 +61,7 @@ export default function PrivacidadPage() {
               puedes contactarnos en{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-ef-teal hover:underline"
+                className="text-ef-blue-deep hover:underline"
               >
                 contacto@elevaforge.com
               </a>
@@ -207,7 +207,7 @@ export default function PrivacidadPage() {
               Para ejercer tus derechos, envía tu solicitud a{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-ef-teal hover:underline"
+                className="text-ef-blue-deep hover:underline"
               >
                 contacto@elevaforge.com
               </a>{' '}
@@ -257,7 +257,7 @@ export default function PrivacidadPage() {
               personales, escríbenos a{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-ef-teal hover:underline"
+                className="text-ef-blue-deep hover:underline"
               >
                 contacto@elevaforge.com
               </a>
