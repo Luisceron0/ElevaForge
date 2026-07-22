@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 
 export default function PrivacidadPage() {
   return (
-    <main className="min-h-screen bg-forge-bg-light py-20">
+    <main className="min-h-screen bg-ef-paper py-20">
       <article className="container mx-auto px-4 max-w-3xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-forge-orange-main hover:underline text-sm font-semibold mb-8"
+          className="inline-flex items-center gap-2 text-ef-teal hover:underline text-sm font-semibold mb-8"
         >
           <svg
             className="w-4 h-4"
@@ -33,12 +33,12 @@ export default function PrivacidadPage() {
           Volver al inicio
         </Link>
 
-        <h1 className="font-humanst text-3xl md:text-4xl font-bold text-forge-bg-dark mb-8">
+        <h1 className="font-humanst text-3xl md:text-4xl font-bold text-ef-ink mb-8">
           Política de Tratamiento de{' '}
-          <span className="text-forge-orange-main">Datos Personales</span>
+          <span className="text-ef-teal">Datos Personales</span>
         </h1>
 
-        <div className="prose prose-lg max-w-none text-forge-bg-dark/80 space-y-6">
+        <div className="prose prose-lg max-w-none text-ef-ink/80 space-y-6">
           <p>
             <strong>Última actualización:</strong> Julio 2026
           </p>
@@ -51,7 +51,7 @@ export default function PrivacidadPage() {
           </p>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               1. Responsable del tratamiento
             </h2>
             <p>
@@ -61,7 +61,7 @@ export default function PrivacidadPage() {
               puedes contactarnos en{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-forge-orange-main hover:underline"
+                className="text-ef-teal hover:underline"
               >
                 contacto@elevaforge.com
               </a>
@@ -70,7 +70,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               2. Datos que recopilamos
             </h2>
             <p>
@@ -88,7 +88,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               3. Finalidad del tratamiento
             </h2>
             <p>Tratamos tus datos exclusivamente para las siguientes finalidades:</p>
@@ -109,7 +109,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               4. Autorización
             </h2>
             <p>
@@ -122,7 +122,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               5. Datos sensibles y menores de edad
             </h2>
             <p>
@@ -135,7 +135,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               6. Almacenamiento, seguridad y encargados
             </h2>
             <p>
@@ -151,7 +151,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               7. Retención de datos
             </h2>
             <p>
@@ -164,7 +164,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               8. Tus derechos como titular (Habeas Data)
             </h2>
             <p>
@@ -200,14 +200,14 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               9. Procedimiento de consultas y reclamos
             </h2>
             <p>
               Para ejercer tus derechos, envía tu solicitud a{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-forge-orange-main hover:underline"
+                className="text-ef-teal hover:underline"
               >
                 contacto@elevaforge.com
               </a>{' '}
@@ -226,7 +226,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               10. Cookies y analítica
             </h2>
             <p>
@@ -238,7 +238,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               11. Cambios a esta política
             </h2>
             <p>
@@ -249,7 +249,7 @@ export default function PrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               12. Contacto y autoridad de control
             </h2>
             <p>
@@ -257,7 +257,7 @@ export default function PrivacidadPage() {
               personales, escríbenos a{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-forge-orange-main hover:underline"
+                className="text-ef-teal hover:underline"
               >
                 contacto@elevaforge.com
               </a>

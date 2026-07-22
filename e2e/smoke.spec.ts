@@ -246,17 +246,18 @@ test.describe('smoke', () => {
   // immediately, so the whole colored-panel system actually gets checked;
   // (2) it eliminates the mid-fade blended-color false positives that a
   // running GSAP tween produces (see tasks/lessons.md).
-  test.describe(() => {
-    test.use({ reducedMotion: 'reduce' })
-    for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proyectos', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
-      test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
-        await page.goto(path)
-        await page.waitForTimeout(600)
-        const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag22aa']).analyze()
-        expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
-      })
-    }
-  })
+  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proyectos', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
+    test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
+      // Emulate reduced motion so the Reveal scroll-animations render every
+      // panel visible immediately (axe skips opacity:0 content) and no
+      // mid-fade blended colors are scanned.
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.goto(path)
+      await page.waitForTimeout(600)
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag22aa']).analyze()
+      expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
+    })
+  }
 
   // DIS-03: gsap.globalTimeline.timeScale(0) — the previous approach to
   // prefers-reduced-motion — froze .from() entrance animations at their

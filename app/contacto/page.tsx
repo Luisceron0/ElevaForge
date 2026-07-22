@@ -25,7 +25,7 @@ export default async function ContactoPage() {
         ])}
       />
       <Navbar />
-      <main id="main-content" className="min-h-screen w-full overflow-x-hidden pt-16">
+      <main id="main-content" className="min-h-screen w-full overflow-x-hidden bg-ef-ink pt-16">
         <ContactSection
           title={contact.title}
           description={contact.description}

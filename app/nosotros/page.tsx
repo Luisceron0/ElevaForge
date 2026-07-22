@@ -39,16 +39,16 @@ export default function NosotrosPage() {
   return (
     <>
       <Navbar />
-      <main id="main-content" className="min-h-screen bg-forge-bg-dark pt-24 pb-24 md:pb-32">
+      <main id="main-content" className="min-h-screen bg-ef-paper pt-32 pb-24 md:pb-32">
         <section aria-label="Equipo ElevaForge" className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-          <div className="max-w-3xl mb-10">
-            <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
+          <div className="max-w-3xl mb-12">
+            <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
               Quiénes somos
             </p>
-            <h1 className="font-humanst text-fluid-display text-white leading-tight mb-4">
+            <h1 className="font-humanst text-fluid-display text-ef-ink leading-[0.98] mb-6">
               Equipo de ingeniería orientado a resultados
             </h1>
-            <p className="text-forge-text-body text-lg leading-relaxed">
+            <p className="text-ef-ink-soft text-lg leading-relaxed">
               Somos tres ingenieros de software colombianos enfocados en
               construir tecnología útil, clara y sostenible para empresas.
             </p>
@@ -58,26 +58,26 @@ export default function NosotrosPage() {
             {team.map((member) => (
               <article
                 key={member.name}
-                className="bg-forge-card-bg rounded-2xl p-6 border border-forge-blue-mid/20"
+                className="bg-white rounded-3xl p-6 border border-ef-ink/10"
               >
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-forge-blue-primary to-forge-blue-deep flex items-center justify-center text-white font-humanst text-xl">
+                  <div className="w-16 h-16 rounded-2xl bg-ef-teal flex items-center justify-center text-ef-paper font-humanst text-xl">
                     {member.initials}
                   </div>
                   <div>
-                    <h2 className="font-humanst text-white text-xl">{member.name}</h2>
-                    <p className="text-xs text-forge-text-muted uppercase tracking-widest">
+                    <h2 className="font-humanst text-ef-ink text-xl">{member.name}</h2>
+                    <p className="text-xs text-ef-ink-soft uppercase tracking-widest">
                       {member.role}
                     </p>
                   </div>
                 </div>
 
-                <p className="text-base text-forge-text-body leading-relaxed">
+                <p className="text-base text-ef-ink-soft leading-relaxed">
                   {member.description}
                 </p>
 
-                <div className="mt-4 pt-4 border-t border-forge-blue-mid/15">
-                  <span className="text-xs text-forge-blue-light">
+                <div className="mt-4 pt-4 border-t border-ef-ink/10">
+                  <span className="text-xs text-ef-teal">
                     {member.area}
                   </span>
                 </div>

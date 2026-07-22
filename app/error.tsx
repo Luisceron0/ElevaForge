@@ -26,7 +26,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-forge-bg-dark px-4">
+    <div className="min-h-screen flex items-center justify-center bg-ef-ink px-4">
       <div className="text-center max-w-md">
         <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
@@ -44,15 +44,15 @@ export default function Error({
             />
           </svg>
         </div>
-        <h2 className="font-humanst text-2xl text-white mb-3">
+        <h2 className="font-humanst text-2xl text-ef-paper mb-3">
           Algo salió mal
         </h2>
-        <p className="text-white/70 mb-8 leading-relaxed">
+        <p className="text-ef-paper/70 mb-8 leading-relaxed">
           Ocurrió un error inesperado. Puedes intentar recargar la página.
         </p>
         <button
           onClick={reset}
-          className="bg-forge-orange-main hover:bg-forge-orange-gold text-forge-bg-dark font-bold py-3 px-8 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+          className="bg-ef-orange hover:bg-ef-ink hover:text-ef-orange text-ef-ink font-bold py-3 px-8 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-ef-orange focus:ring-offset-2 focus:ring-offset-ef-ink border border-transparent hover:border-ef-orange"
         >
           Intentar de nuevo
         </button>

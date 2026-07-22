@@ -57,20 +57,20 @@ export default function PreguntasFrecuentesPage() {
       />
       <JsonLd data={faqJsonLd(FAQ_ITEMS)} />
       <Navbar />
-      <main id="main-content" className="min-h-screen bg-forge-bg-dark pt-24 pb-24 md:pb-32">
+      <main id="main-content" className="min-h-screen bg-ef-paper pt-32 pb-24 md:pb-32">
         <section aria-label="Preguntas frecuentes" className="max-w-4xl mx-auto px-4 md:px-8 lg:px-12">
-          <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
+          <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
             Preguntas frecuentes
           </p>
-          <h1 className="font-humanst text-fluid-display text-white leading-tight mb-10">
+          <h1 className="font-humanst text-fluid-display text-ef-ink leading-[0.98] mb-10">
             Antes de escribirnos
           </h1>
 
           <div className="space-y-8">
             {FAQ_ITEMS.map((item) => (
-              <div key={item.question} className="border-b border-forge-blue-mid/15 pb-8">
-                <h2 className="font-humanst text-white text-xl mb-3">{item.question}</h2>
-                <p className="text-base text-forge-text-body leading-relaxed">{item.answer}</p>
+              <div key={item.question} className="border-b border-ef-ink/12 pb-8">
+                <h2 className="font-humanst text-ef-ink text-xl mb-3">{item.question}</h2>
+                <p className="text-base text-ef-ink-soft leading-relaxed">{item.answer}</p>
               </div>
             ))}
           </div>

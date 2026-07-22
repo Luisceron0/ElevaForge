@@ -26,23 +26,23 @@ export default async function ProyectosPage() {
         ])}
       />
       <Navbar />
-      <main id="main-content" className="min-h-screen bg-forge-bg-dark pt-24 pb-24 md:pb-32">
+      <main id="main-content" className="min-h-screen bg-ef-paper pt-32 pb-24 md:pb-32">
         <section aria-label="Proyectos" className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-          <div className="max-w-3xl mb-10">
-            <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
+          <div className="max-w-3xl mb-12">
+            <p className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-4">
               Proyectos
             </p>
-            <h1 className="font-humanst text-fluid-display text-white leading-tight mb-4">
+            <h1 className="font-humanst text-fluid-display text-ef-ink leading-[0.98] mb-6">
               Casos reales que respaldan nuestro estándar
             </h1>
-            <p className="text-forge-text-body text-lg leading-relaxed">
+            <p className="text-ef-ink-soft text-lg leading-relaxed">
               Experiencia aplicada en productos digitales con foco en velocidad, SEO y claridad operativa.
             </p>
           </div>
 
           {entregados.length > 0 && (
             <div className="mb-12">
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-5">
                 Proyectos entregados
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -50,11 +50,11 @@ export default async function ProyectosPage() {
                   <Link
                     key={project.id}
                     href={`/proyectos/${project.id}`}
-                    className="block bg-forge-card-bg rounded-2xl p-6 border border-forge-blue-mid/20 hover:border-forge-orange-main/40 transition-all duration-300"
+                    className="block bg-white rounded-3xl p-6 border border-ef-ink/10 hover:border-ef-teal/40 hover:shadow-[0_12px_40px_rgba(23,23,28,0.10)] transition-all duration-300"
                   >
-                    <p className="text-xs text-forge-blue-light uppercase tracking-widest mb-2">{project.sector}</p>
-                    <h3 className="font-humanst text-white text-xl mb-2">{project.title}</h3>
-                    <p className="text-sm text-forge-text-body leading-relaxed">{project.summary}</p>
+                    <p className="text-xs text-ef-teal uppercase tracking-widest mb-2">{project.sector}</p>
+                    <h3 className="font-humanst text-ef-ink text-xl mb-2">{project.title}</h3>
+                    <p className="text-sm text-ef-ink-soft leading-relaxed">{project.summary}</p>
                   </Link>
                 ))}
               </div>
@@ -63,18 +63,18 @@ export default async function ProyectosPage() {
 
           {enCurso.length > 0 && (
             <div>
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-forge-blue-light mb-4">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-teal mb-5">
                 Proyectos en curso
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {enCurso.map((project) => (
                   <div
                     key={project.id}
-                    className="bg-forge-card-bg/50 rounded-2xl p-6 border border-forge-blue-mid/10"
+                    className="bg-ef-paper-dim rounded-3xl p-6 border border-ef-ink/10"
                   >
-                    <p className="text-xs text-forge-text-muted uppercase tracking-widest mb-2">{project.sector}</p>
-                    <h3 className="font-humanst text-white/80 text-xl mb-2">{project.title}</h3>
-                    <p className="text-sm text-forge-text-muted leading-relaxed">{project.summary}</p>
+                    <p className="text-xs text-ef-ink-soft uppercase tracking-widest mb-2">{project.sector}</p>
+                    <h3 className="font-humanst text-ef-ink text-xl mb-2">{project.title}</h3>
+                    <p className="text-sm text-ef-ink-soft leading-relaxed">{project.summary}</p>
                   </div>
                 ))}
               </div>
