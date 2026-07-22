@@ -2,6 +2,9 @@
 
 Se amplía cada vez que un error se detecta y se corrige. No dupliques el "por qué" del SRS acá; esto es solo la lección práctica.
 
+## Verificar contraste por cada variante de opacidad, no solo el color base — cada `/70`, `/80` es un color distinto
+Implementando el panel de color de `SolucionesSection.tsx` (RF-026/SRS v0.3), verifiqué por cálculo el contraste de cada color de fondo de panel contra su texto a **opacidad completa** (ej. `forge-bg-dark` sobre `orange-main` → 6.13:1) y di por sentado que una versión atenuada del mismo color (`forge-bg-dark/70`, usada para "capacidades" en texto más discreto) heredaba esa seguridad. No es así: axe-core encontró 3 fallos reales en la primera corrida — `bg-dark/70` sobre `orange-main` da 3.8:1 (no 6.13:1), `bg-dark/80` da 4.58:1 (con margen casi nulo), y `forge-blue-light` (un color que nunca verifiqué, asumí que "ya existía en el sistema" = seguro) sobre `blue-deep` da 4.23:1. La opacidad compone el color con el fondo — es un color efectivo distinto que hay que recalcular, no una fracción segura del original. Regla: todo `text-color/NN` sobre un fondo nuevo se verifica con la fórmula de luminancia relativa (o axe-core) como si fuera un color nuevo, incluso si el color base ya está verificado en otro contexto. En fondos con poco margen (`orange-main`, ~6:1 a opacidad completa) evitar opacidades reducidas del todo — usar el color sólido.
+
 ## Next 16 → `proxy.ts` es el middleware
 Auditores/linters desactualizados lo marcan como "archivo fuera de convención / renombrar a middleware.ts". **Es un falso positivo.** Next.js 16 reemplazó `middleware.ts` por `proxy.ts` (mismo boundary de red: exporta `proxy` + `config.matcher`). No lo renombres ni lo dupliques.
 

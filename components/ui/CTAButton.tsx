@@ -33,7 +33,7 @@ export default function CTAButton({
   disabled = false,
 }: CTAButtonProps) {
   const baseClasses =
-    'inline-flex items-center justify-center text-center gap-2.5 font-semibold px-6 py-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark text-base leading-none cursor-pointer'
+    'inline-flex items-center justify-center text-center gap-2.5 font-semibold px-6 py-3 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark text-base leading-none cursor-pointer'
   const variantClasses = {
     // Dark text on the vivid orange fill — white-on-orange-main is 2.8:1
     // (fails WCAG AA's 4.5:1 for normal text); forge-bg-dark on orange-main

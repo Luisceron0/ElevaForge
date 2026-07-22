@@ -46,7 +46,7 @@ export default function AutonomySection({ eyebrow, title, description, cards }: 
               className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-forge-blue-mid/15 shadow-forge-card"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-forge-orange-main/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-forge-orange-main/10 flex items-center justify-center flex-shrink-0">
                   {icons[index] || icons[0]}
                 </div>
 

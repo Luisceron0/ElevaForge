@@ -105,7 +105,7 @@ export default function HeroSection({
             <CTAButton href={WHATSAPP_URLS.hero} size="lg" label={primaryCtaLabel || 'Iniciar proyecto'} />
             <a
               href="#proyectos"
-              className="inline-flex items-center justify-center text-center gap-2.5 font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-forge-bg-dark hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
+              className="inline-flex items-center justify-center text-center gap-2.5 font-semibold px-8 py-4 rounded-full transition-all duration-200 text-lg border border-forge-orange-main/60 text-forge-orange-main hover:bg-forge-orange-main hover:text-forge-bg-dark hover:border-forge-orange-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-orange-main focus-visible:ring-offset-2 focus-visible:ring-offset-forge-bg-dark"
             >
               {secondaryCtaLabel || 'Ver proyectos'}
             </a>

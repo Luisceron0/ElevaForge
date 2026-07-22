@@ -70,12 +70,18 @@ Precondición: resuelta por el usuario (2026-07-22, "haz lo más óptimo y apega
 DoD Fase 6: si entra, cada artículo indexable y con datos estructurados; si no, marcado fuera de scope v1 en este archivo.
 
 ## Fase 7 — Rediseño visual (SRS v0.3, RF-026)
-Precondición: `SRS-ElevaForge-v0.3.md` (2026-07-22) redactado a partir de 4 capturas reales de `ciandt.com/co` aportadas por el cliente. **Bloqueado hasta que el cliente confirme ADR-010** (paleta expandida — Anexo A del SRS v0.3).
-- [ ] **ADR-010** Confirmar con el cliente la paleta expandida propuesta (reutiliza `forge-blue-deep`/`forge-bg-light`/`forge-orange-main` como fondos de panel + 1 token nuevo `forge-peach-tint`) antes de tocar código.
-- [ ] **RF-026 / DIS-05..08** Implementar patrón de paneles de sección alternados en Home/`/soluciones`/`/nosotros`/`/proceso`, tipografía `fluid-mega`, bloque de cifra/autoridad rediseñado (NF-07), iconografía en círculo para capacidades, botones tipo píldora.
+Precondición: `SRS-ElevaForge-v0.3.md` (2026-07-22) redactado a partir de 4 capturas reales de `ciandt.com/co` aportadas por el cliente.
+- [x] **ADR-010** Paleta expandida decidida (2026-07-22, cliente delegó el ajuste final a criterio de ingeniería): reutiliza `forge-blue-deep`/`forge-bg-light`/`forge-orange-main` como fondos de panel (contraste ya verificado, 10.58:1/14.39:1/6.13:1) + 1 token nuevo `forge-peach-tint: #FFDEC2` derivado matemáticamente del hue de `orange-main` (13.51:1 con texto `bg-dark`). Sin bloqueo, lista para implementar.
+- [x] **`tailwind.config.ts`** Token nuevo `forge-peach-tint: #FFDEC2` (ADR-010) + `fluid-mega` para titulares grandes.
+- [x] **Botones tipo píldora** `CTAButton.tsx` (`rounded-xl`→`rounded-full`) + CTA secundario inline de `HeroSection.tsx`.
+- [x] **Iconografía en círculo** `AutonomySection.tsx` (contenedor de icono `rounded-xl`→`rounded-full`).
+- [x] **`SolucionesSection.tsx` reescrita** con el patrón de paneles: 3 familias, 3 paneles de color distintos (`blue-deep`/`orange-main`/`peach-tint`), pills en vez de checkmarks para "soluciones principales", iconografía en círculo por familia. **3 bugs de contraste reales encontrados y corregidos por axe-core** (no a ojo — ver lessons.md): variantes de opacidad (`/70`, `/80`) de colores ya verificados a opacidad completa fallaban AA; `forge-blue-light` sobre `blue-deep` nunca se había verificado (4.23:1, falla). Los 3 corregidos, re-verificados con axe-core en las 8 páginas: 0 violaciones.
+- [ ] **`fluid-mega` en Home** — probado en el `<h1>` del Hero y **revertido**: a `10vw` el titular no cabía en el viewport inicial en un layout de 2 columnas (empujaba el CTA primario fuera del fold, violaría CRO-02). El token queda disponible para un uso de ancho completo (candidato: NF-07, bloque de cifra/autoridad) — no para el hero actual.
+- [ ] **NF-07** Bloque de cifra/autoridad rediseñado (hoy vive como card lateral en el Hero, RF-018 ya cumplido — pendiente el tratamiento tipográfico más audaz).
 - [ ] **NF-06** Sección de stack tecnológico honesto (Next.js/Supabase/Vercel/TypeScript/Tailwind).
-- [ ] **RF-022/023/024/025** Revisar copy del catálogo expandido contra la política del catálogo (nada de capacidades/actividades de proceso con CTA de compra propio).
-- [ ] Verificación: axe-core en todas las páginas rediseñadas (RNF-DIS-01/TC-11), Lighthouse vs. línea base de Fase 5 (TC-14), `npm run typecheck/lint/test/build` + `npx playwright test` en verde.
+- [ ] **`/nosotros`, `/proceso`** Aplicar el patrón de paneles alternados (hoy sin tocar).
+- [ ] **RF-022/023/024/025** Revisar copy del catálogo expandido contra la política del catálogo (nada de capacidades/actividades de proceso con CTA de compra propio) — el copy actual ya parece cumplirlo, falta una revisión explícita línea a línea.
+- [x] Verificación de lo ya hecho: axe-core en las 8 páginas (RNF-DIS-01/TC-11) en verde, `npm run typecheck/lint/test/build` + `npx playwright test` (35/35) en verde.
 
 DoD Fase 7: paneles de color implementados con tokens (sin arbitrary values); 0 violaciones de contraste; CWV no degrada; contenido del catálogo sin cambios de dato, solo de presentación.
 

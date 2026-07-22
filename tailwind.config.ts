@@ -24,6 +24,13 @@ const config: Config = {
           // stays the brand fill color); only as a foreground color where
           // orange-main would fail contrast.
           'orange-deep': '#B85700',
+          // ADR-010: panel "humano/equipo" — mismo hue/saturación de
+          // orange-main (27.7°/100%) con lightness subida a 0.88; no es un
+          // color inventado, es el naranja de marca aclarado. Verificado:
+          // 13.51:1 con texto forge-bg-dark. Texto forge-orange-deep sobre
+          // este fondo da 3.74:1 — solo válido en texto grande/negrita
+          // (umbral AA de 3:1), nunca en cuerpo de texto normal.
+          'peach-tint': '#FFDEC2',
           'card-bg': '#1F1F3A',
           surface: '#242442',
           border: 'rgba(49,133,197,0.15)',
@@ -39,6 +46,10 @@ const config: Config = {
       // valores clamp() divergentes repartidos por los componentes
       // (algunos eran duplicados casi idénticos) por 6 pasos con nombre.
       fontSize: {
+        // RF-026/DIS-05 (SRS v0.3 §29): paso adicional para el titular
+        // principal de Home y de cada familia — quiebre de línea deliberado,
+        // tracking ajustado. Extiende fluid-display, no lo reemplaza.
+        'fluid-mega': ['clamp(3.2rem, 10vw, 8rem)', { lineHeight: '0.95', letterSpacing: '-0.02em' }],
         'fluid-display': ['clamp(2.8rem, 8vw, 6rem)', { lineHeight: '1' }],
         'fluid-h1': ['clamp(2.4rem, 7vw, 4.5rem)', { lineHeight: '1.05' }],
         'fluid-h2': ['clamp(2rem, 5vw, 3.5rem)', { lineHeight: '1.1' }],
