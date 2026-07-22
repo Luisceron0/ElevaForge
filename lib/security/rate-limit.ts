@@ -81,6 +81,20 @@ function warnNoSharedStoreOnce(): void {
   }
 }
 
+let warnedUpstashFailure = false
+function warnUpstashFailureOnce(err: unknown): void {
+  if (warnedUpstashFailure) return
+  warnedUpstashFailure = true
+  console.warn(
+    JSON.stringify({
+      level: 'SECURITY',
+      ts: new Date().toISOString(),
+      type: 'RATE_LIMIT_STORE_UNAVAILABLE',
+      details: `Upstash rate-limit call failed; degrading to in-memory limiter. ${err instanceof Error ? err.message : 'unknown'}`,
+    }),
+  )
+}
+
 // ── Fallback backend (in-memory, per-instance) ───────────────────────────
 
 interface RateLimitEntry {
@@ -148,12 +162,21 @@ export async function checkRateLimit(
   const resolvedOptions = { ...DEFAULT_OPTIONS, ...options }
 
   if (redis) {
-    const limiter = getLimiter(resolvedOptions)
-    const result = await limiter.limit(key)
-    return {
-      allowed: result.success,
-      remaining: result.remaining,
-      resetMs: Math.max(0, result.reset - Date.now()),
+    try {
+      const limiter = getLimiter(resolvedOptions)
+      const result = await limiter.limit(key)
+      return {
+        allowed: result.success,
+        remaining: result.remaining,
+        resetMs: Math.max(0, result.reset - Date.now()),
+      }
+    } catch (err) {
+      // Upstash outage/timeout must NOT take down the request (a thrown
+      // error here would 500 /api/contact and, via proxy.ts, break
+      // /api/admin/login entirely). Degrade to the in-memory limiter so the
+      // site stays up AND retains per-instance protection.
+      warnUpstashFailureOnce(err)
+      return checkRateLimitInMemory(key, resolvedOptions)
     }
   }
 

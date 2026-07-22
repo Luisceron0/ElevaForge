@@ -19,7 +19,6 @@
     "@gsap/react": "^2.1.2",
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.46.1",
-    "@testsprite/testsprite-mcp": "^0.0.37",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
     "@vercel/analytics": "^2.0.1",

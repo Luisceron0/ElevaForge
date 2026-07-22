@@ -104,5 +104,11 @@ El `process-leads` volcaba nombre+email+presupuesto+contacto_pref de cada lead a
 ## Deprecar un endpoint con 308 (no 410/404) evita romper integraciones desconocidas
 Para `/api/leads` POST (§12) no había confirmación de si alguna integración externa lo usaba. Un `308 Permanent Redirect` a `/api/contact` preserva método Y body, así que un caller externo se reenvía transparentemente al endpoint canónico — cero riesgo de romper algo que no sabíamos que existía, y cero lógica de insert duplicada. Mejor que 410 Gone (rompería al caller) o mantener el duplicado (dos fuentes de verdad).
 
+## Un `await` sin try/catch en el rate-limiter convierte su backend en punto único de falla
+`checkRateLimit` hacía `await limiter.limit(key)` (Upstash) sin captura. Si Upstash caía, la excepción llegaba hasta `runApiGuard` (500 en `/api/contact`) y hasta `proxy.ts` (rompía `/api/admin/login` entero). Un componente de defensa (rate-limit) nunca debe poder tumbar el request que intenta proteger. Regla: toda llamada de red a un store de rate-limit va con try/catch y **degrada** (fail-open a un limitador local), no propaga. Lock-in con test que mockea el store lanzando.
+
+## `npm audit`: mirar el ORIGEN, no el conteo — y desconfiar del "fix" que propone downgrades mayores
+21 vulnerabilidades sonaba alarmante; ~13 venían de UN paquete (`@testsprite/testsprite-mcp`) que estaba en `dependencies` pero no lo importaba ninguna línea del código (herramienta de testing MCP). Removerlo bajó a 3. De esas 3, npm proponía como "fix" `next@9.3.3` (`isSemVerMajor: true`) para vulnerabilidades en el `postcss`/`sharp` que Next bundlea — o sea, downgrade de Next 16 a 9, absurdo y falso. Lección: (1) trazá cada vuln a su paquete raíz con `npm ls <pkg>` antes de asustarte por el número; (2) una herramienta de dev/test jamás va en `dependencies`; (3) cuando `fixAvailable` apunta a una versión mayor de un framework para parchear un transitivo interno de ese framework, es casi siempre un falso positivo — evaluá explotabilidad real en lugar de correr `--force`.
+
 ## Repo tiene ramas remotas activas además de `main`/`develop`
 `origin` incluye `copilot/combine-fix-consumption-and-develop`, `copilot/merge-all-branches`, `fix/mobile-menu-global-border`. Antes de crear una rama nueva, chequear que el nombre no choque con trabajo en curso de otro colaborador/bot.
