@@ -57,6 +57,16 @@ next-env.d.ts
 testem.log
 /typings
 
+# Testing (Vitest / Playwright)
+/coverage
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
+
+# Lighthouse CWV reports (local proxy measurements — see tasks/fase5-cwv-baseline.md)
+/lighthouse-reports/
+
 # System files
 .DS_Store
 Thumbs.db

@@ -5,24 +5,37 @@ const MESSAGES = {
     'Hola ElevaForge, quiero iniciar mi proyecto digital',
   roadmap:
     'Hola ElevaForge, quiero una asesoria gratuita sobre mi proyecto',
-  pricingWeb:
-    'Hola ElevaForge, estoy interesado en el paquete Sitio Web / Landing. ¿Podemos conversar?',
-  pricingPos:
-    'Hola ElevaForge, estoy interesado en el paquete PoS + Gestor de Inventario. ¿Podemos conversar?',
-  pricingCustom:
-    'Hola ElevaForge, estoy interesado en Software Personalizado. ¿Podemos conversar?',
+  familiaPresenciaDigital:
+    'Hola ElevaForge, quiero conversar sobre una solución de Presencia Digital para mi negocio.',
+  familiaSistemasGestion:
+    'Hola ElevaForge, quiero conversar sobre un Sistema de Gestión para mi negocio.',
+  familiaSoftwarePersonalizado:
+    'Hola ElevaForge, quiero conversar sobre una solución de Software Personalizado.',
 } as const
 
 export const WHATSAPP_URLS = {
   base: `https://wa.me/${WHATSAPP_NUMBER}`,
   hero: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.hero)}`,
   roadmap: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.roadmap)}`,
-  pricingWeb: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.pricingWeb)}`,
-  pricingPos: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.pricingPos)}`,
-  pricingCustom: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.pricingCustom)}`,
+  familiaPresenciaDigital: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.familiaPresenciaDigital)}`,
+  familiaSistemasGestion: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.familiaSistemasGestion)}`,
+  familiaSoftwarePersonalizado: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGES.familiaSoftwarePersonalizado)}`,
 }
 
 export function buildWhatsAppURL(message?: string): string {
   if (!message) return WHATSAPP_URLS.hero
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
 }
+
+// RF-004: el número visible debe derivarse siempre de NEXT_PUBLIC_WHATSAPP_NUMBER,
+// nunca hardcodearse en un componente — así solo hay una fuente de verdad.
+export function formatWhatsAppDisplay(number: string = WHATSAPP_NUMBER): string {
+  const digits = number.replace(/\D/g, '')
+  if (digits.startsWith('57') && digits.length === 12) {
+    const rest = digits.slice(2)
+    return `+57 ${rest.slice(0, 3)} ${rest.slice(3, 6)} ${rest.slice(6)}`
+  }
+  return `+${digits}`
+}
+
+export const WHATSAPP_DISPLAY = formatWhatsAppDisplay()

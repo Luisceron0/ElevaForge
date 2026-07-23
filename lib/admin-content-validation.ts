@@ -67,21 +67,37 @@ const aboutSchema = z.object({
       badge: text(120),
       title: text(160),
       highlight: text(120),
+      statement: text(160),
       primaryCta: text(60),
       secondaryCta: text(60),
+    }),
+    stats: z.object({
+      eyebrow: text(120),
+      title: text(240),
+    }),
+    statement: z.object({
+      eyebrow: text(120),
+      title: text(240),
+      body: text(700),
     }),
     projects: homeSectionSchema.extend({
       deliveredLabel: text(120),
       inProgressLabel: text(120),
       notesTitle: text(140),
     }),
-    pricing: homeSectionSchema.extend({
-      legalNote: text(260),
+    soluciones: homeSectionSchema.extend({
       ctaLabel: text(80),
     }),
     roadmap: homeSectionSchema.extend({
       ctaTitle: text(140),
       ctaButton: text(80),
+    }),
+    techStack: z.object({
+      eyebrow: text(160),
+      languagesLabel: text(60),
+      frameworksLabel: text(60),
+      languages: z.array(text(40)).max(40),
+      frameworks: z.array(text(60)).max(40),
     }),
     autonomy: homeSectionSchema,
     contact: z.object({
@@ -109,18 +125,19 @@ const projectSchema = z.object({
   }).optional(),
 })
 
-const packageSchema = z.object({
-  id: z.string().trim().min(1).max(60).regex(/^[a-z0-9-]+$/i, 'ID inválido'),
-  title: text(120),
-  priceUsd: z.number().int().nonnegative(),
-  priceCop: z.number().int().nonnegative(),
-  bullets: z.array(text(220)).min(1).max(12),
+const familiaSchema = z.object({
+  id: z.enum(['presencia-digital', 'sistemas-de-gestion', 'software-personalizado']),
+  nombre: text(120),
+  descripcion: text(600),
+  soluciones: z.array(text(120)).min(1).max(12),
+  capacidades: z.array(text(120)).max(20),
 })
 
 const byKeySchema = {
   about: aboutSchema,
   projects: z.array(projectSchema).max(30),
-  packages: z.array(packageSchema).max(20),
+  // Exactamente 3 familias fijas (§15 del SRS) — nunca más ni menos.
+  soluciones: z.array(familiaSchema).length(3),
 } as const
 
 type ValidContentKey = keyof SiteContent

@@ -46,17 +46,22 @@ cp .env.local.example .env.local
 
 6. **Crear/actualizar tablas en Supabase:**
 
-Ejecutar en el SQL Editor de Supabase:
+Ejecutar en el SQL Editor de Supabase, en este orden:
 
 ```sql
--- Ejecuta el script completo incluido en el repositorio:
--- supabase-migrations.sql
+-- 1. Solo lectura, para ver qué existe hoy (opcional pero recomendado):
+-- supabase/00-introspect-current-state.sql
+
+-- 2. Esquema completo + RLS deny-by-default (RNF-SEC-02 / F-02):
+-- supabase/01-schema-and-rls.sql
 ```
 
-Este script agrega:
-- Campos completos de leads (telefono, servicio, estado, etc.)
-- Tabla site_content para contenido editable del panel admin
-- Tabla admin_users para múltiples administradores
+`supabase/01-schema-and-rls.sql` agrega:
+- Tabla `leads` (outbox de contacto/diagnóstico) con RLS activado
+- Tabla `site_content` para contenido editable del panel admin, con RLS activado
+- Tabla `admin_users` para múltiples administradores, con RLS activado
+
+Ninguna de las tres tiene policies para `anon`/`authenticated` a propósito — nada en el código usa la anon key para leer/escribir estas tablas (todo pasa por `SUPABASE_SERVICE_ROLE_KEY`, que bypassa RLS). Ver el encabezado del script para el detalle y la verificación (TC-06).
 
 7. **Iniciar servidor de desarrollo:**
 
@@ -68,7 +73,7 @@ npm run dev
 
 - URL: /admin/login
 - Variables requeridas:
-  - ADMIN_SESSION_SEED (requerido en producción)
+  - ADMIN_SESSION_SEED (requerido en producción; debe ser un secreto propio y dedicado — nunca reutilices `SUPABASE_SERVICE_ROLE_KEY` como semilla)
 - Variables opcionales de migración (legacy):
   - ADMIN_USERNAME
   - ADMIN_PASSWORD
@@ -82,7 +87,7 @@ El login valida credenciales contra la tabla `admin_users` en Supabase.
 3. Inicia sesión con admin legacy (si aún lo usas).
 4. En el panel admin, sección **Administradores**, crea los nuevos usuarios.
 5. Verifica que el nuevo usuario pueda entrar en `/admin/login`.
-6. Elimina `ADMIN_USERNAME` y `ADMIN_PASSWORD` de tus variables cuando ya no sean necesarios.
+6. Elimina `ADMIN_USERNAME` y `ADMIN_PASSWORD` de tus variables cuando ya no sean necesarios. Si no las eliminás, el servidor loguea una advertencia `LEGACY_ADMIN_CREDENTIAL_ACTIVE` al arrancar (ver `instrumentation.ts` / `lib/security/admin-bootstrap-check.ts`) mientras ese usuario también exista activo en `admin_users`.
 
 Desde el panel puedes:
 - Revisar leads completos y actualizar estado

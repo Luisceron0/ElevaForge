@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 
 export default function TerminosPage() {
   return (
-    <main className="min-h-screen bg-forge-bg-light py-20">
+    <main className="min-h-screen bg-ef-paper py-20">
       <article className="container mx-auto px-4 max-w-3xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-forge-orange-main hover:underline text-sm font-semibold mb-8"
+          className="inline-flex items-center gap-2 text-ef-blue-deep hover:underline text-sm font-semibold mb-8"
         >
           <svg
             className="w-4 h-4"
@@ -33,18 +33,18 @@ export default function TerminosPage() {
           Volver al inicio
         </Link>
 
-        <h1 className="font-humanst text-3xl md:text-4xl font-bold text-forge-bg-dark mb-8">
+        <h1 className="font-humanst text-3xl md:text-4xl font-bold text-ef-ink mb-8">
           Términos y{' '}
-          <span className="text-forge-orange-main">Condiciones</span>
+          <span className="text-ef-blue-deep">Condiciones</span>
         </h1>
 
-        <div className="prose prose-lg max-w-none text-forge-bg-dark/80 space-y-6">
+        <div className="prose prose-lg max-w-none text-ef-ink/80 space-y-6">
           <p>
-            <strong>Última actualización:</strong> Febrero 2026
+            <strong>Última actualización:</strong> Julio 2026
           </p>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               1. Aceptación de los términos
             </h2>
             <p>
@@ -56,7 +56,7 @@ export default function TerminosPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               2. Servicios
             </h2>
             <p>
@@ -68,7 +68,7 @@ export default function TerminosPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               3. Propiedad intelectual
             </h2>
             <p>
@@ -84,7 +84,7 @@ export default function TerminosPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               4. Uso del sitio
             </h2>
             <p>Te comprometes a:</p>
@@ -107,7 +107,7 @@ export default function TerminosPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               5. Limitación de responsabilidad
             </h2>
             <p>
@@ -120,7 +120,7 @@ export default function TerminosPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               6. Enlaces a terceros
             </h2>
             <p>
@@ -132,7 +132,7 @@ export default function TerminosPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               7. Modificaciones
             </h2>
             <p>
@@ -143,26 +143,26 @@ export default function TerminosPage() {
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               8. Legislación aplicable
             </h2>
             <p>
               Estos términos se regirán e interpretarán de acuerdo con las
               leyes de la República de Colombia, en especial la normativa
               relacionada con protección de datos personales (Ley 1581 de
-              2012 y Decreto 1377 de 2013), en la medida en que aplique.
+              2012 y Decreto 1074 de 2015), en la medida en que aplique.
             </p>
           </section>
 
           <section>
-            <h2 className="font-humanst text-xl font-bold text-forge-bg-dark mt-8 mb-3">
+            <h2 className="font-humanst text-xl font-bold text-ef-ink mt-8 mb-3">
               9. Contacto
             </h2>
             <p>
               Para cualquier consulta sobre estos términos, contáctanos en{' '}
               <a
                 href="mailto:contacto@elevaforge.com"
-                className="text-forge-orange-main hover:underline"
+                className="text-ef-blue-deep hover:underline"
               >
                 contacto@elevaforge.com
               </a>

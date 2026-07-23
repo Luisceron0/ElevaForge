@@ -147,11 +147,25 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
               <p className="text-sm font-semibold text-white">Hero</p>
               <input value={draft.homeContent.hero.badge} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, hero: { ...prev.homeContent.hero, badge: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Badge" />
               <input value={draft.homeContent.hero.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, hero: { ...prev.homeContent.hero, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título principal" />
-              <input value={draft.homeContent.hero.highlight} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, hero: { ...prev.homeContent.hero, highlight: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Texto destacado" />
+              <input value={draft.homeContent.hero.highlight} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, hero: { ...prev.homeContent.hero, highlight: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Texto destacado (naranja)" />
+              <input value={draft.homeContent.hero.statement} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, hero: { ...prev.homeContent.hero, statement: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Tercera línea del titular" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input value={draft.homeContent.hero.primaryCta} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, hero: { ...prev.homeContent.hero, primaryCta: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="CTA primario" />
                 <input value={draft.homeContent.hero.secondaryCta} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, hero: { ...prev.homeContent.hero, secondaryCta: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="CTA secundario" />
               </div>
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
+              <p className="text-sm font-semibold text-white">Banda de métricas (Lighthouse)</p>
+              <input value={draft.homeContent.stats.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, stats: { ...prev.homeContent.stats, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
+              <textarea value={draft.homeContent.stats.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, stats: { ...prev.homeContent.stats, title: e.target.value } } }))} className="w-full min-h-[70px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Texto introductorio (los puntajes salen de la pestaña Lighthouse)" />
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
+              <p className="text-sm font-semibold text-white">Filosofía (statement)</p>
+              <input value={draft.homeContent.statement.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, statement: { ...prev.homeContent.statement, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
+              <textarea value={draft.homeContent.statement.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, statement: { ...prev.homeContent.statement, title: e.target.value } } }))} className="w-full min-h-[70px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Frase grande" />
+              <textarea value={draft.homeContent.statement.body} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, statement: { ...prev.homeContent.statement, body: e.target.value } } }))} className="w-full min-h-[90px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Párrafo de apoyo" />
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
@@ -167,12 +181,11 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
-              <p className="text-sm font-semibold text-white">Precios</p>
-              <input value={draft.homeContent.pricing.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
-              <input value={draft.homeContent.pricing.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
-              <textarea value={draft.homeContent.pricing.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, description: e.target.value } } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
-              <textarea value={draft.homeContent.pricing.legalNote} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, legalNote: e.target.value } } }))} className="w-full min-h-[70px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Nota legal" />
-              <input value={draft.homeContent.pricing.ctaLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, pricing: { ...prev.homeContent.pricing, ctaLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Texto CTA" />
+              <p className="text-sm font-semibold text-white">Soluciones</p>
+              <input value={draft.homeContent.soluciones.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
+              <input value={draft.homeContent.soluciones.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
+              <textarea value={draft.homeContent.soluciones.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, description: e.target.value } } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
+              <input value={draft.homeContent.soluciones.ctaLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, ctaLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Texto CTA" />
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
@@ -182,6 +195,19 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
               <textarea value={draft.homeContent.roadmap.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, roadmap: { ...prev.homeContent.roadmap, description: e.target.value } } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
               <input value={draft.homeContent.roadmap.ctaTitle} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, roadmap: { ...prev.homeContent.roadmap, ctaTitle: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título CTA" />
               <input value={draft.homeContent.roadmap.ctaButton} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, roadmap: { ...prev.homeContent.roadmap, ctaButton: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Texto botón CTA" />
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
+              <p className="text-sm font-semibold text-white">Stack tecnológico (marquee)</p>
+              <input value={draft.homeContent.techStack.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, techStack: { ...prev.homeContent.techStack, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input value={draft.homeContent.techStack.languagesLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, techStack: { ...prev.homeContent.techStack, languagesLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Etiqueta lenguajes" />
+                <input value={draft.homeContent.techStack.frameworksLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, techStack: { ...prev.homeContent.techStack, frameworksLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Etiqueta frameworks" />
+              </div>
+              <label className="block text-xs text-white/60">Lenguajes (separados por coma)</label>
+              <textarea value={draft.homeContent.techStack.languages.join(', ')} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, techStack: { ...prev.homeContent.techStack, languages: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) } } }))} className="w-full min-h-[60px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="C, Java, Python, ..." />
+              <label className="block text-xs text-white/60">Frameworks (separados por coma)</label>
+              <textarea value={draft.homeContent.techStack.frameworks.join(', ')} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, techStack: { ...prev.homeContent.techStack, frameworks: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) } } }))} className="w-full min-h-[60px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="React, Next.js, Django, ..." />
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
@@ -557,9 +583,19 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
         badge: about.homeContent?.hero?.badge || DEFAULT_ABOUT.homeContent.hero.badge,
         title: about.homeContent?.hero?.title || DEFAULT_ABOUT.homeContent.hero.title,
         highlight: about.homeContent?.hero?.highlight || DEFAULT_ABOUT.homeContent.hero.highlight,
+        statement: about.homeContent?.hero?.statement || DEFAULT_ABOUT.homeContent.hero.statement,
         primaryCta: about.homeContent?.hero?.primaryCta || DEFAULT_ABOUT.homeContent.hero.primaryCta,
         secondaryCta:
           about.homeContent?.hero?.secondaryCta || DEFAULT_ABOUT.homeContent.hero.secondaryCta,
+      },
+      stats: {
+        eyebrow: about.homeContent?.stats?.eyebrow || DEFAULT_ABOUT.homeContent.stats.eyebrow,
+        title: about.homeContent?.stats?.title || DEFAULT_ABOUT.homeContent.stats.title,
+      },
+      statement: {
+        eyebrow: about.homeContent?.statement?.eyebrow || DEFAULT_ABOUT.homeContent.statement.eyebrow,
+        title: about.homeContent?.statement?.title || DEFAULT_ABOUT.homeContent.statement.title,
+        body: about.homeContent?.statement?.body || DEFAULT_ABOUT.homeContent.statement.body,
       },
       projects: {
         eyebrow: about.homeContent?.projects?.eyebrow || DEFAULT_ABOUT.homeContent.projects.eyebrow,
@@ -571,12 +607,11 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
           about.homeContent?.projects?.inProgressLabel || DEFAULT_ABOUT.homeContent.projects.inProgressLabel,
         notesTitle: about.homeContent?.projects?.notesTitle || DEFAULT_ABOUT.homeContent.projects.notesTitle,
       },
-      pricing: {
-        eyebrow: about.homeContent?.pricing?.eyebrow || DEFAULT_ABOUT.homeContent.pricing.eyebrow,
-        title: about.homeContent?.pricing?.title || DEFAULT_ABOUT.homeContent.pricing.title,
-        description: about.homeContent?.pricing?.description || DEFAULT_ABOUT.homeContent.pricing.description,
-        legalNote: about.homeContent?.pricing?.legalNote || DEFAULT_ABOUT.homeContent.pricing.legalNote,
-        ctaLabel: about.homeContent?.pricing?.ctaLabel || DEFAULT_ABOUT.homeContent.pricing.ctaLabel,
+      soluciones: {
+        eyebrow: about.homeContent?.soluciones?.eyebrow || DEFAULT_ABOUT.homeContent.soluciones.eyebrow,
+        title: about.homeContent?.soluciones?.title || DEFAULT_ABOUT.homeContent.soluciones.title,
+        description: about.homeContent?.soluciones?.description || DEFAULT_ABOUT.homeContent.soluciones.description,
+        ctaLabel: about.homeContent?.soluciones?.ctaLabel || DEFAULT_ABOUT.homeContent.soluciones.ctaLabel,
       },
       roadmap: {
         eyebrow: about.homeContent?.roadmap?.eyebrow || DEFAULT_ABOUT.homeContent.roadmap.eyebrow,
@@ -584,6 +619,21 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
         description: about.homeContent?.roadmap?.description || DEFAULT_ABOUT.homeContent.roadmap.description,
         ctaTitle: about.homeContent?.roadmap?.ctaTitle || DEFAULT_ABOUT.homeContent.roadmap.ctaTitle,
         ctaButton: about.homeContent?.roadmap?.ctaButton || DEFAULT_ABOUT.homeContent.roadmap.ctaButton,
+      },
+      techStack: {
+        eyebrow: about.homeContent?.techStack?.eyebrow || DEFAULT_ABOUT.homeContent.techStack.eyebrow,
+        languagesLabel:
+          about.homeContent?.techStack?.languagesLabel || DEFAULT_ABOUT.homeContent.techStack.languagesLabel,
+        frameworksLabel:
+          about.homeContent?.techStack?.frameworksLabel || DEFAULT_ABOUT.homeContent.techStack.frameworksLabel,
+        languages:
+          Array.isArray(about.homeContent?.techStack?.languages) && about.homeContent.techStack.languages.length > 0
+            ? about.homeContent.techStack.languages
+            : DEFAULT_ABOUT.homeContent.techStack.languages,
+        frameworks:
+          Array.isArray(about.homeContent?.techStack?.frameworks) && about.homeContent.techStack.frameworks.length > 0
+            ? about.homeContent.techStack.frameworks
+            : DEFAULT_ABOUT.homeContent.techStack.frameworks,
       },
       autonomy: {
         eyebrow: about.homeContent?.autonomy?.eyebrow || DEFAULT_ABOUT.homeContent.autonomy.eyebrow,

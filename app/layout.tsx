@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
+import JsonLd from '@/components/seo/JsonLd'
 import './globals.css'
 
 // Force per-request server rendering so middleware-provided headers
@@ -25,7 +27,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://elevaforge.com'
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'ElevaForge — Forjamos tu crecimiento digital',
+    default: 'ElevaForge · Forjamos tu crecimiento digital',
     template: '%s | ElevaForge',
   },
   description:
@@ -37,7 +39,7 @@ export const metadata: Metadata = {
     'Next.js',
     'SEO',
     'PyMEs',
-    'desarrollo de software México',
+    'desarrollo de software Colombia',
     'páginas web profesionales',
     'aplicaciones web',
   ],
@@ -47,11 +49,11 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'ElevaForge — Forjamos tu crecimiento digital',
+    title: 'ElevaForge · Forjamos tu crecimiento digital',
     description:
       'No solo creamos herramientas; forjamos el motor digital de tu empresa con transparencia total y resultados Lighthouse verificables.',
     type: 'website',
-    locale: 'es_MX',
+    locale: 'es_CO',
     url: SITE_URL,
     siteName: 'ElevaForge',
     images: [
@@ -59,14 +61,14 @@ export const metadata: Metadata = {
         url: '/ElevaIcon.png',
         width: 1200,
         height: 630,
-        alt: 'ElevaForge — Agencia de Desarrollo de Software',
+        alt: 'ElevaForge · Agencia de Desarrollo de Software',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ElevaForge — Forjamos tu crecimiento digital',
+    title: 'ElevaForge · Forjamos tu crecimiento digital',
     description:
       'Agencia de desarrollo de software con transparencia total y resultados Lighthouse verificables.',
     images: ['/ElevaIcon.png'],
@@ -107,7 +109,6 @@ export default async function RootLayout({
     url: SITE_URL,
     logo: `${SITE_URL}/ElevaIcon.png`,
     image: `${SITE_URL}/ElevaIcon.png`,
-    priceRange: '$$',
     foundingDate: '2024',
     contactPoint: {
       '@type': 'ContactPoint',
@@ -117,7 +118,7 @@ export default async function RootLayout({
     },
     areaServed: {
       '@type': 'Country',
-      name: 'México',
+      name: 'Colombia',
     },
     knowsAbout: [
       'Desarrollo Web',
@@ -157,22 +158,18 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd).replace(/</g, '\u003c'),
-          }}
-        />
+        <JsonLd data={jsonLd} />
       </head>
       <body>
         {/* Skip navigation - accesibilidad */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-forge-orange-main focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-semibold focus:shadow-lg"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-ef-orange focus:text-ef-ink focus:px-4 focus:py-2 focus:rounded-full focus:text-sm focus:font-semibold focus:shadow-lg"
         >
           Saltar al contenido principal
         </a>
         {children}
+        <Analytics />
       </body>
     </html>
   )

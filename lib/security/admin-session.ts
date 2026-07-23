@@ -27,8 +27,17 @@ function timingSafeEqual(a: string, b: string): boolean {
   return crypto.timingSafeEqual(aBuf, bBuf)
 }
 
+/**
+ * Session signing seed — RNF-SEC-03 / F-03.
+ *
+ * Must be its own dedicated secret, never the Supabase service-role key.
+ * Reusing that key as an HMAC seed would mean any code path that logs or
+ * leaks the seed also leaks full DB-bypassing credentials, and vice versa.
+ * Fails closed: an unset seed throws rather than silently signing with a
+ * fallback.
+ */
 function getSessionSeed() {
-  const seed = process.env.ADMIN_SESSION_SEED || process.env.SUPABASE_SERVICE_ROLE_KEY
+  const seed = process.env.ADMIN_SESSION_SEED
   if (!seed) throw new Error('ADMIN_SESSION_SEED environment variable is not set')
   return seed
 }

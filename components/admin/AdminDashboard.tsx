@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Lead } from '@/types/lead'
-import { AboutContent, PackagePlan, ProjectItem, SiteContent, TeamCapability } from '@/lib/site-content'
+import { AboutContent, FamiliaDeSolucion, ProjectItem, SiteContent, TeamCapability } from '@/lib/site-content'
 import TeamAdminEditor from './TeamAdminEditor'
 import ProjectsAdminEditor from './ProjectsAdminEditor'
-import PackagesAdminEditor from './PackagesAdminEditor'
+import SolucionesAdminEditor from './SolucionesAdminEditor'
 import AboutAdminEditor from './AboutAdminEditor'
 import AdminNavbar from '@/components/admin/AdminNavbar'
 
@@ -26,7 +26,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
   const [leads, setLeads] = useState<Lead[]>(initialLeads)
   const [panelView, setPanelView] = useState<'content' | 'admins' | 'leads'>('content')
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'sent' | 'failed'>('all')
-  const [savingKey, setSavingKey] = useState<'' | 'about' | 'projects' | 'packages' | 'team'>('')
+  const [savingKey, setSavingKey] = useState<'' | 'about' | 'projects' | 'soluciones' | 'team'>('')
   const [adminUsers, setAdminUsers] = useState<AdminUserRow[]>([])
   const [adminsLoading, setAdminsLoading] = useState(true)
   const [adminsSaving, setAdminsSaving] = useState(false)
@@ -106,8 +106,8 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
     await saveContent('projects', projects)
   }
 
-  async function savePackagesVisual(plans: PackagePlan[]) {
-    await saveContent('packages', plans)
+  async function saveSolucionesVisual(familias: FamiliaDeSolucion[]) {
+    await saveContent('soluciones', familias)
   }
 
   async function createAdminUser() {
@@ -334,16 +334,16 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
                 </div>
               </div>
 
-              {/* Packages - Full width */}
+              {/* Soluciones - Full width */}
               <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-semibold text-white">Paquetes de Precios</h2>
-                  <p className="text-sm text-white/60 mt-1">Planes y estructura comercial</p>
+                  <h2 className="text-2xl font-semibold text-white">Familias de Soluciones</h2>
+                  <p className="text-sm text-white/60 mt-1">Contenido comunicacional, sin precios</p>
                 </div>
-                <PackagesAdminEditor
-                  plans={content.packages}
-                  saving={savingKey === 'packages'}
-                  onSave={savePackagesVisual}
+                <SolucionesAdminEditor
+                  familias={content.soluciones}
+                  saving={savingKey === 'soluciones'}
+                  onSave={saveSolucionesVisual}
                 />
               </div>
             </div>

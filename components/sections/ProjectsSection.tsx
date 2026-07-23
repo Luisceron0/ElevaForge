@@ -1,5 +1,6 @@
 import type { ProjectItem } from '@/lib/site-content'
 import ProjectCard from '@/components/ui/ProjectCard'
+import Reveal from '@/components/ui/Reveal'
 
 interface ProjectsSectionProps {
   projects: ProjectItem[]
@@ -27,61 +28,59 @@ export default function ProjectsSection({
   const inProgressProjects = filteredProjects.filter((project) => project.status === 'en-curso')
 
   return (
-    <section id="proyectos" aria-label="Proyectos" className="py-24 md:py-32 bg-forge-bg-light">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-        <div className="max-w-3xl mb-10">
-          <p className="text-xs font-semibold tracking-widest uppercase text-forge-blue-mid mb-4">
+    <section id="proyectos" aria-label="Proyectos" className="py-24 md:py-32 bg-ef-paper">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
+        <Reveal className="max-w-3xl mb-14">
+          <p className="flex items-center gap-3 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-ef-blue-deep mb-6">
+            <span>(07)</span>
             {eyebrow}
           </p>
-          <h2
-            className="font-humanst text-forge-bg-dark leading-tight mb-4"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
-          >
+          <h2 className="font-humanst text-fluid-display text-ef-ink mb-5">
             {title}
           </h2>
-          <p className="text-forge-blue-deep text-lg leading-relaxed">
+          <p className="text-ef-ink-soft text-lg md:text-xl leading-relaxed">
             {description}
           </p>
-        </div>
+        </Reveal>
 
         {deliveredProjects.length > 0 && (
-          <div className="mb-10">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-humanst text-forge-bg-dark text-[clamp(1.3rem,2vw,1.8rem)]">{deliveredLabel}</h3>
-              <span className="rounded-full border border-emerald-600/30 bg-emerald-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-700">
+          <div className="mb-12">
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="font-humanst text-fluid-h3 text-ef-ink">{deliveredLabel}</h3>
+              <span className="rounded-full border border-ef-blue-deep/30 bg-ef-blue-deep/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ef-blue-deep">
                 {deliveredProjects.length}
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <Reveal stagger className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {deliveredProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
-            </div>
+            </Reveal>
           </div>
         )}
 
         {inProgressProjects.length > 0 && (
           <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-humanst text-forge-bg-dark text-[clamp(1.3rem,2vw,1.8rem)]">{inProgressLabel}</h3>
-              <span className="rounded-full border border-forge-orange-main/30 bg-forge-orange-main/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-forge-orange-main">
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="font-humanst text-fluid-h3 text-ef-ink">{inProgressLabel}</h3>
+              <span className="rounded-full border border-ef-orange/50 bg-ef-orange/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ef-ink">
                 {inProgressProjects.length}
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <Reveal stagger className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {inProgressProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
-            </div>
+            </Reveal>
           </div>
         )}
 
         {inProgressNotes.length > 0 && (
-          <div className="mt-10 rounded-2xl border border-forge-blue-mid/20 bg-white p-6 md:p-8">
-            <h4 className="font-humanst text-forge-bg-dark text-xl mb-4">{notesTitle}</h4>
+          <div className="mt-10 rounded-3xl border border-ef-ink/10 bg-ef-paper-dim p-6 md:p-8">
+            <h4 className="font-humanst text-ef-ink text-xl mb-4">{notesTitle}</h4>
             <ul className="space-y-3">
               {inProgressNotes.map((note, index) => (
-                <li key={`${note}-${index}`} className="text-forge-blue-deep text-base leading-relaxed break-words">
+                <li key={`${note}-${index}`} className="text-ef-ink-soft text-base leading-relaxed break-words">
                   {note}
                 </li>
               ))}

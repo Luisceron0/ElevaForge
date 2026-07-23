@@ -5,7 +5,7 @@ import { TeamCapability } from '@/lib/site-content'
 import ImageUploadInput from './ImageUploadInput'
 import { extractStoragePath } from '@/lib/asset-refs'
 
-/** Paleta de colores — debe coincidir con TeamSection.tsx */
+/** Paleta de avatares del editor (independiente del render público). */
 const AVATAR_PALETTES = [
   { from: '#F97300', to: '#FBA81E', text: '#19192E' },
   { from: '#3185C5', to: '#49ACED', text: '#ffffff' },

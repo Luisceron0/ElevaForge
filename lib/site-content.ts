@@ -7,12 +7,16 @@ import {
 } from '@/lib/storage-assets'
 import { normalizeAssetRef } from '@/lib/asset-refs'
 
-export interface PackagePlan {
-  id: string
-  title: string
-  priceUsd: number
-  priceCop: number
-  bullets: string[]
+export type FamiliaId = 'presencia-digital' | 'sistemas-de-gestion' | 'software-personalizado'
+
+export interface FamiliaDeSolucion {
+  id: FamiliaId
+  nombre: string
+  descripcion: string
+  /** Soluciones principales de esta familia (contenido, no precios). */
+  soluciones: string[]
+  /** Capacidades configurables que complementan las soluciones — nunca productos independientes. */
+  capacidades: string[]
 }
 
 export interface ProjectItem {
@@ -59,21 +63,37 @@ export interface HomeContent {
     badge: string
     title: string
     highlight: string
+    statement: string
     primaryCta: string
     secondaryCta: string
+  }
+  stats: {
+    eyebrow: string
+    title: string
+  }
+  statement: {
+    eyebrow: string
+    title: string
+    body: string
   }
   projects: HomeSectionCopy & {
     deliveredLabel: string
     inProgressLabel: string
     notesTitle: string
   }
-  pricing: HomeSectionCopy & {
-    legalNote: string
+  soluciones: HomeSectionCopy & {
     ctaLabel: string
   }
   roadmap: HomeSectionCopy & {
     ctaTitle: string
     ctaButton: string
+  }
+  techStack: {
+    eyebrow: string
+    languagesLabel: string
+    frameworksLabel: string
+    languages: string[]
+    frameworks: string[]
   }
   autonomy: HomeSectionCopy
   contact: {
@@ -126,44 +146,60 @@ export interface AboutContent {
 export interface SiteContent {
   about: AboutContent
   projects: ProjectItem[]
-  packages: PackagePlan[]
+  soluciones: FamiliaDeSolucion[]
 }
 
-export const DEFAULT_PACKAGES: PackagePlan[] = [
+export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
   {
-    id: 'web',
-    title: 'Sitio Web / Landing',
-    priceUsd: 125,
-    priceCop: 125 * 3800,
-    bullets: [
-      'Landing + gestor de contenido (CMS) y panel de administración',
-      'Diseño responsivo y optimización',
-      'SEO técnico y rendimiento',
-      'Entrega en 2 a 4 semanas',
+    id: 'presencia-digital',
+    nombre: 'Presencia Digital',
+    descripcion:
+      'Para negocios que necesitan mostrarse online y dirigir a sus clientes hacia una acción concreta: escribir por WhatsApp, pedir una cotización, reservar o conocer tu catálogo.',
+    soluciones: ['Landing Page', 'Sitio Web'],
+    capacidades: [
+      'Panel administrativo y gestión de contenido',
+      'Blog y catálogo digital',
+      'Formularios, agenda y noticias',
+      'Buscador y multilenguaje',
+      'SEO técnico',
+      'Integraciones con servicios externos',
+      'Autenticación y gestión documental',
+      'Dashboards, analítica y notificaciones',
     ],
   },
   {
-    id: 'pos',
-    title: 'PoS + Gestor de Inventario',
-    priceUsd: 80,
-    priceCop: 80 * 3800,
-    bullets: [
-      'Punto de venta funcional',
-      'Gestión de inventario',
-      'Capacitación incluida',
-      'Entrega en 1 a 3 semanas',
+    id: 'sistemas-de-gestion',
+    nombre: 'Sistemas de Gestión',
+    descripcion:
+      'Para negocios que necesitan ordenar y automatizar su operación interna: ventas, inventario, atención al cliente o procesos administrativos, con las capacidades que tu operación realmente necesita.',
+    soluciones: ['CRM', 'ERP configurable', 'PoS + Inventario', 'Help Desk'],
+    capacidades: [
+      'Inventario, compras, ventas y producción',
+      'Recursos humanos y gestión documental',
+      'Gestión de activos, calidad y proyectos',
+      'Reservas, portal de clientes y de proveedores',
+      'Reportes, dashboards e indicadores',
+      'Automatización de procesos e integraciones (APIs)',
+      'Auditoría, control de acceso y firma electrónica',
+      'Trazabilidad, geolocalización e inteligencia artificial',
     ],
   },
   {
-    id: 'custom',
-    title: 'Software Personalizado',
-    priceUsd: 80,
-    priceCop: 80 * 3800,
-    bullets: [
-      'Soluciones a medida para operaciones y ventas',
-      'Arquitectura escalable',
-      'Soporte y roadmap definido',
-      'Entrega según alcance acordado',
+    id: 'software-personalizado',
+    nombre: 'Software Personalizado',
+    descripcion:
+      'Para necesidades que no encajan en un molde: plataformas educativas, logísticas, colaborativas, científicas, industriales o para entidades públicas y fundaciones. Se diseña a la medida del problema, reutilizando cualquier capacidad de las otras familias cuando aporte valor.',
+    soluciones: [
+      'Plataformas educativas',
+      'Plataformas logísticas y colaborativas',
+      'Aplicaciones móviles',
+      'Software científico e industrial',
+      'Soluciones IoT y especializadas',
+    ],
+    capacidades: [
+      'Arquitectura a medida del problema de negocio',
+      'Integración con sistemas y capacidades existentes',
+      'Escalabilidad y mantenibilidad como requisito de diseño',
     ],
   },
 ]
@@ -223,7 +259,7 @@ export const DEFAULT_ABOUT: AboutContent = {
     {
       title: 'Fase 4 - Pruebas y Optimización',
       description:
-        'Ejecutamos pruebas funcionales, de rendimiento, seguridad y compatibilidad. Miguel revisa optimización y cuellos de botella; también configuramos SEO técnico.',
+        'Ejecutamos pruebas funcionales, de rendimiento, seguridad y compatibilidad. Revisamos optimización y cuellos de botella; también configuramos SEO técnico.',
     },
     {
       title: 'Fase 5 - Lanzamiento y Transferencia',
@@ -283,30 +319,23 @@ export const DEFAULT_ABOUT: AboutContent = {
   team: [
     {
       area: 'Arquitectura y Seguridad',
-      owner: 'Luis',
+      owner: 'Luis Cerón',
       description:
         'Diseño de sistemas, requisitos, documentación, pruebas de calidad y seguridad de aplicaciones.',
       imageUrl: '',
     },
     {
       area: 'Backend, Bases de Datos y Nube',
-      owner: 'Jhonatan',
+      owner: 'Jhonatan Diaz',
       description:
         'Desarrollo backend, modelado de datos e infraestructura cloud alineada al negocio.',
       imageUrl: '',
     },
     {
-      area: 'Optimización y Rendimiento',
-      owner: 'Miguel',
+      area: 'Frontend, Rendimiento y Pruebas',
+      owner: 'Santiago Reyes',
       description:
-        'Detección y eliminación de cuellos de botella para asegurar tiempos de respuesta óptimos.',
-      imageUrl: '',
-    },
-    {
-      area: 'Frontend y Pruebas',
-      owner: 'Santiago',
-      description:
-        'Construcción de interfaces, pruebas funcionales y optimización de recursos del cliente.',
+        'Construcción de interfaces, pruebas funcionales, eliminación de cuellos de botella y optimización de recursos del cliente.',
       imageUrl: '',
     },
   ],
@@ -380,8 +409,18 @@ export const DEFAULT_ABOUT: AboutContent = {
       badge: 'Agencia de software · Colombia',
       title: 'Forjamos el motor digital',
       highlight: 'de tu empresa',
+      statement: 'No vendemos tecnología.',
       primaryCta: 'Iniciar proyecto',
       secondaryCta: 'Ver proyectos',
+    },
+    stats: {
+      eyebrow: 'Prueba antes que promesa',
+      title: 'Puntajes Lighthouse reales, verificados en producción, no aspiracionales.',
+    },
+    statement: {
+      eyebrow: 'Cómo pensamos',
+      title: 'El software es un medio. La solución es el producto.',
+      body: 'No vendemos frameworks, lenguajes ni horas de desarrollo. Empezamos por el problema de tu negocio y diseñamos la solución que lo resuelve, con ingeniería, documentación y autonomía para tu equipo.',
     },
     projects: {
       eyebrow: 'Proyectos y resultados',
@@ -391,12 +430,11 @@ export const DEFAULT_ABOUT: AboutContent = {
       inProgressLabel: 'Proyectos en curso',
       notesTitle: 'Seguimiento activo del equipo',
     },
-    pricing: {
-      eyebrow: 'Paquetes orientativos',
-      title: 'Inversión clara para resultados medibles',
-      description: 'Precios de referencia en USD para definir un alcance inicial y avanzar con transparencia.',
-      legalNote: 'Los precios son orientativos en USD. El costo final se define según el alcance acordado con el cliente.',
-      ctaLabel: 'Solicitar propuesta',
+    soluciones: {
+      eyebrow: 'Familias de soluciones',
+      title: 'Resolvemos problemas de negocio, no vendemos tecnología',
+      description: 'Cada familia agrupa soluciones y capacidades configurables según lo que tu negocio necesita, sin paquetes rígidos.',
+      ctaLabel: 'Solicitar diagnóstico',
     },
     roadmap: {
       eyebrow: 'Proceso transparente',
@@ -404,6 +442,13 @@ export const DEFAULT_ABOUT: AboutContent = {
       description: 'Cada fase está definida para que sepas qué estamos haciendo, por qué lo hacemos y qué sigue después.',
       ctaTitle: '¿Listo para el paso 01?',
       ctaButton: 'Solicitar asesoría gratuita',
+    },
+    techStack: {
+      eyebrow: 'Construimos con herramientas modernas y probadas',
+      languagesLabel: 'Lenguajes',
+      frameworksLabel: 'Frameworks',
+      languages: ['C', 'Java', 'Python', 'C#', 'C++', 'JavaScript', 'TypeScript', 'Dart', 'HTML5', 'CSS3'],
+      frameworks: ['Spring Boot', 'Django', 'React', 'Vue.js', 'Angular', 'Astro', 'Bootstrap', 'Tailwind CSS', 'Next.js', 'Nuxt.js'],
     },
     autonomy: {
       eyebrow: 'Diferencial ElevaForge',
@@ -421,7 +466,7 @@ export const DEFAULT_ABOUT: AboutContent = {
 export const DEFAULT_SITE_CONTENT: SiteContent = {
   about: DEFAULT_ABOUT,
   projects: DEFAULT_PROJECTS,
-  packages: DEFAULT_PACKAGES,
+  soluciones: DEFAULT_SOLUCIONES,
 }
 
 type ContentKey = keyof SiteContent
@@ -515,18 +560,38 @@ function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeConten
 
   const projects = isRecord(merged.projects) ? merged.projects : {}
   const hero = isRecord(merged.hero) ? merged.hero : {}
-  const pricing = isRecord(merged.pricing) ? merged.pricing : {}
+  const stats = isRecord(merged.stats) ? merged.stats : {}
+  const statement = isRecord(merged.statement) ? merged.statement : {}
+  const soluciones = isRecord(merged.soluciones) ? merged.soluciones : {}
   const roadmap = isRecord(merged.roadmap) ? merged.roadmap : {}
+  const techStack = isRecord(merged.techStack) ? merged.techStack : {}
   const contact = isRecord(merged.contact) ? merged.contact : {}
+
+  const normalizeList = (value: unknown, fb: string[]): string[] => {
+    const list = Array.isArray(value)
+      ? value.map((v) => String(v ?? '').trim()).filter(Boolean)
+      : []
+    return list.length > 0 ? list : fb
+  }
 
   return {
     hero: {
       badge: String(hero.badge ?? fallback.hero.badge).trim() || fallback.hero.badge,
       title: String(hero.title ?? fallback.hero.title).trim() || fallback.hero.title,
       highlight: String(hero.highlight ?? fallback.hero.highlight).trim() || fallback.hero.highlight,
+      statement: String(hero.statement ?? fallback.hero.statement).trim() || fallback.hero.statement,
       primaryCta: String(hero.primaryCta ?? fallback.hero.primaryCta).trim() || fallback.hero.primaryCta,
       secondaryCta:
         String(hero.secondaryCta ?? fallback.hero.secondaryCta).trim() || fallback.hero.secondaryCta,
+    },
+    stats: {
+      eyebrow: String(stats.eyebrow ?? fallback.stats.eyebrow).trim() || fallback.stats.eyebrow,
+      title: String(stats.title ?? fallback.stats.title).trim() || fallback.stats.title,
+    },
+    statement: {
+      eyebrow: String(statement.eyebrow ?? fallback.statement.eyebrow).trim() || fallback.statement.eyebrow,
+      title: String(statement.title ?? fallback.statement.title).trim() || fallback.statement.title,
+      body: String(statement.body ?? fallback.statement.body).trim() || fallback.statement.body,
     },
     projects: {
       ...normalizeSection(projects, fallback.projects),
@@ -540,15 +605,23 @@ function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeConten
         String(projects.notesTitle ?? fallback.projects.notesTitle).trim() ||
         fallback.projects.notesTitle,
     },
-    pricing: {
-      ...normalizeSection(pricing, fallback.pricing),
-      legalNote: String(pricing.legalNote ?? fallback.pricing.legalNote).trim() || fallback.pricing.legalNote,
-      ctaLabel: String(pricing.ctaLabel ?? fallback.pricing.ctaLabel).trim() || fallback.pricing.ctaLabel,
+    soluciones: {
+      ...normalizeSection(soluciones, fallback.soluciones),
+      ctaLabel: String(soluciones.ctaLabel ?? fallback.soluciones.ctaLabel).trim() || fallback.soluciones.ctaLabel,
     },
     roadmap: {
       ...normalizeSection(roadmap, fallback.roadmap),
       ctaTitle: String(roadmap.ctaTitle ?? fallback.roadmap.ctaTitle).trim() || fallback.roadmap.ctaTitle,
       ctaButton: String(roadmap.ctaButton ?? fallback.roadmap.ctaButton).trim() || fallback.roadmap.ctaButton,
+    },
+    techStack: {
+      eyebrow: String(techStack.eyebrow ?? fallback.techStack.eyebrow).trim() || fallback.techStack.eyebrow,
+      languagesLabel:
+        String(techStack.languagesLabel ?? fallback.techStack.languagesLabel).trim() || fallback.techStack.languagesLabel,
+      frameworksLabel:
+        String(techStack.frameworksLabel ?? fallback.techStack.frameworksLabel).trim() || fallback.techStack.frameworksLabel,
+      languages: normalizeList(techStack.languages, fallback.techStack.languages),
+      frameworks: normalizeList(techStack.frameworks, fallback.techStack.frameworks),
     },
     autonomy: normalizeSection(merged.autonomy, fallback.autonomy),
     contact: {
@@ -772,13 +845,37 @@ function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): Proj
   })
 }
 
+function normalizeSolucionesContent(value: unknown, fallback: FamiliaDeSolucion[]): FamiliaDeSolucion[] {
+  if (!Array.isArray(value)) return fallback
+
+  const byId = new Map<string, Record<string, unknown>>()
+  for (const entry of value) {
+    if (isRecord(entry) && typeof entry.id === 'string') byId.set(entry.id, entry)
+  }
+
+  // Always exactly the 3 fixed families (§15) — an admin can edit their copy,
+  // never add/remove/reorder them.
+  return fallback.map((familia) => {
+    const stored = byId.get(familia.id)
+    if (!stored) return familia
+
+    return {
+      id: familia.id,
+      nombre: String(stored.nombre ?? familia.nombre).trim() || familia.nombre,
+      descripcion: String(stored.descripcion ?? familia.descripcion).trim() || familia.descripcion,
+      soluciones: dedupeTextList(normalizeTextList(stored.soluciones, familia.soluciones)),
+      capacidades: dedupeTextList(normalizeTextList(stored.capacidades, familia.capacidades)),
+    }
+  })
+}
+
 export async function getSiteContent(): Promise<SiteContent> {
   try {
     const supabase = createServerSupabaseClient()
     const { data, error } = await supabase
       .from('site_content')
       .select('key,value')
-      .in('key', ['about', 'projects', 'packages'])
+      .in('key', ['about', 'projects', 'soluciones'])
 
     if (error || !data) {
       return DEFAULT_SITE_CONTENT
@@ -792,7 +889,7 @@ export async function getSiteContent(): Promise<SiteContent> {
     return {
       about: normalizeAboutContent(byKey.get('about'), DEFAULT_SITE_CONTENT.about),
       projects: normalizeProjectsContent(byKey.get('projects'), DEFAULT_SITE_CONTENT.projects),
-      packages: safeMerge(byKey.get('packages'), DEFAULT_SITE_CONTENT.packages),
+      soluciones: normalizeSolucionesContent(byKey.get('soluciones'), DEFAULT_SITE_CONTENT.soluciones),
     }
   } catch {
     return DEFAULT_SITE_CONTENT

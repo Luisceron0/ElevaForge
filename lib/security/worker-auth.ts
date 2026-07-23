@@ -10,6 +10,7 @@
 
 import { NextRequest } from 'next/server'
 import { logSecurityEvent } from '@/lib/security/logger'
+import { getTrustedClientIp } from '@/lib/security/client-ip'
 
 /**
  * Constant-time string comparison to prevent timing attacks (A07).
@@ -26,14 +27,6 @@ function timingSafeEqual(a: string, b: string): boolean {
     mismatch |= (aBytes[i] ?? 0) ^ bBytes[i]
   }
   return mismatch === 0
-}
-
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  )
 }
 
 /**
@@ -53,7 +46,7 @@ export function isAuthorizedWorker(req: NextRequest): boolean {
   if (!header.startsWith(prefix)) {
     logSecurityEvent({
       type: 'CSRF_VIOLATION',
-      ip: getClientIp(req),
+      ip: getTrustedClientIp(req),
       path: req.nextUrl.pathname,
       method: req.method,
       details: 'Missing or malformed Authorization header on worker endpoint',
@@ -67,7 +60,7 @@ export function isAuthorizedWorker(req: NextRequest): boolean {
   if (!valid) {
     logSecurityEvent({
       type: 'CSRF_VIOLATION',
-      ip: getClientIp(req),
+      ip: getTrustedClientIp(req),
       path: req.nextUrl.pathname,
       method: req.method,
       details: 'Invalid CRON_SECRET token',

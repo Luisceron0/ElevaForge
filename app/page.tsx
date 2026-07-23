@@ -1,9 +1,13 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import LegacyAnchorRedirect from '@/components/seo/LegacyAnchorRedirect'
 import HeroSection from '@/components/sections/HeroSection'
+import StatsBand from '@/components/sections/StatsBand'
+import StatementBand from '@/components/sections/StatementBand'
 import ProjectsSection from '@/components/sections/ProjectsSection'
-import PricingSection from '@/components/sections/PricingSection'
+import SolucionesSection from '@/components/sections/SolucionesSection'
 import RoadmapSection from '@/components/sections/RoadmapSection'
+import TechMarquee from '@/components/sections/TechMarquee'
 import AutonomySection from '@/components/sections/AutonomySection'
 import ContactSection from '@/components/sections/ContactSection'
 import { getResolvedSiteContent } from '@/lib/site-content'
@@ -22,18 +26,51 @@ export default async function Home() {
 
   return (
     <>
+      <LegacyAnchorRedirect />
       <Navbar />
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
         <HeroSection
-          lighthouse={lighthouse}
           deliveredProjects={deliveredProjects}
           inProgressProjects={inProgressProjects}
           subtitle={content.about.heroSubtitle}
           badge={homeContent.hero.badge}
           title={homeContent.hero.title}
           highlight={homeContent.hero.highlight}
+          statement={homeContent.hero.statement}
           primaryCtaLabel={homeContent.hero.primaryCta}
           secondaryCtaLabel={homeContent.hero.secondaryCta}
+        />
+        <StatsBand
+          lighthouse={lighthouse}
+          eyebrow={homeContent.stats.eyebrow}
+          title={homeContent.stats.title}
+        />
+        <StatementBand
+          eyebrow={homeContent.statement.eyebrow}
+          title={homeContent.statement.title}
+          body={homeContent.statement.body}
+        />
+        <SolucionesSection
+          familias={content.soluciones}
+          eyebrow={homeContent.soluciones.eyebrow}
+          title={homeContent.soluciones.title}
+          description={homeContent.soluciones.description}
+          ctaLabel={homeContent.soluciones.ctaLabel}
+        />
+        <RoadmapSection
+          phases={phases}
+          eyebrow={homeContent.roadmap.eyebrow}
+          title={homeContent.roadmap.title}
+          description={homeContent.roadmap.description}
+          ctaTitle={homeContent.roadmap.ctaTitle}
+          ctaLabel={homeContent.roadmap.ctaButton}
+        />
+        <TechMarquee
+          eyebrow={homeContent.techStack.eyebrow}
+          languagesLabel={homeContent.techStack.languagesLabel}
+          frameworksLabel={homeContent.techStack.frameworksLabel}
+          languages={homeContent.techStack.languages}
+          frameworks={homeContent.techStack.frameworks}
         />
         <ProjectsSection
           projects={content.projects}
@@ -44,22 +81,6 @@ export default async function Home() {
           deliveredLabel={homeContent.projects.deliveredLabel}
           inProgressLabel={homeContent.projects.inProgressLabel}
           notesTitle={homeContent.projects.notesTitle}
-        />
-        <PricingSection
-          plans={content.packages}
-          eyebrow={homeContent.pricing.eyebrow}
-          title={homeContent.pricing.title}
-          description={homeContent.pricing.description}
-          legalNote={homeContent.pricing.legalNote}
-          ctaLabel={homeContent.pricing.ctaLabel}
-        />
-        <RoadmapSection
-          phases={phases}
-          eyebrow={homeContent.roadmap.eyebrow}
-          title={homeContent.roadmap.title}
-          description={homeContent.roadmap.description}
-          ctaTitle={homeContent.roadmap.ctaTitle}
-          ctaLabel={homeContent.roadmap.ctaButton}
         />
         <AutonomySection
           eyebrow={homeContent.autonomy.eyebrow}

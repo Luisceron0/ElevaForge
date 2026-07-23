@@ -2,14 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { isAuthorizedWorker } from '@/lib/security/worker-auth'
 import { logSecurityEvent } from '@/lib/security/logger'
-
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  )
-}
+import { getTrustedClientIp } from '@/lib/security/client-ip'
 
 export async function POST(req: NextRequest) {
   // A07: Timing-safe auth check
@@ -59,7 +52,7 @@ export async function POST(req: NextRequest) {
     // A10: Never expose internals — generic message
     logSecurityEvent({
       type: 'UNHANDLED_ERROR',
-      ip: getClientIp(req),
+      ip: getTrustedClientIp(req),
       path: req.nextUrl.pathname,
       method: req.method,
       details: err instanceof Error ? err.message : 'unknown',

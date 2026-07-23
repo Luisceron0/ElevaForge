@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { hasActiveAdminSessionInRequest } from '@/lib/security/admin-access'
 import { validateOrigin } from '@/lib/security/csrf'
 import { checkRateLimit } from '@/lib/security/rate-limit'
+import { getTrustedClientIp } from '@/lib/security/client-ip'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { toStorageAssetRef } from '@/lib/asset-refs'
 import { resolveAssetUrl } from '@/lib/storage-assets'
@@ -22,14 +23,6 @@ const EXT_BY_MIME: Record<string, string> = {
   'image/webp': 'webp',
   'image/gif': 'gif',
   'image/avif': 'avif',
-}
-
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  )
 }
 
 function getBucketName(): string {
@@ -62,8 +55,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Solicitud no autorizada' }, { status: 403 })
   }
 
-  const ip = getClientIp(request)
-  const rl = checkRateLimit(`${ip}:${request.nextUrl.pathname}`, {
+  const ip = getTrustedClientIp(request)
+  const rl = await checkRateLimit(`${ip}:${request.nextUrl.pathname}`, {
     maxRequests: 20,
     windowMs: 60_000,
   })

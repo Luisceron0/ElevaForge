@@ -12,20 +12,20 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-forge-bg-dark px-4">
+    <div className="min-h-screen flex items-center justify-center bg-ef-ink px-4">
       <div className="text-center max-w-md">
-        <p className="font-humanst text-7xl text-forge-orange-main mb-4">
+        <p className="font-humanst text-7xl text-ef-orange mb-4">
           404
         </p>
-        <h1 className="font-humanst text-2xl text-white mb-3">
+        <h1 className="font-humanst text-2xl text-ef-paper mb-3">
           Página no encontrada
         </h1>
-        <p className="text-white/70 mb-8 leading-relaxed">
+        <p className="text-ef-paper/70 mb-8 leading-relaxed">
           La página que buscas no existe o fue movida.
         </p>
         <Link
           href="/"
-          className="inline-block bg-forge-orange-main hover:bg-forge-orange-gold text-white font-bold py-3 px-8 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-forge-orange-main focus:ring-offset-2 focus:ring-offset-forge-bg-dark"
+          className="inline-block bg-ef-orange hover:bg-ef-ink hover:text-ef-orange text-ef-ink font-bold py-3 px-8 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-ef-orange focus:ring-offset-2 focus:ring-offset-ef-ink border border-transparent hover:border-ef-orange"
         >
           Volver al inicio
         </Link>
