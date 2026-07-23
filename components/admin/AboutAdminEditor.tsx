@@ -54,7 +54,7 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
 
 
   const tabs = [
-    { id: 'intro' as TabType, label: '📋 Introducción', icon: '📋' },
+    { id: 'intro' as TabType, label: '📋 Página Proceso', icon: '📋' },
     { id: 'home' as TabType, label: '🏠 Home', icon: '🏠' },
     { id: 'fases' as TabType, label: '📊 Fases', icon: '📊' },
     { id: 'faq' as TabType, label: '❓ FAQ', icon: '❓' },
@@ -116,8 +116,8 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-white mb-3">Introducción</label>
-              <p className="text-xs text-white/60 mb-3">Texto principal que aparece en la sección "Quiénes somos"</p>
+              <label className="block text-sm font-semibold text-white mb-3">Introducción de /proceso</label>
+              <p className="text-xs text-white/60 mb-3">Párrafo bajo el título &quot;Estándar Forge&quot; en la página /proceso. (El encabezado de /nosotros se edita en la pestaña Home → &quot;Página Quiénes somos&quot;).</p>
               <textarea
                 value={draft.intro}
                 onChange={(e) => setDraft((prev) => ({ ...prev, intro: e.target.value }))}
@@ -168,6 +168,13 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
                 <input value={draft.homeContent.projects.inProgressLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, inProgressLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Label en curso" />
               </div>
               <input value={draft.homeContent.projects.notesTitle} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, notesTitle: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título bloque de seguimiento" />
+              <label className="block text-xs text-white/60">Notas del bloque de seguimiento (una por línea)</label>
+              <textarea
+                value={draft.projectsInProgress.join('\n')}
+                onChange={(e) => setDraft((prev) => ({ ...prev, projectsInProgress: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
+                className="w-full min-h-[100px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none"
+                placeholder="Actualmente tenemos varios proyectos en desarrollo en distintos sectores."
+              />
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
