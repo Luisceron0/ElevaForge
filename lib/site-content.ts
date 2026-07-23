@@ -103,6 +103,11 @@ export interface HomeContent {
   }
 }
 
+export interface FaqEntry {
+  question: string
+  answer: string
+}
+
 export interface TeamCapability {
   area: string
   owner: string
@@ -140,6 +145,10 @@ export interface AboutContent {
   projectsInProgress: string[]
   supportItems: string[]
   autonomyCards: AutonomyCard[]
+  /** Copy of the /nosotros page header (the team list itself is `team`). */
+  teamSection: HomeSectionCopy
+  /** Q&A rendered on /preguntas-frecuentes (also feeds the FAQPage JSON-LD). */
+  faq: FaqEntry[]
   homeContent: HomeContent
 }
 
@@ -404,6 +413,46 @@ export const DEFAULT_ABOUT: AboutContent = {
         'Definimos procesos para que puedas administrar contenidos y tareas comunes sin fricción técnica diaria.',
     },
   ],
+  teamSection: {
+    eyebrow: 'Quiénes somos',
+    title: 'Equipo de ingeniería orientado a resultados',
+    description:
+      'Somos un equipo de ingenieros de software colombianos enfocados en construir tecnología útil, clara y sostenible para empresas.',
+  },
+  // RF-019 / CRO-05: sin precios publicados (ADR-003), la pregunta sobre
+  // inversión es obligatoria acá, no opcional.
+  faq: [
+    {
+      question: '¿Qué incluye una solicitud de diagnóstico?',
+      answer:
+        'Una conversación inicial sin costo donde entendemos tu problema de negocio, tu contexto y tus objetivos. De ahí sale un alcance preliminar y los próximos pasos concretos, no es una llamada de ventas genérica.',
+    },
+    {
+      question: '¿Cómo se define la inversión, si no publican precios?',
+      answer:
+        'Cada solución es distinta porque cada negocio lo es. El costo se define en la fase de diseño y arquitectura, después de entender el alcance real, no antes. Eso evita cobrar de más por lo que no necesitás y de menos por lo que sí. Vas a conocer el número antes de que empecemos a construir, nunca después.',
+    },
+    {
+      question: '¿El código y los accesos son míos?',
+      answer:
+        'Sí. Al finalizar la entrega, el código fuente, el repositorio, el dominio, el hosting y los accesos administrativos quedan a tu nombre. No dependés de nosotros para operar tu propio sistema.',
+    },
+    {
+      question: '¿Qué pasa después de que el proyecto se entrega?',
+      answer:
+        'Incluimos 6 meses de mantenimiento sin costo adicional (correcciones, seguridad y ajustes menores), además de un manual y capacitación para que tu equipo pueda operar la plataforma sin depender de terceros.',
+    },
+    {
+      question: '¿Cuánto tiempo toma un proyecto?',
+      answer:
+        'Depende del alcance: lo definimos juntos en la fase de exploración y queda documentado antes de empezar a desarrollar, con entregas parciales en el camino para que puedas monitorear avances en tiempo real.',
+    },
+    {
+      question: 'Mi negocio recién empieza a digitalizarse, ¿igual pueden ayudarme?',
+      answer:
+        'Sí. Trabajamos con acompañamiento cercano desde el análisis hasta después del lanzamiento, pensado específicamente para negocios que dan sus primeros pasos en digitalización, no solo para equipos técnicos.',
+    },
+  ],
   homeContent: {
     hero: {
       badge: 'Agencia de software · Colombia',
@@ -546,17 +595,31 @@ function normalizeAutonomyCards(value: unknown, fallback: AutonomyCard[]): Auton
   return cards.length ? cards : fallback
 }
 
+function normalizeFaq(value: unknown, fallback: FaqEntry[]): FaqEntry[] {
+  if (!Array.isArray(value)) return fallback
+  const entries = value
+    .map((raw) => {
+      const item = isRecord(raw) ? raw : {}
+      return {
+        question: String(item.question ?? '').trim(),
+        answer: String(item.answer ?? '').trim(),
+      }
+    })
+    .filter((item) => item.question && item.answer)
+  return entries.length > 0 ? entries : fallback
+}
+
+function normalizeSection(sectionValue: unknown, sectionFallback: HomeSectionCopy): HomeSectionCopy {
+  const section = isRecord(sectionValue) ? sectionValue : {}
+  return {
+    eyebrow: String(section.eyebrow ?? sectionFallback.eyebrow).trim() || sectionFallback.eyebrow,
+    title: String(section.title ?? sectionFallback.title).trim() || sectionFallback.title,
+    description: String(section.description ?? sectionFallback.description).trim() || sectionFallback.description,
+  }
+}
+
 function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeContent {
   const merged = isRecord(value) ? value : {}
-
-  const normalizeSection = (sectionValue: unknown, sectionFallback: HomeSectionCopy): HomeSectionCopy => {
-    const section = isRecord(sectionValue) ? sectionValue : {}
-    return {
-      eyebrow: String(section.eyebrow ?? sectionFallback.eyebrow).trim() || sectionFallback.eyebrow,
-      title: String(section.title ?? sectionFallback.title).trim() || sectionFallback.title,
-      description: String(section.description ?? sectionFallback.description).trim() || sectionFallback.description,
-    }
-  }
 
   const projects = isRecord(merged.projects) ? merged.projects : {}
   const hero = isRecord(merged.hero) ? merged.hero : {}
@@ -783,6 +846,8 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
     ),
     supportItems: normalizeSupportItems(merged.supportItems, fallback.supportItems),
     autonomyCards: normalizeAutonomyCards(merged.autonomyCards, fallback.autonomyCards),
+    teamSection: normalizeSection(merged.teamSection, fallback.teamSection),
+    faq: normalizeFaq(merged.faq, fallback.faq),
     homeContent: normalizeHomeContent(merged.homeContent, fallback.homeContent),
   }
 }

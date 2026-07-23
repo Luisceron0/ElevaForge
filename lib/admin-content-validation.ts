@@ -62,6 +62,15 @@ const aboutSchema = z.object({
   projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),
   autonomyCards: z.array(autonomyCardSchema).max(4),
+  teamSection: homeSectionSchema,
+  faq: z
+    .array(
+      z.object({
+        question: text(300),
+        answer: text(1500),
+      }),
+    )
+    .max(24),
   homeContent: z.object({
     hero: z.object({
       badge: text(120),

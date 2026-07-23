@@ -1,41 +1,31 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { getResolvedSiteContent } from '@/lib/site-content'
 
 export const metadata: Metadata = {
   title: 'Quiénes somos · ElevaForge',
   description:
-    'Equipo de 3 ingenieros de software colombianos enfocados en arquitectura, seguridad, backend, frontend y rendimiento.',
+    'Equipo de ingenieros de software colombianos enfocados en arquitectura, seguridad, backend, frontend y rendimiento.',
 }
 
-const team = [
-  {
-    initials: 'LC',
-    name: 'Luis Cerón',
-    role: 'Arquitectura y Seguridad',
-    description:
-      'Define arquitectura de sistemas, requisitos funcionales y buenas prácticas de seguridad desde el inicio del proyecto.',
-    area: 'Ingeniería de software',
-  },
-  {
-    initials: 'JD',
-    name: 'Jhonatan Diaz',
-    role: 'Backend, Datos y Nube',
-    description:
-      'Construye servicios robustos, modela base de datos y configura infraestructura cloud orientada a continuidad operativa.',
-    area: 'Ingeniería de software',
-  },
-  {
-    initials: 'SR',
-    name: 'Santiago Reyes',
-    role: 'Frontend, Rendimiento y Pruebas',
-    description:
-      'Diseña interfaces claras, valida flujos críticos, ejecuta pruebas y elimina cuellos de botella para garantizar estabilidad y velocidad en cada entrega.',
-    area: 'Ingeniería de software',
-  },
-]
+/** "Luis Cerón" -> "LC". Fallback when a member has no photo uploaded. */
+function initialsFor(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? '')
+    .join('')
+}
 
-export default function NosotrosPage() {
+export default async function NosotrosPage() {
+  // The team is edited from /admin (about.team). It used to be a hardcoded
+  // array in this file, so admin edits never reached the page.
+  const content = await getResolvedSiteContent()
+  const team = content.about.team
+
   return (
     <>
       <Navbar />
@@ -43,31 +33,41 @@ export default function NosotrosPage() {
         <section aria-label="Equipo ElevaForge" className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
           <div className="max-w-3xl mb-12">
             <p className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep mb-4">
-              Quiénes somos
+              {content.about.teamSection.eyebrow}
             </p>
             <h1 className="font-humanst text-fluid-display text-ef-ink leading-[0.98] mb-6">
-              Equipo de ingeniería orientado a resultados
+              {content.about.teamSection.title}
             </h1>
             <p className="text-ef-ink-soft text-lg leading-relaxed">
-              Somos tres ingenieros de software colombianos enfocados en
-              construir tecnología útil, clara y sostenible para empresas.
+              {content.about.teamSection.description}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {team.map((member) => (
+            {team.map((member, index) => (
               <article
-                key={member.name}
+                key={`${member.owner}-${index}`}
                 className="bg-white rounded-3xl p-6 border border-ef-ink/10"
               >
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-2xl bg-ef-blue-deep flex items-center justify-center text-ef-paper font-humanst text-xl">
-                    {member.initials}
-                  </div>
+                  {member.imageUrl ? (
+                    <Image
+                      src={member.imageUrl}
+                      alt={member.owner}
+                      width={128}
+                      height={128}
+                      className="w-16 h-16 rounded-2xl object-cover"
+                      unoptimized={/^https?:\/\//i.test(member.imageUrl)}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-ef-blue-deep flex items-center justify-center text-ef-paper font-humanst text-xl">
+                      {initialsFor(member.owner)}
+                    </div>
+                  )}
                   <div>
-                    <h2 className="font-humanst text-ef-ink text-xl">{member.name}</h2>
+                    <h2 className="font-humanst text-ef-ink text-xl">{member.owner}</h2>
                     <p className="text-xs text-ef-ink-soft uppercase tracking-widest">
-                      {member.role}
+                      {member.area}
                     </p>
                   </div>
                 </div>
@@ -75,12 +75,6 @@ export default function NosotrosPage() {
                 <p className="text-base text-ef-ink-soft leading-relaxed">
                   {member.description}
                 </p>
-
-                <div className="mt-4 pt-4 border-t border-ef-ink/10">
-                  <span className="text-xs text-ef-blue-deep">
-                    {member.area}
-                  </span>
-                </div>
               </article>
             ))}
           </div>
