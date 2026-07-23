@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AboutContent, DEFAULT_ABOUT } from '@/lib/site-content'
+import EntityListEditor, { type Entity } from './EntityListEditor'
 
 interface Props {
   about: AboutContent
@@ -789,75 +790,3 @@ function dedupeTextItems(items: string[]): string[] {
   return result
 }
 
-interface Entity {
-  title: string
-  description: string
-}
-
-interface EntityListEditorProps {
-  title: string
-  items: Entity[]
-  onAdd: () => void
-  onRemove: (index: number) => void
-  onChange: (items: Entity[]) => void
-  showTitle?: boolean
-}
-
-function EntityListEditor({ title, items, onAdd, onRemove, onChange, showTitle = true }: EntityListEditorProps) {
-  return (
-    <div className={showTitle ? "space-y-3 pt-2 border-t border-white/10" : "space-y-3"}>
-      {showTitle && (
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm text-white">{title}</h4>
-          <button type="button" onClick={onAdd} className="text-xs border border-white/20 rounded-lg px-3 py-1.5 hover:bg-white/10 transition-colors text-white">+ Agregar</button>
-        </div>
-      )}
-
-      <div className={showTitle ? "space-y-2" : "space-y-3"}>
-        {items.length === 0 ? (
-          <p className="text-sm text-white/50 text-center py-8">No hay items. Haz clic en "+ Agregar" para crear uno.</p>
-        ) : (
-          items.map((item, index) => (
-            <div key={index} className="rounded-lg border border-white/10 bg-white/5 p-5 space-y-3 group hover:border-white/20 transition-colors">
-              <div>
-                <label className="text-xs font-semibold text-white/70 block mb-2">Título</label>
-                <input
-                  value={item.title}
-                  onChange={(e) => {
-                    const next = [...items]
-                    next[index] = { ...next[index], title: e.target.value }
-                    onChange(next)
-                  }}
-                  placeholder="Ej: Análisis Completo"
-                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-white/70 block mb-2">Descripción</label>
-                <textarea
-                  value={item.description}
-                  onChange={(e) => {
-                    const next = [...items]
-                    next[index] = { ...next[index], description: e.target.value }
-                    onChange(next)
-                  }}
-                  placeholder="Describe esta fase o pilar..."
-                  className="w-full min-h-[100px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => onRemove(index)}
-                  className="text-xs border border-red-500/50 text-red-300 rounded-lg px-3 py-1.5 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  )
-}

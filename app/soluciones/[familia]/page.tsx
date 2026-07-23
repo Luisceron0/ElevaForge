@@ -84,13 +84,18 @@ export default async function FamiliaPage({
               <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep mb-4">
                 Soluciones principales
               </h2>
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 {familia.soluciones.map((solucion) => (
-                  <li key={solucion} className="flex items-start gap-3 text-base text-ef-ink">
+                  <li key={solucion.nombre} className="flex items-start gap-3 text-base text-ef-ink">
                     <svg aria-hidden="true" className="h-5 w-5 text-ef-blue-deep mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>{solucion}</span>
+                    <span>
+                      {solucion.nombre}
+                      {solucion.descripcion && (
+                        <span className="block text-sm text-ef-ink-soft font-normal mt-0.5">{solucion.descripcion}</span>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>

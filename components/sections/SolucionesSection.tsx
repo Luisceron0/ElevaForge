@@ -122,8 +122,12 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
                   </p>
                   <div className="flex flex-wrap gap-2.5 mb-8">
                     {familia.soluciones.map((solucion) => (
-                      <span key={solucion} className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium ${style.pill}`}>
-                        {solucion}
+                      <span
+                        key={solucion.nombre}
+                        title={solucion.descripcion || undefined}
+                        className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium ${style.pill}`}
+                      >
+                        {solucion.nombre}
                       </span>
                     ))}
                   </div>

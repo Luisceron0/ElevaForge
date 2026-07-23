@@ -9,12 +9,18 @@ import { normalizeAssetRef } from '@/lib/asset-refs'
 
 export type FamiliaId = 'presencia-digital' | 'sistemas-de-gestion' | 'software-personalizado'
 
+export interface SolucionItem {
+  nombre: string
+  /** Opcional: se muestra en la página de detalle de la familia, no en Home. */
+  descripcion: string
+}
+
 export interface FamiliaDeSolucion {
   id: FamiliaId
   nombre: string
   descripcion: string
   /** Soluciones principales de esta familia (contenido, no precios). */
-  soluciones: string[]
+  soluciones: SolucionItem[]
   /** Capacidades configurables que complementan las soluciones — nunca productos independientes. */
   capacidades: string[]
 }
@@ -164,7 +170,10 @@ export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
     nombre: 'Presencia Digital',
     descripcion:
       'Para negocios que necesitan mostrarse online y dirigir a sus clientes hacia una acción concreta: escribir por WhatsApp, pedir una cotización, reservar o conocer tu catálogo.',
-    soluciones: ['Landing Page', 'Sitio Web'],
+    soluciones: [
+      { nombre: 'Landing Page', descripcion: '' },
+      { nombre: 'Sitio Web', descripcion: '' },
+    ],
     capacidades: [
       'Panel administrativo y gestión de contenido',
       'Blog y catálogo digital',
@@ -181,7 +190,12 @@ export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
     nombre: 'Sistemas de Gestión',
     descripcion:
       'Para negocios que necesitan ordenar y automatizar su operación interna: ventas, inventario, atención al cliente o procesos administrativos, con las capacidades que tu operación realmente necesita.',
-    soluciones: ['CRM', 'ERP configurable', 'PoS + Inventario', 'Help Desk'],
+    soluciones: [
+      { nombre: 'CRM', descripcion: '' },
+      { nombre: 'ERP configurable', descripcion: '' },
+      { nombre: 'PoS + Inventario', descripcion: '' },
+      { nombre: 'Help Desk', descripcion: '' },
+    ],
     capacidades: [
       'Inventario, compras, ventas y producción',
       'Recursos humanos y gestión documental',
@@ -199,11 +213,11 @@ export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
     descripcion:
       'Para necesidades que no encajan en un molde: plataformas educativas, logísticas, colaborativas, científicas, industriales o para entidades públicas y fundaciones. Se diseña a la medida del problema, reutilizando cualquier capacidad de las otras familias cuando aporte valor.',
     soluciones: [
-      'Plataformas educativas',
-      'Plataformas logísticas y colaborativas',
-      'Aplicaciones móviles',
-      'Software científico e industrial',
-      'Soluciones IoT y especializadas',
+      { nombre: 'Plataformas educativas', descripcion: '' },
+      { nombre: 'Plataformas logísticas y colaborativas', descripcion: '' },
+      { nombre: 'Aplicaciones móviles', descripcion: '' },
+      { nombre: 'Software científico e industrial', descripcion: '' },
+      { nombre: 'Soluciones IoT y especializadas', descripcion: '' },
     ],
     capacidades: [
       'Arquitectura a medida del problema de negocio',
@@ -548,6 +562,35 @@ function normalizeTextList(value: unknown, fallback: string[]): string[] {
   }
 
   return fallback
+}
+
+function normalizeSolucionItems(value: unknown, fallback: SolucionItem[]): SolucionItem[] {
+  if (!Array.isArray(value)) return fallback
+
+  const items: SolucionItem[] = []
+  const seen = new Set<string>()
+
+  for (const raw of value) {
+    let nombre = ''
+    let descripcion = ''
+
+    if (typeof raw === 'string') {
+      // Legacy shape (pre-migration): plain string label, no description yet.
+      nombre = raw.trim()
+    } else if (isRecord(raw)) {
+      nombre = String(raw.nombre ?? '').trim()
+      descripcion = String(raw.descripcion ?? '').trim()
+    }
+
+    if (!nombre) continue
+    const key = nombre.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    items.push({ nombre, descripcion })
+    if (items.length >= 20) break
+  }
+
+  return items.length > 0 ? items : fallback
 }
 
 function dedupeTextList(items: string[]): string[] {
@@ -928,7 +971,7 @@ function normalizeSolucionesContent(value: unknown, fallback: FamiliaDeSolucion[
       id: familia.id,
       nombre: String(stored.nombre ?? familia.nombre).trim() || familia.nombre,
       descripcion: String(stored.descripcion ?? familia.descripcion).trim() || familia.descripcion,
-      soluciones: dedupeTextList(normalizeTextList(stored.soluciones, familia.soluciones)),
+      soluciones: normalizeSolucionItems(stored.soluciones, familia.soluciones),
       capacidades: dedupeTextList(normalizeTextList(stored.capacidades, familia.capacidades)),
     }
   })

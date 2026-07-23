@@ -134,11 +134,16 @@ const projectSchema = z.object({
   }).optional(),
 })
 
+const solucionItemSchema = z.object({
+  nombre: text(120),
+  descripcion: optionalText(400),
+})
+
 const familiaSchema = z.object({
   id: z.enum(['presencia-digital', 'sistemas-de-gestion', 'software-personalizado']),
   nombre: text(120),
   descripcion: text(600),
-  soluciones: z.array(text(120)).min(1).max(12),
+  soluciones: z.array(solucionItemSchema).min(1).max(12),
   capacidades: z.array(text(120)).max(20),
 })
 
