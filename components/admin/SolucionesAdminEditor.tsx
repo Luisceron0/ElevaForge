@@ -37,11 +37,26 @@ function toFamilia(draft: FamiliaDraft): FamiliaDeSolucion {
   }
 }
 
+// Límites en sincronía con familiaSchema en lib/admin-content-validation.ts
+// (nombre/soluciones/capacidades: 120 c/u, descripcion: 600) — validar acá
+// evita que el usuario descubra el límite recién al hacer clic en "Guardar",
+// con un error de zod técnico que ni identifica la familia.
+const NOMBRE_MAX = 120
+const DESCRIPCION_MAX = 600
+const ITEM_MAX = 120
+
 function validate(draft: FamiliaDraft): string {
   if (!draft.nombre.trim()) return 'El nombre es obligatorio'
+  if (draft.nombre.length > NOMBRE_MAX) return `El nombre supera ${NOMBRE_MAX} caracteres`
   if (!draft.descripcion.trim()) return 'La descripción es obligatoria'
+  if (draft.descripcion.length > DESCRIPCION_MAX) return `La descripción supera ${DESCRIPCION_MAX} caracteres (tiene ${draft.descripcion.length})`
   const soluciones = draft.solucionesText.split('\n').map((l) => l.trim()).filter(Boolean)
   if (soluciones.length === 0) return 'Debes listar al menos una solución (una por línea)'
+  const longSolucion = soluciones.find((s) => s.length > ITEM_MAX)
+  if (longSolucion) return `Esta solución supera ${ITEM_MAX} caracteres: "${longSolucion.slice(0, 40)}..."`
+  const capacidades = draft.capacidadesText.split('\n').map((l) => l.trim()).filter(Boolean)
+  const longCapacidad = capacidades.find((c) => c.length > ITEM_MAX)
+  if (longCapacidad) return `Esta capacidad supera ${ITEM_MAX} caracteres: "${longCapacidad.slice(0, 40)}..."`
   return ''
 }
 
@@ -141,17 +156,30 @@ interface FormProps {
 }
 
 function FamiliaForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
+  const solucionesLines = draft.solucionesText.split('\n').map((l) => l.trim()).filter(Boolean)
+  const capacidadesLines = draft.capacidadesText.split('\n').map((l) => l.trim()).filter(Boolean)
+  const longestSolucion = Math.max(0, ...solucionesLines.map((s) => s.length))
+  const longestCapacidad = Math.max(0, ...capacidadesLines.map((c) => c.length))
+
   return (
     <div className="space-y-3">
-      <input value={draft.nombre} onChange={(e) => onChange({ ...draft, nombre: e.target.value })} placeholder="Nombre de la familia" className="w-full border rounded-lg px-3 py-2 text-sm" />
-      <textarea value={draft.descripcion} onChange={(e) => onChange({ ...draft, descripcion: e.target.value })} placeholder="Descripción (problema → solución)" className="w-full border rounded-lg px-3 py-2 text-sm min-h-[80px]" />
       <div>
-        <label className="text-xs text-white/60">Soluciones principales, una por línea</label>
-        <textarea value={draft.solucionesText} onChange={(e) => onChange({ ...draft, solucionesText: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm min-h-[100px]" />
+        <input value={draft.nombre} onChange={(e) => onChange({ ...draft, nombre: e.target.value })} maxLength={NOMBRE_MAX} placeholder="Nombre de la familia" className="w-full border rounded-lg px-3 py-2 text-sm" />
+        <p className="text-xs text-white/40 mt-1 text-right">{draft.nombre.length}/{NOMBRE_MAX}</p>
       </div>
       <div>
-        <label className="text-xs text-white/60">Capacidades configurables, una por línea</label>
+        <textarea value={draft.descripcion} onChange={(e) => onChange({ ...draft, descripcion: e.target.value })} maxLength={DESCRIPCION_MAX} placeholder="Descripción (problema → solución)" className="w-full border rounded-lg px-3 py-2 text-sm min-h-[80px]" />
+        <p className={`text-xs mt-1 text-right ${draft.descripcion.length > DESCRIPCION_MAX * 0.9 ? 'text-amber-400' : 'text-white/40'}`}>{draft.descripcion.length}/{DESCRIPCION_MAX}</p>
+      </div>
+      <div>
+        <label className="text-xs text-white/60">Soluciones principales, una por línea (máx. {ITEM_MAX} caracteres c/u)</label>
+        <textarea value={draft.solucionesText} onChange={(e) => onChange({ ...draft, solucionesText: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm min-h-[100px]" />
+        {longestSolucion > ITEM_MAX && <p className="text-xs text-amber-400 mt-1">Hay una línea de {longestSolucion} caracteres (máx. {ITEM_MAX})</p>}
+      </div>
+      <div>
+        <label className="text-xs text-white/60">Capacidades configurables, una por línea (máx. {ITEM_MAX} caracteres c/u)</label>
         <textarea value={draft.capacidadesText} onChange={(e) => onChange({ ...draft, capacidadesText: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm min-h-[100px]" />
+        {longestCapacidad > ITEM_MAX && <p className="text-xs text-amber-400 mt-1">Hay una línea de {longestCapacidad} caracteres (máx. {ITEM_MAX})</p>}
       </div>
       <div className="flex gap-2">
         <button type="button" onClick={onConfirm} className="bg-forge-orange-main text-white px-4 py-2 rounded-lg text-sm">Confirmar</button>
