@@ -9,7 +9,10 @@ interface Props {
   onSave: (about: AboutContent) => void
 }
 
-type TabType = 'intro' | 'home' | 'fases' | 'pilares' | 'lighthouse' | 'soporte'
+// "Pilares" was removed: it edited about.pillars, which is not rendered on any
+// public page — editing it had no visible effect. The field stays in the data
+// model (harmless) but is no longer offered as an editing surface.
+type TabType = 'intro' | 'home' | 'fases' | 'faq' | 'lighthouse' | 'soporte'
 
 const SUPPORT_CARD_TITLES = [
   'Propiedad del código',
@@ -48,26 +51,13 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
     }))
   }
 
-  function addDifferentiationItem() {
-    setDraft((prev) => ({
-      ...prev,
-      pillars: [...prev.pillars, { title: '', description: '' }],
-    }))
-  }
 
-  function removeDifferentiationItem(index: number) {
-    if (!window.confirm('¿Eliminar este item?')) return
-    setDraft((prev) => ({
-      ...prev,
-      pillars: prev.pillars.filter((_, idx) => idx !== index),
-    }))
-  }
 
   const tabs = [
-    { id: 'intro' as TabType, label: '📋 Introducción', icon: '📋' },
+    { id: 'intro' as TabType, label: '📋 Página Proceso', icon: '📋' },
     { id: 'home' as TabType, label: '🏠 Home', icon: '🏠' },
     { id: 'fases' as TabType, label: '📊 Fases', icon: '📊' },
-    { id: 'pilares' as TabType, label: '🎯 Pilares', icon: '🎯' },
+    { id: 'faq' as TabType, label: '❓ FAQ', icon: '❓' },
     { id: 'lighthouse' as TabType, label: '📈 Lighthouse', icon: '📈' },
     { id: 'soporte' as TabType, label: '📌 Autonomía', icon: '📌' },
   ]
@@ -126,8 +116,8 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-white mb-3">Introducción</label>
-              <p className="text-xs text-white/60 mb-3">Texto principal que aparece en la sección "Quiénes somos"</p>
+              <label className="block text-sm font-semibold text-white mb-3">Introducción de /proceso</label>
+              <p className="text-xs text-white/60 mb-3">Párrafo bajo el título &quot;Estándar Forge&quot; en la página /proceso. (El encabezado de /nosotros se edita en la pestaña Home → &quot;Página Quiénes somos&quot;).</p>
               <textarea
                 value={draft.intro}
                 onChange={(e) => setDraft((prev) => ({ ...prev, intro: e.target.value }))}
@@ -178,6 +168,13 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
                 <input value={draft.homeContent.projects.inProgressLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, inProgressLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Label en curso" />
               </div>
               <input value={draft.homeContent.projects.notesTitle} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, notesTitle: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título bloque de seguimiento" />
+              <label className="block text-xs text-white/60">Notas del bloque de seguimiento (una por línea)</label>
+              <textarea
+                value={draft.projectsInProgress.join('\n')}
+                onChange={(e) => setDraft((prev) => ({ ...prev, projectsInProgress: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
+                className="w-full min-h-[100px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none"
+                placeholder="Actualmente tenemos varios proyectos en desarrollo en distintos sectores."
+              />
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
@@ -218,6 +215,14 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
+              <p className="text-sm font-semibold text-white">Página &quot;Quiénes somos&quot;</p>
+              <p className="text-xs text-white/60">Encabezado de /nosotros. Los integrantes se editan en la pestaña Equipo.</p>
+              <input value={draft.teamSection.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, teamSection: { ...prev.teamSection, eyebrow: e.target.value } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
+              <input value={draft.teamSection.title} onChange={(e) => setDraft((prev) => ({ ...prev, teamSection: { ...prev.teamSection, title: e.target.value } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
+              <textarea value={draft.teamSection.description} onChange={(e) => setDraft((prev) => ({ ...prev, teamSection: { ...prev.teamSection, description: e.target.value } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
               <p className="text-sm font-semibold text-white">Contacto</p>
               <input value={draft.homeContent.contact.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, contact: { ...prev.homeContent.contact, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
               <textarea value={draft.homeContent.contact.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, contact: { ...prev.homeContent.contact, description: e.target.value } } }))} className="w-full min-h-[70px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
@@ -255,31 +260,66 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
           </div>
         )}
 
-        {/* Tab: Pilares */}
-        {activeTab === 'pilares' && (
+        {/* Tab: FAQ */}
+        {activeTab === 'faq' && (
           <div className="space-y-4 animate-in fade-in-50">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h4 className="font-semibold text-white">Pilares y diferenciadores</h4>
-                  <p className="text-xs text-white/60 mt-1">Lo que te hace diferente en el mercado</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={addDifferentiationItem}
-                  className="text-xs border border-white/20 rounded-lg px-3 py-2 hover:bg-white/10 transition-colors font-medium text-white"
-                >
-                  + Agregar pilar
-                </button>
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h4 className="font-semibold text-white">Preguntas frecuentes</h4>
+                <p className="text-xs text-white/60 mt-1">Se publican en /preguntas-frecuentes y alimentan el schema FAQPage de Google.</p>
               </div>
-              <EntityListEditor
-                title=""
-                items={draft.pillars}
-                onAdd={addDifferentiationItem}
-                onRemove={removeDifferentiationItem}
-                onChange={(items) => setDraft((prev) => ({ ...prev, pillars: items }))}
-                showTitle={false}
-              />
+              <button
+                type="button"
+                onClick={() => setDraft((prev) => ({ ...prev, faq: [...prev.faq, { question: '', answer: '' }] }))}
+                className="text-xs border border-white/20 rounded-lg px-3 py-2 hover:bg-white/10 transition-colors font-medium text-white"
+              >
+                + Agregar pregunta
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {draft.faq.map((item, index) => (
+                <div key={index} className="rounded-lg border border-white/10 bg-white/5 p-5 space-y-3 group hover:border-white/20 transition-colors">
+                  <div>
+                    <label className="text-xs font-semibold text-white/70 block mb-2">Pregunta</label>
+                    <input
+                      value={item.question}
+                      onChange={(e) => {
+                        const next = [...draft.faq]
+                        next[index] = { ...next[index], question: e.target.value }
+                        setDraft((prev) => ({ ...prev, faq: next }))
+                      }}
+                      placeholder="Ej: ¿Cómo se define la inversión?"
+                      className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-white/70 block mb-2">Respuesta</label>
+                    <textarea
+                      value={item.answer}
+                      onChange={(e) => {
+                        const next = [...draft.faq]
+                        next[index] = { ...next[index], answer: e.target.value }
+                        setDraft((prev) => ({ ...prev, faq: next }))
+                      }}
+                      placeholder="Respuesta clara y concreta..."
+                      className="w-full min-h-[110px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!window.confirm('¿Eliminar esta pregunta?')) return
+                        setDraft((prev) => ({ ...prev, faq: prev.faq.filter((_, i) => i !== index) }))
+                      }}
+                      className="text-xs border border-red-500/50 text-red-300 rounded-lg px-3 py-1.5 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -578,6 +618,20 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
     projectsInProgress,
     supportItems: padSupportItems(about.supportItems),
     autonomyCards: normalizeAutonomyCardsDraft(about),
+    teamSection: {
+      eyebrow: about.teamSection?.eyebrow || DEFAULT_ABOUT.teamSection.eyebrow,
+      title: about.teamSection?.title || DEFAULT_ABOUT.teamSection.title,
+      description: about.teamSection?.description || DEFAULT_ABOUT.teamSection.description,
+    },
+    faq: (() => {
+      const entries = (Array.isArray(about.faq) ? about.faq : [])
+        .map((item) => ({
+          question: String(item?.question ?? '').trim(),
+          answer: String(item?.answer ?? '').trim(),
+        }))
+        .filter((item) => item.question && item.answer)
+      return entries.length > 0 ? entries : DEFAULT_ABOUT.faq
+    })(),
     homeContent: {
       hero: {
         badge: about.homeContent?.hero?.badge || DEFAULT_ABOUT.homeContent.hero.badge,
