@@ -30,6 +30,24 @@ describe('validateContentByKey', () => {
     expect(validateContentByKey('soluciones', withoutDemo).ok).toBe(true)
   })
 
+  it('accepts a solución with detalleExtendido set', () => {
+    const withDetalle = structuredClone(DEFAULT_SITE_CONTENT.soluciones)
+    withDetalle[0].soluciones[0].detalleExtendido = 'Contenido más profundo, solo visible en /soluciones/[familia].'
+    expect(validateContentByKey('soluciones', withDetalle).ok).toBe(true)
+  })
+
+  it('accepts a solución with no detalleExtendido at all', () => {
+    const withoutDetalle = structuredClone(DEFAULT_SITE_CONTENT.soluciones)
+    delete withoutDetalle[0].soluciones[0].detalleExtendido
+    expect(validateContentByKey('soluciones', withoutDetalle).ok).toBe(true)
+  })
+
+  it('rejects a detalleExtendido over 2000 characters', () => {
+    const tooLong = structuredClone(DEFAULT_SITE_CONTENT.soluciones)
+    tooLong[0].soluciones[0].detalleExtendido = 'x'.repeat(2001)
+    expect(validateContentByKey('soluciones', tooLong).ok).toBe(false)
+  })
+
   // El demoUrl termina en un href público: un esquema ejecutable acá es XSS
   // almacenado, no un dato feo. Ver lib/safe-url.ts.
   it.each([

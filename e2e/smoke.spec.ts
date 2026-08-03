@@ -297,7 +297,7 @@ test.describe('smoke', () => {
   // immediately, so the whole colored-panel system actually gets checked;
   // (2) it eliminates the mid-fade blended-color false positives that a
   // running GSAP tween produces (see tasks/lessons.md).
-  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
+  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/soluciones/sistemas-de-gestion', '/soluciones/software-personalizado', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
     test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
       // Emulate reduced motion so the Reveal scroll-animations render every
       // panel visible immediately (axe skips opacity:0 content) and no

@@ -48,16 +48,29 @@ const panelStyles: Record<string, PanelStyle> = {
   'sistemas-de-gestion': {
     // clay panel: SOLO texto ink pleno — clay tiene poco margen, incluso
     // opacidades reducidas de ink caen bajo AA (ver lessons.md).
+    //
+    // El overlay de tarjeta NO puede seguir el mismo patrón que los otros
+    // 2 paneles (una superposición oscura sutil): sobre un naranja tan
+    // saturado, un tinte ink al 5-15% es casi invisible — el ojo detecta
+    // mucho mejor un tinte CLARO sobre fondo saturado que uno oscuro
+    // (encontrado por el cliente, 2026-08-03: "no hay suficiente
+    // contraste" — no era un fallo de axe-core en color de texto, sino de
+    // definición visual del borde/tarjeta). Por eso acá el overlay va con
+    // `paper` (más claro que el naranja) en vez de `ink`, y los bordes
+    // usan la misma opacidad ya validada de las píldoras (`/35`) en vez
+    // de una mucho más tenue.
     section: 'bg-ef-orange',
     index: 'text-ef-ink/75',
     eyebrow: 'text-ef-ink',
     heading: 'text-ef-ink',
     body: 'text-ef-ink',
-    card: 'bg-ef-ink/[0.05] border-ef-ink/15',
-    divider: 'divide-ef-ink/12',
+    card: 'bg-ef-paper/30 border-ef-ink/35',
+    divider: 'divide-ef-ink/25',
     pill: 'border-ef-ink/35 text-ef-ink',
     pillLink: 'hover:bg-ef-ink hover:text-ef-orange focus-visible:bg-ef-ink focus-visible:text-ef-orange',
-    capChip: 'border-ef-ink/25 text-ef-ink',
+    // Mismo ajuste que el card de arriba: /25 era demasiado tenue sobre
+    // naranja saturado.
+    capChip: 'border-ef-ink/35 text-ef-ink',
     cta: 'border-ef-ink/40 text-ef-ink hover:bg-ef-ink hover:text-ef-orange',
   },
   'software-personalizado': {

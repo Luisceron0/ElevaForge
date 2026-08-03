@@ -119,6 +119,9 @@ const solucionItemSchema = z.object({
   demoUrl: optionalText(300)
     .refine((value) => !value || isSafeExternalUrl(value), 'El demo debe ser una URL http(s) completa')
     .optional(),
+  // Solo se muestra en /soluciones/[familia], nunca en Home — ver comentario
+  // en lib/site-content.ts.
+  detalleExtendido: optionalText(2000).optional(),
 })
 
 const familiaSchema = z.object({

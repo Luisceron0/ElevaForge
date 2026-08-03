@@ -11,6 +11,8 @@ export interface Entity {
   description: string
   /** Campo opcional extra (una línea). Solo se edita si se pasa `extraLabel`. */
   extra?: string
+  /** Campo opcional extra (multilínea). Solo se edita si se pasa `extra2Label`. */
+  extra2?: string
 }
 
 interface EntityListEditorProps {
@@ -32,6 +34,11 @@ interface EntityListEditorProps {
   extraMaxLength?: number
   extraHelp?: string
   extraType?: 'text' | 'url'
+  /** Activa el cuarto campo (textarea multilínea) por ítem. */
+  extra2Label?: string
+  extra2Placeholder?: string
+  extra2MaxLength?: number
+  extra2Help?: string
 }
 
 export default function EntityListEditor({
@@ -52,6 +59,10 @@ export default function EntityListEditor({
   extraMaxLength,
   extraHelp,
   extraType = 'text',
+  extra2Label,
+  extra2Placeholder,
+  extra2MaxLength,
+  extra2Help,
 }: EntityListEditorProps) {
   return (
     <div className={showTitle ? "space-y-3 pt-2 border-t border-white/10" : "space-y-3"}>
@@ -114,6 +125,26 @@ export default function EntityListEditor({
                     className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
                   />
                   {extraHelp && <p className="text-xs text-white/40 mt-1">{extraHelp}</p>}
+                </div>
+              )}
+              {extra2Label && (
+                <div>
+                  <label className="text-xs font-semibold text-white/70 block mb-2">{extra2Label}</label>
+                  <textarea
+                    value={item.extra2 ?? ''}
+                    maxLength={extra2MaxLength}
+                    onChange={(e) => {
+                      const next = [...items]
+                      next[index] = { ...next[index], extra2: e.target.value }
+                      onChange(next)
+                    }}
+                    placeholder={extra2Placeholder}
+                    className="w-full min-h-[100px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
+                  />
+                  <div className="flex items-center justify-between mt-1">
+                    {extra2Help && <p className="text-xs text-white/40">{extra2Help}</p>}
+                    {extra2MaxLength && <p className="text-xs text-white/40 shrink-0">{(item.extra2 ?? '').length}/{extra2MaxLength}</p>}
+                  </div>
                 </div>
               )}
               <div className="flex justify-end">

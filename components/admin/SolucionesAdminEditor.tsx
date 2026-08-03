@@ -38,9 +38,10 @@ function toFamilia(draft: FamiliaDraft): FamiliaDeSolucion {
       .map((s) => ({
         nombre: s.nombre.trim(),
         descripcion: s.descripcion.trim(),
-        // Sin demo se manda undefined (no ''), para no persistir claves vacías
-        // en el jsonb.
+        // Sin demo/detalle se manda undefined (no ''), para no persistir
+        // claves vacías en el jsonb.
         demoUrl: s.demoUrl?.trim() || undefined,
+        detalleExtendido: s.detalleExtendido?.trim() || undefined,
       }))
       .filter((s) => s.nombre),
     capacidades: draft.capacidadesText.split('\n').map((line) => line.trim()).filter(Boolean),
@@ -57,6 +58,7 @@ const DESCRIPCION_MAX = 600
 const SOLUCION_NOMBRE_MAX = 120
 const SOLUCION_DESCRIPCION_MAX = 400
 const SOLUCION_DEMO_URL_MAX = 300
+const SOLUCION_DETALLE_MAX = 2000
 const ITEM_MAX = 120
 
 function validate(draft: FamiliaDraft): string {
@@ -74,6 +76,8 @@ function validate(draft: FamiliaDraft): string {
   if (badDemo) return `El demo de "${badDemo.nombre}" debe ser una URL completa que empiece con https:// (recibido: "${badDemo.demoUrl?.slice(0, 40)}")`
   const longDemo = soluciones.find((s) => (s.demoUrl?.length ?? 0) > SOLUCION_DEMO_URL_MAX)
   if (longDemo) return `La URL de demo de "${longDemo.nombre}" supera ${SOLUCION_DEMO_URL_MAX} caracteres`
+  const longDetalle = soluciones.find((s) => (s.detalleExtendido?.length ?? 0) > SOLUCION_DETALLE_MAX)
+  if (longDetalle) return `El detalle extendido de "${longDetalle.nombre}" supera ${SOLUCION_DETALLE_MAX} caracteres`
   const capacidades = draft.capacidadesText.split('\n').map((l) => l.trim()).filter(Boolean)
   const longCapacidad = capacidades.find((c) => c.length > ITEM_MAX)
   if (longCapacidad) return `Esta capacidad supera ${ITEM_MAX} caracteres: "${longCapacidad.slice(0, 40)}..."`
@@ -154,6 +158,7 @@ export default function SolucionesAdminEditor({ familias, saving, onSave }: Prop
                       {s.nombre}
                       {s.descripcion && <span className="text-white/50"> — {s.descripcion}</span>}
                       {s.demoUrl && <span className="block text-xs text-forge-orange-main break-all">Demo: {s.demoUrl}</span>}
+                      {s.detalleExtendido && <span className="block text-xs text-white/40">Tiene detalle extendido ({s.detalleExtendido.length} caracteres, solo visible en /soluciones/{'{familia}'})</span>}
                     </li>
                   ))}
                 </ul>
@@ -184,17 +189,22 @@ function FamiliaForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
   const longestCapacidad = Math.max(0, ...capacidadesLines.map((c) => c.length))
 
   function addSolucion() {
-    onChange({ ...draft, soluciones: [...draft.soluciones, { nombre: '', descripcion: '', demoUrl: '' }] })
+    onChange({ ...draft, soluciones: [...draft.soluciones, { nombre: '', descripcion: '', demoUrl: '', detalleExtendido: '' }] })
   }
 
   function removeSolucion(index: number) {
     onChange({ ...draft, soluciones: draft.soluciones.filter((_, i) => i !== index) })
   }
 
-  function changeSoluciones(entities: { title: string; description: string; extra?: string }[]) {
+  function changeSoluciones(entities: { title: string; description: string; extra?: string; extra2?: string }[]) {
     onChange({
       ...draft,
-      soluciones: entities.map((e) => ({ nombre: e.title, descripcion: e.description, demoUrl: e.extra ?? '' })),
+      soluciones: entities.map((e) => ({
+        nombre: e.title,
+        descripcion: e.description,
+        demoUrl: e.extra ?? '',
+        detalleExtendido: e.extra2 ?? '',
+      })),
     })
   }
 
@@ -211,12 +221,17 @@ function FamiliaForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
 
       <EntityListEditor
         title="Soluciones principales"
-        items={draft.soluciones.map((s) => ({ title: s.nombre, description: s.descripcion, extra: s.demoUrl ?? '' }))}
+        items={draft.soluciones.map((s) => ({
+          title: s.nombre,
+          description: s.descripcion,
+          extra: s.demoUrl ?? '',
+          extra2: s.detalleExtendido ?? '',
+        }))}
         onAdd={addSolucion}
         onRemove={removeSolucion}
         onChange={changeSoluciones}
         titleLabel="Nombre de la solución"
-        descriptionLabel="Descripción (opcional)"
+        descriptionLabel="Descripción corta (aparece en Home y en la página de la familia)"
         titlePlaceholder="Ej: Landing Page"
         descriptionPlaceholder="Describe brevemente en qué consiste esta solución..."
         titleMaxLength={SOLUCION_NOMBRE_MAX}
@@ -226,6 +241,10 @@ function FamiliaForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
         extraMaxLength={SOLUCION_DEMO_URL_MAX}
         extraHelp="Si se completa, aparece como botón 'Ver demo' en la home y en la página de la familia. Solo URLs https:// completas."
         extraType="url"
+        extra2Label="Detalle extendido (opcional)"
+        extra2Placeholder="Contenido más profundo sobre esta solución: para quién es, qué la diferencia, en qué casos conviene..."
+        extra2MaxLength={SOLUCION_DETALLE_MAX}
+        extra2Help="Solo se muestra en /soluciones/[familia], nunca en el Home — es lo que le da profundidad extra a quien entra buscando más detalle."
       />
 
       <div>

@@ -136,6 +136,28 @@ export default async function FamiliaPage({
             )}
           </div>
 
+          {/* Contenido aparte del Home (pedido del cliente, 2026-08-03): esta
+              página existe para dar más profundidad, no para repetir el
+              mismo texto corto. Solo aparece para las soluciones que tienen
+              detalleExtendido cargado — las demás ya están cubiertas arriba. */}
+          {familia.soluciones.some((s) => s.detalleExtendido) && (
+            <div className="mb-10 space-y-8 border-t border-ef-ink/10 pt-10">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-ef-blue-deep">
+                Más sobre cada solución
+              </h2>
+              {familia.soluciones
+                .filter((solucion) => solucion.detalleExtendido)
+                .map((solucion) => (
+                  <div key={solucion.nombre}>
+                    <h3 className="font-humanst text-fluid-h3 text-ef-ink mb-2">{solucion.nombre}</h3>
+                    <p className="text-ef-ink-soft leading-relaxed whitespace-pre-line">
+                      {solucion.detalleExtendido}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          )}
+
           <WhatsAppLink
             href={ctaHref}
             source={`soluciones-detalle-${familia.id}`}
