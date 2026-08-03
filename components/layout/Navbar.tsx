@@ -8,7 +8,7 @@ import CTAButton from '@/components/ui/CTAButton'
 // "Diferencial" is a home-only section (#autonomia) with no page of its own,
 // so it is intentionally not in the nav.
 const links = [
-  { href: '/soluciones', label: 'Soluciones' },
+  { href: '/#soluciones', label: 'Soluciones' },
   { href: '/proceso', label: 'Proceso' },
   { href: '/nosotros', label: 'Quiénes somos' },
   { href: '/preguntas-frecuentes', label: 'FAQ' },

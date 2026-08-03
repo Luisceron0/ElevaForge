@@ -41,12 +41,19 @@ const config: NextConfig = {
 
     // ADR-012: /proyectos y sus casos dejaron de existir (el portafolio con
     // 1 caso entregado restaba confianza en vez de darla). Redirect
-    // permanente a /soluciones, que es donde ahora vive la evidencia pública
-    // (demos en vivo). Sin esto, cualquier URL ya indexada de /proyectos/*
-    // daría 404. `permanent: true` en Next emite 308, no 301 — igual de
-    // permanente para los buscadores y además preserva el método.
-    { source: '/proyectos', destination: '/soluciones', permanent: true },
-    { source: '/proyectos/:slug*', destination: '/soluciones', permanent: true },
+    // permanente a la sección de soluciones en Home. `permanent: true` en
+    // Next emite 308, no 301 — igual de permanente para los buscadores y
+    // además preserva el método.
+    { source: '/proyectos', destination: '/#soluciones', permanent: true },
+    { source: '/proyectos/:slug*', destination: '/#soluciones', permanent: true },
+
+    // Este cambio: /soluciones y sus páginas de familia se eliminaron
+    // (decisión del cliente, 2026-08-03 — el contenido quedaba duplicado
+    // entre esa página y el Home, con fricción real de mantenimiento cada
+    // vez que se agregaba un campo nuevo). Todo el catálogo ya vive en la
+    // sección #soluciones del Home.
+    { source: '/soluciones', destination: '/#soluciones', permanent: true },
+    { source: '/soluciones/:familia*', destination: '/#soluciones', permanent: true },
   ],
 
   // Security headers in config (static) instead of middleware (dynamic)

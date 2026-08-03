@@ -86,7 +86,7 @@ export default function HeroSection({
 
           <div data-hero-ctas className="flex flex-col sm:flex-row gap-4 lg:justify-end">
             <CTAButton href="/contacto" size="lg" label={primaryCtaLabel || 'Solicitar diagnóstico'} />
-            <CTAButton href="/soluciones" size="lg" variant="outline" label={secondaryCtaLabel || 'Ver soluciones'} />
+            <CTAButton href="/#soluciones" size="lg" variant="outline" label={secondaryCtaLabel || 'Ver soluciones'} />
           </div>
         </div>
       </div>

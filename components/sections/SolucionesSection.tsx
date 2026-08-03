@@ -146,9 +146,9 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
                     Soluciones principales
                   </p>
                   {/* Cada solución con su propia descripción y, si existe, su
-                      demo — visibles acá mismo, sin tener que entrar a
-                      /soluciones/[familia] para verlas (pedido del cliente,
-                      2026-08-03: la info relevante se ve desde el Home). */}
+                      demo — visibles acá mismo. La página dedicada de
+                      familia se eliminó (2026-08-03): todo el catálogo vive
+                      solo acá, en el Home. */}
                   <div className={`mb-8 divide-y rounded-2xl border ${style.card} ${style.divider}`}>
                     {familia.soluciones.map((solucion) => {
                       // Re-sanitizado en render (defensa en profundidad): el

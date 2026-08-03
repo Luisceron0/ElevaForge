@@ -146,48 +146,58 @@ test.describe('smoke', () => {
     expect(navText).not.toContain('Paquetes')
   })
 
-  test('multipage IA: /soluciones, /proceso, /contacto all resolve (§14)', async ({ request }) => {
-    for (const path of ['/soluciones', '/proceso', '/contacto']) {
+  test('multipage IA: /proceso, /contacto resolve; /soluciones no longer exists as a page (§14, this change)', async ({ request }) => {
+    for (const path of ['/proceso', '/contacto']) {
       const response = await request.get(path)
       expect(response.status(), `${path} should resolve`).toBeLessThan(400)
     }
   })
 
-  test('/soluciones/[familia]: all 3 fixed familias resolve, unknown slug 404s', async ({ request }) => {
-    for (const id of ['presencia-digital', 'sistemas-de-gestion', 'software-personalizado']) {
-      const response = await request.get(`/soluciones/${id}`)
-      expect(response.status(), `${id} should resolve`).toBe(200)
-    }
-    const notFound = await request.get('/soluciones/no-existe')
-    expect(notFound.status()).toBe(404)
-  })
-
-  // ADR-012: /proyectos y sus casos salieron del sitio. Lo ya indexado no
-  // puede quedar en 404 — redirect permanente a /soluciones. Next.js emite
+  // ADR-012 (/proyectos) + este cambio (/soluciones): ambas salieron del
+  // sitio. Lo ya indexado no puede quedar en 404 — redirect permanente al
+  // catálogo, que ahora vive solo en el Home (#soluciones). Next.js emite
   // 308 (no 301) para `permanent: true`: mismo peso de "permanente" para
   // los buscadores, y además preserva el método HTTP.
-  test('/proyectos and /proyectos/[slug] permanently redirect to /soluciones (ADR-012)', async ({ request }) => {
-    for (const path of ['/proyectos', '/proyectos/avc', '/proyectos/lo-que-sea']) {
+  test('/proyectos, /soluciones and their sub-paths permanently redirect to /#soluciones', async ({ request }) => {
+    const paths = [
+      '/proyectos',
+      '/proyectos/avc',
+      '/proyectos/lo-que-sea',
+      '/soluciones',
+      '/soluciones/presencia-digital',
+      '/soluciones/sistemas-de-gestion',
+      '/soluciones/software-personalizado',
+      '/soluciones/lo-que-sea',
+    ]
+    for (const path of paths) {
       const response = await request.get(path, { maxRedirects: 0 })
       expect(response.status(), `${path} should redirect permanently`).toBe(308)
-      expect(response.headers()['location'], `${path} should point at /soluciones`).toContain('/soluciones')
+      expect(response.headers()['location'], `${path} should point at /#soluciones`).toContain('/#soluciones')
     }
   })
 
-  test('sitemap no longer lists /proyectos (ADR-012)', async ({ request }) => {
+  test('sitemap no longer lists /proyectos nor /soluciones', async ({ request }) => {
     const body = await (await request.get('/sitemap.xml')).text()
     expect(body).not.toContain('/proyectos')
+    expect(body).not.toContain('/soluciones')
   })
 
-  test('legacy #proyectos anchor redirects client-side to /soluciones (SEO-11)', async ({ page }) => {
+  test('legacy #proyectos anchor jumps to #soluciones on the same page (SEO-11)', async ({ page }) => {
     await page.goto('/#proyectos')
-    await page.waitForURL('**/soluciones')
-    expect(page.url()).toContain('/soluciones')
+    await page.waitForURL('**/#soluciones')
+    expect(page.url()).toContain('/#soluciones')
   })
 
-  // Punto 2 del pedido: los demos son ahora la evidencia pública. Se
-  // verifica el href real, el target/rel seguro y que el esquema sea https
-  // (nunca javascript: — ver lib/safe-url.ts).
+  test('legacy #precios anchor jumps to #soluciones on the same page (SEO-11)', async ({ page }) => {
+    await page.goto('/#precios')
+    await page.waitForURL('**/#soluciones')
+    expect(page.url()).toContain('/#soluciones')
+  })
+
+  // Punto 2 del pedido original: los demos son ahora la evidencia pública,
+  // visible solo desde el Home (la página dedicada de familia se eliminó,
+  // 2026-08-03). Se verifica el href real, el target/rel seguro y que el
+  // esquema sea https (nunca javascript: — ver lib/safe-url.ts).
   test('home: Landing Page and Sitio Web expose their live demo links', async ({ page }) => {
     await page.goto('/')
     const demoLinks = page.locator('#soluciones a[target="_blank"]').filter({ hasText: 'Ver demo' })
@@ -206,26 +216,6 @@ test.describe('smoke', () => {
       expect(rel).toContain('noopener')
       expect(rel).toContain('noreferrer')
     }
-  })
-
-  test('/soluciones/presencia-digital shows both demos with https hrefs', async ({ page }) => {
-    await page.goto('/soluciones/presencia-digital')
-    const demoLinks = page.getByRole('link', { name: /Ver demo en vivo/ })
-    await expect(demoLinks).toHaveCount(2)
-    const hrefs = await demoLinks.evaluateAll((links) =>
-      links.map((link) => (link as HTMLAnchorElement).getAttribute('href')),
-    )
-    for (const href of hrefs) {
-      expect(href).toMatch(/^https:\/\//)
-    }
-    expect(hrefs).toContain('https://koa.elevaforge.com/')
-    expect(hrefs).toContain('https://store.koa.elevaforge.com/es')
-  })
-
-  test('legacy #precios anchor redirects client-side to /soluciones (SEO-11)', async ({ page }) => {
-    await page.goto('/#precios')
-    await page.waitForURL('**/soluciones')
-    expect(page.url()).toContain('/soluciones')
   })
 
   test('/preguntas-frecuentes answers "cómo se define la inversión" with FAQPage schema (RF-019/CRO-05)', async ({ page }) => {
@@ -297,7 +287,7 @@ test.describe('smoke', () => {
   // immediately, so the whole colored-panel system actually gets checked;
   // (2) it eliminates the mid-fade blended-color false positives that a
   // running GSAP tween produces (see tasks/lessons.md).
-  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/soluciones/sistemas-de-gestion', '/soluciones/software-personalizado', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
+  for (const path of ['/', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
     test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
       // Emulate reduced motion so the Reveal scroll-animations render every
       // panel visible immediately (axe skips opacity:0 content) and no

@@ -19,26 +19,6 @@ export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
   }
 }
 
-/** Service JSON-LD for each familia de soluciones page (SEO-08). */
-export function serviceJsonLd(input: { nombre: string; descripcion: string; path: string }) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: input.nombre,
-    description: input.descripcion,
-    url: `${SITE_URL}${input.path}`,
-    provider: {
-      '@type': 'ProfessionalService',
-      name: 'ElevaForge',
-      url: SITE_URL,
-    },
-    areaServed: {
-      '@type': 'Country',
-      name: 'Colombia',
-    },
-  }
-}
-
 export interface FaqItem {
   question: string
   answer: string

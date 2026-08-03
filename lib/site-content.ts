@@ -12,7 +12,6 @@ export type FamiliaId = 'presencia-digital' | 'sistemas-de-gestion' | 'software-
 
 export interface SolucionItem {
   nombre: string
-  /** Texto corto: se muestra tanto en Home como en /soluciones/[familia]. */
   descripcion: string
   /**
    * Demo público en vivo de esta solución (opcional). Solo http/https —
@@ -20,13 +19,6 @@ export interface SolucionItem {
    * de proyectos (decisión del cliente 2026-08-03, ADR-012).
    */
   demoUrl?: string
-  /**
-   * Contenido más profundo, opcional — SOLO se muestra en
-   * /soluciones/[familia], nunca en Home (pedido del cliente 2026-08-03: la
-   * página de familia debe aportar algo distinto de lo que ya se ve en el
-   * Home, no repetir el mismo texto corto).
-   */
-  detalleExtendido?: string
 }
 
 export interface FamiliaDeSolucion {
@@ -166,16 +158,12 @@ export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
         descripcion:
           'Una sola página con un único objetivo de conversión: dejar tus datos, escribir por WhatsApp o sumarse a una lista de espera. Ideal para lanzamientos, campañas o validar una idea rápido, sin la complejidad de un sitio completo.',
         demoUrl: 'https://koa.elevaforge.com/',
-        detalleExtendido:
-          'Se construye alrededor de un solo objetivo de conversión, sin secciones que distraigan de esa decisión. Es la opción indicada para lanzamientos de producto, campañas puntuales, eventos o para validar una oferta antes de invertir en un sitio completo: se publica rápido y se puede medir su efectividad desde el primer día. No incluye blog, catálogo ni áreas internas de contenido — si tu negocio necesita eso, la solución es Sitio Web.',
       },
       {
         nombre: 'Sitio Web',
         descripcion:
           'Sitio multipágina con catálogo, blog y navegación institucional completa, con soporte multilenguaje si tu negocio lo necesita. Para cuando ya tenés un catálogo de productos o servicios y necesitás presencia digital robusta y administrable.',
         demoUrl: 'https://store.koa.elevaforge.com/es',
-        detalleExtendido:
-          'Pensado para negocios que ya tienen (o van a tener) un catálogo de productos o servicios y necesitan una presencia digital que crezca con ellos: múltiples páginas, blog para posicionamiento en buscadores y soporte multilenguaje cuando el negocio lo requiere. A diferencia de una Landing Page, no está atado a una sola acción: organiza distintos tipos de contenido (institucional, catálogo, noticias) bajo una navegación propia, con panel administrativo para que tu equipo lo mantenga actualizado sin depender de terceros.',
       },
     ],
     capacidades: [
@@ -535,7 +523,6 @@ function normalizeSolucionItems(value: unknown, fallback: SolucionItem[]): Soluc
     let nombre = ''
     let descripcion = ''
     let demoUrl: string | undefined
-    let detalleExtendido: string | undefined
 
     if (typeof raw === 'string') {
       // Legacy shape (pre-migration): plain string label, no description yet.
@@ -547,14 +534,13 @@ function normalizeSolucionItems(value: unknown, fallback: SolucionItem[]): Soluc
       // ningún `href` — la validación de zod al guardar no alcanza porque la
       // fila de la DB puede escribirse por fuera del panel.
       demoUrl = safeExternalUrl(raw.demoUrl)
-      detalleExtendido = String(raw.detalleExtendido ?? '').trim().slice(0, 2000) || undefined
     }
 
     if (!nombre) continue
     const key = nombre.toLowerCase()
     if (seen.has(key)) continue
     seen.add(key)
-    items.push({ nombre, descripcion, demoUrl, detalleExtendido })
+    items.push({ nombre, descripcion, demoUrl })
     if (items.length >= 20) break
   }
 
