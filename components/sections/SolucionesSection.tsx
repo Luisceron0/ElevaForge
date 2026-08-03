@@ -20,11 +20,14 @@ type PanelStyle = {
   eyebrow: string
   heading: string
   body: string
+  /** Fondo/borde de cada fila de solución dentro del panel. */
+  card: string
+  /** Separador entre filas cuando no hay tarjeta (recurso visual liviano). */
+  divider: string
   pill: string
-  /** Estado hover/focus de las píldoras que además son enlace a un demo. */
+  /** Estado hover/focus del botón de demo. */
   pillLink: string
-  capLabel: string
-  capText: string
+  capChip: string
   cta: string
 }
 
@@ -34,11 +37,12 @@ const panelStyles: Record<string, PanelStyle> = {
     index: 'text-ef-paper/55',
     eyebrow: 'text-ef-paper/70',
     heading: 'text-ef-paper',
-    body: 'text-ef-paper/85',
+    body: 'text-ef-paper/80',
+    card: 'bg-ef-paper/[0.06] border-ef-paper/15',
+    divider: 'divide-ef-paper/12',
     pill: 'border-ef-paper/35 text-ef-paper',
     pillLink: 'hover:bg-ef-paper hover:text-ef-blue-deep focus-visible:bg-ef-paper focus-visible:text-ef-blue-deep',
-    capLabel: 'text-ef-paper/70',
-    capText: 'text-ef-paper/75',
+    capChip: 'border-ef-paper/25 text-ef-paper/80',
     cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-blue-deep',
   },
   'sistemas-de-gestion': {
@@ -49,10 +53,11 @@ const panelStyles: Record<string, PanelStyle> = {
     eyebrow: 'text-ef-ink',
     heading: 'text-ef-ink',
     body: 'text-ef-ink',
+    card: 'bg-ef-ink/[0.05] border-ef-ink/15',
+    divider: 'divide-ef-ink/12',
     pill: 'border-ef-ink/35 text-ef-ink',
     pillLink: 'hover:bg-ef-ink hover:text-ef-orange focus-visible:bg-ef-ink focus-visible:text-ef-orange',
-    capLabel: 'text-ef-ink',
-    capText: 'text-ef-ink',
+    capChip: 'border-ef-ink/25 text-ef-ink',
     cta: 'border-ef-ink/40 text-ef-ink hover:bg-ef-ink hover:text-ef-orange',
   },
   'software-personalizado': {
@@ -60,11 +65,12 @@ const panelStyles: Record<string, PanelStyle> = {
     index: 'text-ef-paper/45',
     eyebrow: 'text-ef-paper/70',
     heading: 'text-ef-paper',
-    body: 'text-ef-paper/85',
+    body: 'text-ef-paper/80',
+    card: 'bg-ef-paper/[0.05] border-ef-paper/12',
+    divider: 'divide-ef-paper/10',
     pill: 'border-ef-paper/35 text-ef-paper',
     pillLink: 'hover:bg-ef-paper hover:text-ef-ink focus-visible:bg-ef-paper focus-visible:text-ef-ink',
-    capLabel: 'text-ef-paper/70',
-    capText: 'text-ef-paper/75',
+    capChip: 'border-ef-paper/20 text-ef-paper/80',
     cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-ink',
   },
 }
@@ -126,7 +132,11 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
                   <p className={`text-xs font-semibold tracking-[0.2em] uppercase mb-3 ${style.eyebrow}`}>
                     Soluciones principales
                   </p>
-                  <div className="flex flex-wrap gap-2.5 mb-8">
+                  {/* Cada solución con su propia descripción y, si existe, su
+                      demo — visibles acá mismo, sin tener que entrar a
+                      /soluciones/[familia] para verlas (pedido del cliente,
+                      2026-08-03: la info relevante se ve desde el Home). */}
+                  <div className={`mb-8 divide-y rounded-2xl border ${style.card} ${style.divider}`}>
                     {familia.soluciones.map((solucion) => {
                       // Re-sanitizado en render (defensa en profundidad): el
                       // valor ya pasó por zod al guardar y por safeExternalUrl
@@ -134,48 +144,50 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
                       // puede escribirse por fuera del panel admin.
                       const demoUrl = safeExternalUrl(solucion.demoUrl)
 
-                      if (!demoUrl) {
-                        return (
-                          <span
-                            key={solucion.nombre}
-                            title={solucion.descripcion || undefined}
-                            className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium ${style.pill}`}
-                          >
-                            {solucion.nombre}
-                          </span>
-                        )
-                      }
-
                       return (
-                        <a
-                          key={solucion.nombre}
-                          href={demoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-200 ${style.pill} ${style.pillLink}`}
-                        >
-                          {solucion.nombre}
-                          <span className="font-semibold">
-                            Ver demo
-                            <span className="sr-only"> de {solucion.nombre} (se abre en una pestaña nueva)</span>
-                          </span>
-                          <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H18v4.5M17.5 6.5 10 14M15 14.5V18H6V9h3.5" />
-                          </svg>
-                        </a>
+                        <div key={solucion.nombre} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-5">
+                          <div className="min-w-0">
+                            <p className={`font-semibold ${style.heading}`}>{solucion.nombre}</p>
+                            {solucion.descripcion && (
+                              <p className={`mt-1 text-sm leading-relaxed ${style.body}`}>{solucion.descripcion}</p>
+                            )}
+                          </div>
+
+                          {demoUrl && (
+                            <a
+                              href={demoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors duration-200 ${style.pill} ${style.pillLink}`}
+                            >
+                              Ver demo
+                              <span className="sr-only"> de {solucion.nombre} (se abre en una pestaña nueva)</span>
+                              <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H18v4.5M17.5 6.5 10 14M15 14.5V18H6V9h3.5" />
+                              </svg>
+                            </a>
+                          )}
+                        </div>
                       )
                     })}
                   </div>
 
                   {familia.capacidades.length > 0 && (
-                    <>
-                      <p className={`text-xs font-semibold tracking-[0.2em] uppercase mb-2 ${style.capLabel}`}>
+                    <div className="mb-8">
+                      <p className={`text-xs font-semibold tracking-[0.2em] uppercase mb-3 ${style.eyebrow}`}>
                         Capacidades configurables
                       </p>
-                      <p className={`text-sm leading-relaxed mb-8 ${style.capText}`}>
-                        {familia.capacidades.join(' · ')}
-                      </p>
-                    </>
+                      <div className="flex flex-wrap gap-2">
+                        {familia.capacidades.map((capacidad) => (
+                          <span
+                            key={capacidad}
+                            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${style.capChip}`}
+                          >
+                            {capacidad}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   <WhatsAppLink

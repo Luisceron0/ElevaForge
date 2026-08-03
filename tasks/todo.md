@@ -106,6 +106,17 @@ Verificación: `npm run typecheck && npm run lint && npm test && npm run build` 
 
 DoD Fase 8: `projects` no existe en código ni en el modelo de contenido; ninguna URL de `/proyectos*` queda en 404; los 2 demos visibles y clicables desde Home y desde la página de familia; ningún esquema no-http(s) puede llegar a un `href`. **Cumplido**, salvo la migración de DB que corre el cliente.
 
+## Fase 9 — Demos y catálogo visibles desde el Home sin navegación extra (2026-08-03)
+El cliente reportó no poder ver los demos en producción y que ver el detalle de una solución requería entrar a `/soluciones` → `/soluciones/[familia]` — dos saltos de página. Investigación: producción (`www.elevaforge.com`) todavía no tenía desplegado el push de Fase 8 (el HTML servido no traía "Ver demo" ni las URLs de KOA) — eso explica el "no los veo" en el momento; el pedido de fondo (simplificar la vista, evitar depender de una página aparte para ver detalle de producto) es independiente de eso y se resuelve con código.
+- [x] **`SolucionesSection.tsx` (Home) rediseñado.** La fila de píldoras compactas (nombre + "Ver demo" apretado en el mismo chip, descripción solo visible como `title` tooltip — invisible en touch) se reemplaza por una lista de filas dentro de una tarjeta por familia: nombre en negrita, descripción de la solución visible como texto (ya no tooltip, lista para cuando el admin la complete), y — si existe — un botón "Ver demo ↗" claramente separado y distinguible como acción, con `target="_blank" rel="noopener noreferrer"` y texto accesible completo. Una solución sin demo se ve igual, sin el botón.
+- [x] **Capacidades configurables**, antes un párrafo denso unido por "·", ahora se muestran como chips individuales — más fácil de escanear, mismo contenido.
+- [x] **Sin nuevas páginas ni rutas eliminadas.** `/soluciones` y `/soluciones/[familia]` se conservan intactas (valor de SEO: URL propia, metadata, `Service`/`BreadcrumbList` JSON-LD por familia, ya especificado en §14/SEO-07/08) — la Home simplemente deja de depender de ellas para mostrar lo esencial. No se tocó su contenido.
+- [x] **Contraste verificado, no asumido.** El fondo de cada fila usa una superposición sutil (5-6% de opacidad) sobre el color ya validado del panel — mismos tokens de texto que ya pasaban AA. Confirmado con axe-core, no solo visual.
+
+Verificación: `npm run typecheck && npm run lint && npm test` (64 unit) `&& npm run build` en verde; `npx playwright test` 38/38, incluye el axe-core de `/` y `/soluciones/presencia-digital` con 0 violaciones tras el cambio de layout. Verificación visual con agent-browser (capturas del panel con y sin demos).
+
+DoD Fase 9: cada familia en Home muestra sus soluciones con nombre, descripción (cuando existe) y demo (cuando existe) sin salir de la página; 0 violaciones axe-core; `/soluciones/[familia]` sigue accesible y sin cambios. **Cumplido.** Pendiente fuera de este cambio: confirmar con el cliente que producción ya desplegó Fase 8 (los demos existen en el código desde ese push; si seguían sin verse tras este merge, es un problema de deploy/CI en Vercel, no de código).
+
 ---
 
 ## Gates abiertos ahora mismo (Anexo B del SRS)
