@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getResolvedSiteContent, DEFAULT_SOLUCIONES } from '@/lib/site-content'
+import { DEFAULT_SOLUCIONES } from '@/lib/site-content'
 
 // SEO-12: generado desde las rutas/artículos reales en vez de una lista
 // estática — antes omitía /soluciones, /proyectos, /proceso, /contacto por
@@ -16,12 +16,10 @@ const STATIC_LAST_MODIFIED = '2026-02-25'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date().toISOString()
-  const content = await getResolvedSiteContent()
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: now, changeFrequency: 'weekly', priority: 1 },
     { url: `${SITE_URL}/soluciones`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${SITE_URL}/proyectos`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/proceso`, lastModified: STATIC_LAST_MODIFIED, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/contacto`, lastModified: STATIC_LAST_MODIFIED, changeFrequency: 'yearly', priority: 0.8 },
     { url: `${SITE_URL}/preguntas-frecuentes`, lastModified: STATIC_LAST_MODIFIED, changeFrequency: 'monthly', priority: 0.5 },
@@ -37,14 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  const proyectoPages: MetadataRoute.Sitemap = content.projects
-    .filter((project) => project.status === 'entregado')
-    .map((project) => ({
-      url: `${SITE_URL}/proyectos/${project.id}`,
-      lastModified: now,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    }))
-
-  return [...staticPages, ...familiaPages, ...proyectoPages]
+  // /proyectos y /proyectos/[slug] salieron del sitio (ADR-012): ya no se
+  // listan acá y next.config.ts las redirige con 301 a /soluciones.
+  return [...staticPages, ...familiaPages]
 }

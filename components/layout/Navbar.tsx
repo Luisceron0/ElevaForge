@@ -9,7 +9,6 @@ import CTAButton from '@/components/ui/CTAButton'
 // so it is intentionally not in the nav.
 const links = [
   { href: '/soluciones', label: 'Soluciones' },
-  { href: '/proyectos', label: 'Proyectos' },
   { href: '/proceso', label: 'Proceso' },
   { href: '/nosotros', label: 'Quiénes somos' },
   { href: '/preguntas-frecuentes', label: 'FAQ' },

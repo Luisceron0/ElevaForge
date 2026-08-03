@@ -19,7 +19,7 @@ Sos un ingeniero senior evolucionando el sitio de ElevaForge. No sos un autocomp
 
 1. `SRS-ElevaForge-v0.3.md` completo — cada tarea traza a un ID (RF-xxx, F-xx, CRO-xx, SEO-xx, DIS-xx, ADR-xxx).
 2. Capa de seguridad real: `proxy.ts` (raíz), `lib/security/*` (`api-guard`, `rate-limit`, `csrf`, `admin-session`, `admin-access`, `worker-auth`, `logger`), rutas `app/api/**`.
-3. Modelo de contenido: `lib/site-content.ts` (tipos + `DEFAULT_SITE_CONTENT`) y `lib/admin-content-validation.ts` (claves válidas hoy: `about`, `projects`, `packages`).
+3. Modelo de contenido: `lib/site-content.ts` (tipos + `DEFAULT_SITE_CONTENT`) y `lib/admin-content-validation.ts` (claves válidas hoy: `about`, `soluciones`).
 4. `tasks/todo.md` y `tasks/lessons.md`.
 
 ## Gates duros — condiciones de STOP
@@ -43,7 +43,9 @@ Ante cualquier gate: reportás el ID del gate, qué falta, y **una** pregunta co
 
 **Patrón de leads (outbox):** `POST /api/contact` → valida (`leadSchema`, zod) → `runApiGuard` → insert `status='pending'`. Cron diario `process-leads` (Bearer `CRON_SECRET`, timing-safe en `worker-auth.ts`) → notifica Discord (webhook allowlisted, anti-SSRF) → update por lote. Cron `cleanup?days=30` purga. Ambos crons en `vercel.json` a las 00:00 y 01:00 UTC.
 
-**Contenido editable:** tabla `site_content` (jsonb) con claves `about | projects | packages` (confirmado en `lib/site-content.ts:775-796` y `lib/admin-content-validation.ts:120-124`). Editores en `/admin`. El rename `packages`→`soluciones` (SRS §11) toca: `admin-content-validation.ts` (clave y schema), `lib/site-content.ts` (tipos, `DEFAULT_PACKAGES`, normalización, `getSiteContent`/`saveSiteContent`), el editor admin de packages, `PricingSection.tsx`, y requiere migración de datos de la fila `packages` a `soluciones` (sin dejar la clave vieja).
+**Contenido editable:** tabla `site_content` (jsonb) con **dos** claves: `about | soluciones`. La lista de claves válidas se deriva de `Object.keys(DEFAULT_SITE_CONTENT)` (`CONTENT_KEYS`), no se hardcodea en ningún lado — agregar o quitar una clave del modelo actualiza sola la allowlist de `PUT /api/admin/content`. `packages` se renombró a `soluciones` (SRS §11) y `projects` se eliminó por completo (ADR-012, 2026-08-03: no hay portafolio; la evidencia pública son los demos en vivo del catálogo, RF-027). Editores en `/admin`. Ambas migraciones de datos están documentadas en `supabase/01-schema-and-rls.sql` — el CHECK de `key` NO se actualiza solo con `create table if not exists`, hay que correr el `alter table` a mano.
+
+**URLs de contenido en `href`:** toda URL que venga de `site_content` y se renderice como enlace pasa por `safeExternalUrl()` (`lib/safe-url.ts`) en el punto de render, además de validarse con zod al guardar (RNF-SEC-06). React escapa texto, no el esquema de un `href` — un `javascript:` guardado en la DB es XSS almacenado. Ver `tasks/lessons.md`.
 
 **Comandos:**
 - `npm run dev` — desarrollo

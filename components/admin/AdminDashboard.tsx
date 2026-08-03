@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Lead } from '@/types/lead'
-import { AboutContent, FamiliaDeSolucion, ProjectItem, SiteContent, TeamCapability } from '@/lib/site-content'
+import { AboutContent, FamiliaDeSolucion, SiteContent, TeamCapability } from '@/lib/site-content'
 import TeamAdminEditor from './TeamAdminEditor'
-import ProjectsAdminEditor from './ProjectsAdminEditor'
 import SolucionesAdminEditor from './SolucionesAdminEditor'
 import AboutAdminEditor from './AboutAdminEditor'
 import AdminNavbar from '@/components/admin/AdminNavbar'
@@ -26,7 +25,7 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
   const [leads, setLeads] = useState<Lead[]>(initialLeads)
   const [panelView, setPanelView] = useState<'content' | 'admins' | 'leads'>('content')
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'sent' | 'failed'>('all')
-  const [savingKey, setSavingKey] = useState<'' | 'about' | 'projects' | 'soluciones' | 'team'>('')
+  const [savingKey, setSavingKey] = useState<'' | 'about' | 'soluciones' | 'team'>('')
   const [adminUsers, setAdminUsers] = useState<AdminUserRow[]>([])
   const [adminsLoading, setAdminsLoading] = useState(true)
   const [adminsSaving, setAdminsSaving] = useState(false)
@@ -100,10 +99,6 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
   async function saveTeam(team: TeamCapability[]) {
     const updatedAbout = { ...content.about, team }
     await saveContent('about', updatedAbout)
-  }
-
-  async function saveProjectsVisual(projects: ProjectItem[]) {
-    await saveContent('projects', projects)
   }
 
   async function saveSolucionesVisual(familias: FamiliaDeSolucion[]) {
@@ -294,16 +289,18 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
           {/* CONTENT TAB */}
           {panelView === 'content' && (
             <div className="space-y-6">
-              {/* Proyectos - Full width */}
+              {/* Soluciones - Full width. Reemplazó al editor de Proyectos como
+                  primer bloque: el catálogo (y sus demos) es ahora la evidencia
+                  pública, ver ADR-012. */}
               <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-semibold text-white">Proyectos</h2>
-                  <p className="text-sm text-white/60 mt-1">Gestiona proyectos y narrativa institucional</p>
+                  <h2 className="text-2xl font-semibold text-white">Familias de Soluciones</h2>
+                  <p className="text-sm text-white/60 mt-1">Contenido comunicacional y demos públicos, sin precios</p>
                 </div>
-                <ProjectsAdminEditor
-                  projects={content.projects}
-                  saving={savingKey === 'projects'}
-                  onSave={saveProjectsVisual}
+                <SolucionesAdminEditor
+                  familias={content.soluciones}
+                  saving={savingKey === 'soluciones'}
+                  onSave={saveSolucionesVisual}
                 />
               </div>
 
@@ -334,18 +331,6 @@ export default function AdminDashboard({ initialContent, initialLeads }: Props) 
                 </div>
               </div>
 
-              {/* Soluciones - Full width */}
-              <div className="bg-[#1F1F3A] rounded-2xl border border-white/10 p-8 shadow-lg">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-semibold text-white">Familias de Soluciones</h2>
-                  <p className="text-sm text-white/60 mt-1">Contenido comunicacional, sin precios</p>
-                </div>
-                <SolucionesAdminEditor
-                  familias={content.soluciones}
-                  saving={savingKey === 'soluciones'}
-                  onSave={saveSolucionesVisual}
-                />
-              </div>
             </div>
           )}
 

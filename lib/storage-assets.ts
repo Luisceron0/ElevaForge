@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import type { AboutContent, ProjectItem, SiteContent, TeamCapability } from '@/lib/site-content'
+import type { AboutContent, SiteContent, TeamCapability } from '@/lib/site-content'
 import { extractStoragePath, getStorageBucketName, normalizeAssetRef } from '@/lib/asset-refs'
 
 const SIGNED_URL_TTL_SECONDS = 60 * 60
@@ -33,15 +33,6 @@ export async function resolveAssetUrl(value: string | undefined): Promise<string
   return signedUrl || undefined
 }
 
-async function resolveProjects(projects: ProjectItem[]): Promise<ProjectItem[]> {
-  return Promise.all(
-    projects.map(async (project) => ({
-      ...project,
-      imageUrl: await resolveAssetUrl(project.imageUrl),
-    })),
-  )
-}
-
 async function resolveTeam(team: TeamCapability[]): Promise<TeamCapability[]> {
   return Promise.all(
     team.map(async (member) => ({
@@ -66,15 +57,7 @@ export async function resolveSiteContentAssets(content: SiteContent): Promise<Si
   return {
     ...content,
     about: await resolveAbout(content.about),
-    projects: await resolveProjects(content.projects),
   }
-}
-
-function normalizeProjects(projects: ProjectItem[]): ProjectItem[] {
-  return projects.map((project) => ({
-    ...project,
-    imageUrl: normalizeAssetRef(project.imageUrl),
-  }))
 }
 
 function normalizeTeam(team: TeamCapability[]): TeamCapability[] {
@@ -99,10 +82,6 @@ export function normalizeContentAssets<K extends ContentKey>(
   key: K,
   value: SiteContent[K],
 ): SiteContent[K] {
-  if (key === 'projects') {
-    return normalizeProjects(value as ProjectItem[]) as SiteContent[K]
-  }
-
   if (key === 'about') {
     return normalizeAbout(value as AboutContent) as SiteContent[K]
   }
@@ -124,27 +103,12 @@ function collectAboutAssetPaths(about: AboutContent): string[] {
   return [...result]
 }
 
-function collectProjectAssetPaths(projects: ProjectItem[]): string[] {
-  const result = new Set<string>()
-
-  for (const project of projects) {
-    const path = extractStoragePath(project.imageUrl)
-    if (path) result.add(path)
-  }
-
-  return [...result]
-}
-
 export function collectAssetPathsForContent<K extends ContentKey>(
   key: K,
   value: SiteContent[K],
 ): string[] {
   if (key === 'about') {
     return collectAboutAssetPaths(value as AboutContent)
-  }
-
-  if (key === 'projects') {
-    return collectProjectAssetPaths(value as ProjectItem[])
   }
 
   return []

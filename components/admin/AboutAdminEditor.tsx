@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AboutContent, DEFAULT_ABOUT } from '@/lib/site-content'
+import EntityListEditor, { type Entity } from './EntityListEditor'
 
 interface Props {
   about: AboutContent
@@ -156,25 +157,6 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
               <input value={draft.homeContent.statement.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, statement: { ...prev.homeContent.statement, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
               <textarea value={draft.homeContent.statement.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, statement: { ...prev.homeContent.statement, title: e.target.value } } }))} className="w-full min-h-[70px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Frase grande" />
               <textarea value={draft.homeContent.statement.body} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, statement: { ...prev.homeContent.statement, body: e.target.value } } }))} className="w-full min-h-[90px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Párrafo de apoyo" />
-            </div>
-
-            <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
-              <p className="text-sm font-semibold text-white">Proyectos</p>
-              <input value={draft.homeContent.projects.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
-              <input value={draft.homeContent.projects.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
-              <textarea value={draft.homeContent.projects.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, description: e.target.value } } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input value={draft.homeContent.projects.deliveredLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, deliveredLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Label entregados" />
-                <input value={draft.homeContent.projects.inProgressLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, inProgressLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Label en curso" />
-              </div>
-              <input value={draft.homeContent.projects.notesTitle} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, notesTitle: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título bloque de seguimiento" />
-              <label className="block text-xs text-white/60">Notas del bloque de seguimiento (una por línea)</label>
-              <textarea
-                value={draft.projectsInProgress.join('\n')}
-                onChange={(e) => setDraft((prev) => ({ ...prev, projectsInProgress: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
-                className="w-full min-h-[100px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none"
-                placeholder="Actualmente tenemos varios proyectos en desarrollo en distintos sectores."
-              />
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
@@ -591,10 +573,6 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
 function normalizeAboutDraft(about: AboutContent): AboutContent {
   const mergedDifferentiationItems = dedupeAboutItems([...about.pillars, ...about.differentiators])
 
-  const projectsInProgress = Array.isArray(about.projectsInProgress)
-    ? about.projectsInProgress
-    : [String(about.projectsInProgress ?? '').trim()].filter(Boolean)
-
   const experienceItems = Array.isArray(about.experience?.items)
     ? about.experience.items
     : []
@@ -615,7 +593,6 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
       'Diseñamos, construimos y optimizamos plataformas web con métricas verificables, acompañamiento cercano y decisiones técnicas enfocadas en resultados de negocio.',
     pillars: mergedDifferentiationItems,
     differentiators: [],
-    projectsInProgress,
     supportItems: padSupportItems(about.supportItems),
     autonomyCards: normalizeAutonomyCardsDraft(about),
     teamSection: {
@@ -650,16 +627,6 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
         eyebrow: about.homeContent?.statement?.eyebrow || DEFAULT_ABOUT.homeContent.statement.eyebrow,
         title: about.homeContent?.statement?.title || DEFAULT_ABOUT.homeContent.statement.title,
         body: about.homeContent?.statement?.body || DEFAULT_ABOUT.homeContent.statement.body,
-      },
-      projects: {
-        eyebrow: about.homeContent?.projects?.eyebrow || DEFAULT_ABOUT.homeContent.projects.eyebrow,
-        title: about.homeContent?.projects?.title || DEFAULT_ABOUT.homeContent.projects.title,
-        description: about.homeContent?.projects?.description || DEFAULT_ABOUT.homeContent.projects.description,
-        deliveredLabel:
-          about.homeContent?.projects?.deliveredLabel || DEFAULT_ABOUT.homeContent.projects.deliveredLabel,
-        inProgressLabel:
-          about.homeContent?.projects?.inProgressLabel || DEFAULT_ABOUT.homeContent.projects.inProgressLabel,
-        notesTitle: about.homeContent?.projects?.notesTitle || DEFAULT_ABOUT.homeContent.projects.notesTitle,
       },
       soluciones: {
         eyebrow: about.homeContent?.soluciones?.eyebrow || DEFAULT_ABOUT.homeContent.soluciones.eyebrow,
@@ -789,75 +756,3 @@ function dedupeTextItems(items: string[]): string[] {
   return result
 }
 
-interface Entity {
-  title: string
-  description: string
-}
-
-interface EntityListEditorProps {
-  title: string
-  items: Entity[]
-  onAdd: () => void
-  onRemove: (index: number) => void
-  onChange: (items: Entity[]) => void
-  showTitle?: boolean
-}
-
-function EntityListEditor({ title, items, onAdd, onRemove, onChange, showTitle = true }: EntityListEditorProps) {
-  return (
-    <div className={showTitle ? "space-y-3 pt-2 border-t border-white/10" : "space-y-3"}>
-      {showTitle && (
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm text-white">{title}</h4>
-          <button type="button" onClick={onAdd} className="text-xs border border-white/20 rounded-lg px-3 py-1.5 hover:bg-white/10 transition-colors text-white">+ Agregar</button>
-        </div>
-      )}
-
-      <div className={showTitle ? "space-y-2" : "space-y-3"}>
-        {items.length === 0 ? (
-          <p className="text-sm text-white/50 text-center py-8">No hay items. Haz clic en "+ Agregar" para crear uno.</p>
-        ) : (
-          items.map((item, index) => (
-            <div key={index} className="rounded-lg border border-white/10 bg-white/5 p-5 space-y-3 group hover:border-white/20 transition-colors">
-              <div>
-                <label className="text-xs font-semibold text-white/70 block mb-2">Título</label>
-                <input
-                  value={item.title}
-                  onChange={(e) => {
-                    const next = [...items]
-                    next[index] = { ...next[index], title: e.target.value }
-                    onChange(next)
-                  }}
-                  placeholder="Ej: Análisis Completo"
-                  className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-white/70 block mb-2">Descripción</label>
-                <textarea
-                  value={item.description}
-                  onChange={(e) => {
-                    const next = [...items]
-                    next[index] = { ...next[index], description: e.target.value }
-                    onChange(next)
-                  }}
-                  placeholder="Describe esta fase o pilar..."
-                  className="w-full min-h-[100px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50 resize-none"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => onRemove(index)}
-                  className="text-xs border border-red-500/50 text-red-300 rounded-lg px-3 py-1.5 hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  )
-}

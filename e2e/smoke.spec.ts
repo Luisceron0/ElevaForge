@@ -73,13 +73,16 @@ test.describe('smoke', () => {
     }
   })
 
-  test('delivered project count agrees grammatically in Spanish (F-08)', async ({ request }) => {
-    const response = await request.get('/')
-    const html = await response.text()
-    // Bug was: count=1 rendered the plural "proyectos entregados" regardless
-    // of value (SRS evidence: "1 proyectos entregados").
-    expect(html).not.toMatch(/>1<!--\s*-->\s*<!--\s*-->\s*proyectos entregados/)
-    expect(html).toMatch(/>1<!--\s*-->\s*<!--\s*-->\s*proyecto entregado</)
+  // ADR-012: la sección de proyectos entregados/en curso se eliminó del
+  // sitio. El conteo ("1 proyecto entregado") era justamente la señal que
+  // restaba confianza — este test falla si vuelve a aparecer por cualquier
+  // vía (sección, ticker del hero o link de nav).
+  test('home no longer advertises delivered/in-progress project counts (ADR-012)', async ({ request }) => {
+    const html = await (await request.get('/')).text()
+    expect(html).not.toMatch(/proyectos? entregados?/i)
+    expect(html).not.toMatch(/Proyectos en curso/i)
+    expect(html).not.toContain('id="proyectos"')
+    expect(html).not.toContain('href="/proyectos"')
   })
 
   test('geo metadata targets Colombia, not Mexico (SEO-01/ADR-002)', async ({ request }) => {
@@ -143,8 +146,8 @@ test.describe('smoke', () => {
     expect(navText).not.toContain('Paquetes')
   })
 
-  test('multipage IA: /soluciones, /proyectos, /proceso, /contacto all resolve (§14)', async ({ request }) => {
-    for (const path of ['/soluciones', '/proyectos', '/proceso', '/contacto']) {
+  test('multipage IA: /soluciones, /proceso, /contacto all resolve (§14)', async ({ request }) => {
+    for (const path of ['/soluciones', '/proceso', '/contacto']) {
       const response = await request.get(path)
       expect(response.status(), `${path} should resolve`).toBeLessThan(400)
     }
@@ -159,16 +162,64 @@ test.describe('smoke', () => {
     expect(notFound.status()).toBe(404)
   })
 
-  test('/proyectos/[slug]: delivered project resolves with BreadcrumbList JSON-LD', async ({ page, request }) => {
-    const listResponse = await request.get('/proyectos')
-    expect(listResponse.status()).toBe(200)
+  // ADR-012: /proyectos y sus casos salieron del sitio. Lo ya indexado no
+  // puede quedar en 404 — redirect permanente a /soluciones. Next.js emite
+  // 308 (no 301) para `permanent: true`: mismo peso de "permanente" para
+  // los buscadores, y además preserva el método HTTP.
+  test('/proyectos and /proyectos/[slug] permanently redirect to /soluciones (ADR-012)', async ({ request }) => {
+    for (const path of ['/proyectos', '/proyectos/avc', '/proyectos/lo-que-sea']) {
+      const response = await request.get(path, { maxRedirects: 0 })
+      expect(response.status(), `${path} should redirect permanently`).toBe(308)
+      expect(response.headers()['location'], `${path} should point at /soluciones`).toContain('/soluciones')
+    }
+  })
 
-    // AVC is the seeded "entregado" project in DEFAULT_PROJECTS.
-    const response = await page.goto('/proyectos/avc')
-    expect(response?.status()).toBeLessThan(400)
-    const jsonLdScripts = await page.locator('script[type="application/ld+json"]').allTextContents()
-    const hasBreadcrumb = jsonLdScripts.some((s) => s.includes('BreadcrumbList'))
-    expect(hasBreadcrumb).toBe(true)
+  test('sitemap no longer lists /proyectos (ADR-012)', async ({ request }) => {
+    const body = await (await request.get('/sitemap.xml')).text()
+    expect(body).not.toContain('/proyectos')
+  })
+
+  test('legacy #proyectos anchor redirects client-side to /soluciones (SEO-11)', async ({ page }) => {
+    await page.goto('/#proyectos')
+    await page.waitForURL('**/soluciones')
+    expect(page.url()).toContain('/soluciones')
+  })
+
+  // Punto 2 del pedido: los demos son ahora la evidencia pública. Se
+  // verifica el href real, el target/rel seguro y que el esquema sea https
+  // (nunca javascript: — ver lib/safe-url.ts).
+  test('home: Landing Page and Sitio Web expose their live demo links', async ({ page }) => {
+    await page.goto('/')
+    const demoLinks = page.locator('#soluciones a[target="_blank"]').filter({ hasText: 'Ver demo' })
+    await expect(demoLinks).toHaveCount(2)
+
+    const hrefs = await demoLinks.evaluateAll((links) =>
+      links.map((link) => (link as HTMLAnchorElement).getAttribute('href')),
+    )
+    expect(hrefs).toContain('https://koa.elevaforge.com/')
+    expect(hrefs).toContain('https://store.koa.elevaforge.com/es')
+
+    const rels = await demoLinks.evaluateAll((links) =>
+      links.map((link) => (link as HTMLAnchorElement).getAttribute('rel')),
+    )
+    for (const rel of rels) {
+      expect(rel).toContain('noopener')
+      expect(rel).toContain('noreferrer')
+    }
+  })
+
+  test('/soluciones/presencia-digital shows both demos with https hrefs', async ({ page }) => {
+    await page.goto('/soluciones/presencia-digital')
+    const demoLinks = page.getByRole('link', { name: /Ver demo en vivo/ })
+    await expect(demoLinks).toHaveCount(2)
+    const hrefs = await demoLinks.evaluateAll((links) =>
+      links.map((link) => (link as HTMLAnchorElement).getAttribute('href')),
+    )
+    for (const href of hrefs) {
+      expect(href).toMatch(/^https:\/\//)
+    }
+    expect(hrefs).toContain('https://koa.elevaforge.com/')
+    expect(hrefs).toContain('https://store.koa.elevaforge.com/es')
   })
 
   test('legacy #precios anchor redirects client-side to /soluciones (SEO-11)', async ({ page }) => {
@@ -246,7 +297,7 @@ test.describe('smoke', () => {
   // immediately, so the whole colored-panel system actually gets checked;
   // (2) it eliminates the mid-fade blended-color false positives that a
   // running GSAP tween produces (see tasks/lessons.md).
-  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proyectos', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
+  for (const path of ['/', '/soluciones', '/soluciones/presencia-digital', '/proceso', '/contacto', '/preguntas-frecuentes', '/nosotros']) {
     test(`${path} has no WCAG 2.2 AA violations (axe-core)`, async ({ page }) => {
       // Emulate reduced motion so the Reveal scroll-animations render every
       // panel visible immediately (axe skips opacity:0 content) and no

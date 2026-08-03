@@ -127,7 +127,9 @@ Se hereda íntegro v0.2 §10, **más** todo lo que en v0.2 era "funcionalidad nu
 
 ## 12. Funcionalidades a eliminar
 
-Ninguna nueva respecto a v0.2 (las eliminaciones de v0.2 — precios, `/api/leads` POST duplicado, credencial legacy — ya se ejecutaron y verificaron).
+Además de las eliminaciones de v0.2 (precios, `/api/leads` POST duplicado, credencial legacy), ya ejecutadas y verificadas:
+
+- **Portafolio de proyectos, completo (decisión del cliente 2026-08-03 — ver ADR-012).** Se elimina la sección "Proyectos entregados / en curso" de la Home, las rutas `/proyectos` y `/proyectos/[slug]`, la clave de contenido `projects` (tipos, defaults, validación, normalización y editor del admin), el bloque `about.projectsInProgress`, el copy `homeContent.projects` y los contadores de proyectos del ticker del Hero. **Sin reemplazo**: el cliente eligió explícitamente no sustituir la sección por otro bloque. La evidencia pública pasa a ser la que ya existía y no depende del volumen de portafolio (métricas Lighthouse verificadas, Estándar Forge, garantías de autonomía) más los **demos en vivo** del catálogo (§15, RF-027).
 
 ## 13. Funcionalidades nuevas
 
@@ -136,11 +138,15 @@ Ninguna nueva respecto a v0.2 (las eliminaciones de v0.2 — precios, `/api/lead
 
 ## 14. Arquitectura de navegación (IA)
 
-**Sin cambios respecto a v0.2 §14.** La IA multipágina ya está implementada y verificada (`/`, `/soluciones` + 3 familias, `/proyectos` + casos, `/proceso`, `/nosotros`, `/contacto`, `/preguntas-frecuentes`, legales, `/admin`). Este documento no agrega ni quita rutas — el rediseño ocurre **dentro** de las páginas existentes.
+La IA multipágina está implementada y verificada: `/`, `/soluciones` + 3 familias, `/proceso`, `/nosotros`, `/contacto`, `/preguntas-frecuentes`, legales, `/admin`.
+
+**Cambio respecto a v0.2 §14 (2026-08-03, ADR-012):** `/proyectos` y `/proyectos/[slug]` **salen de la IA**. Ambas responden redirect permanente (308 — `permanent: true` de Next; equivale a 301 para indexación y además preserva el método) hacia `/soluciones`, salen del sitemap, del header y del footer. El ancla legacy `#proyectos` se suma al mapa de `LegacyAnchorRedirect` (SEO-11), y el CTA secundario del Hero pasa de `/proyectos` a `/soluciones`. El header queda en 4 ítems + CTA persistente (dentro del límite de ≤6 de §14).
 
 ## 15. Modelo del dominio
 
-Sin cambios respecto a v0.2 §15. Se aclara la relación ya implementada en código: **FamiliaDeSolucion** (3 instancias fijas: `presencia-digital`, `sistemas-de-gestion`, `software-personalizado`) → cada una con un array `soluciones: string[]` (soluciones principales nombradas, ej. "CRM") y un array `capacidades: string[]` (complementos configurables, nunca productos independientes). Para Software Personalizado, `soluciones` contiene **dominios de aplicación de ejemplo**, no un catálogo cerrado — el brief es explícito en que la lista es ilustrativa.
+**FamiliaDeSolucion** (3 instancias fijas: `presencia-digital`, `sistemas-de-gestion`, `software-personalizado`) → cada una con un array `soluciones: SolucionItem[]` (soluciones principales nombradas, ej. "CRM") y un array `capacidades: string[]` (complementos configurables, nunca productos independientes). Para Software Personalizado, `soluciones` contiene **dominios de aplicación de ejemplo**, no un catálogo cerrado — el brief es explícito en que la lista es ilustrativa.
+
+**Cambio 2026-08-03 (ADR-012):** `SolucionItem` pasa de `{ nombre, descripcion }` a `{ nombre, descripcion, demoUrl? }`. `demoUrl` es un demo público en vivo de esa solución, opcional, **solo http(s)** (RF-027). La entidad **ProjectItem** y la clave de contenido `projects` dejan de existir en el modelo (§12).
 
 ## 16. Requisitos funcionales
 
@@ -167,6 +173,15 @@ Sin cambios respecto a v0.2 §15. Se aclara la relación ya implementada en cód
 - **Precondiciones:** Anexo A ADR-010 (paleta expandida) confirmado por el cliente antes de implementar.
 - **Criterios de aceptación:** ver §27 (criterios globales) y §29 (requisitos de diseño verificables DIS-05 a DIS-08).
 
+### RF-027 — Demos en vivo por solución
+- **Descripción:** cada `SolucionItem` del catálogo puede declarar un `demoUrl` opcional: un demo público, real y navegable de esa solución. Si existe, se muestra como enlace ("Ver demo") en el panel de la familia en Home y en la página de detalle `/soluciones/[familia]`. Es editable desde el panel admin, dentro del editor de Familias de Soluciones — no es un modelo de contenido nuevo ni una sección nueva. Demos iniciales aportados por el cliente (2026-08-03): Landing Page → `https://koa.elevaforge.com/`, Sitio Web → `https://store.koa.elevaforge.com/es`.
+- **Motivación:** sustituye en función (no en formato) lo que el portafolio de proyectos intentaba hacer. Un demo navegable es evidencia verificable en un clic y **escala honestamente**: con 2 demos se lee sólido, con 10 sigue siendo legible, y no comunica volumen de facturación como lo hacía un contador de proyectos entregados (regla de escala honesta, §29).
+- **Criterios de aceptación:**
+  - Solo se aceptan URLs con esquema `http`/`https`, validadas por el parser de URL del runtime (no por regex). Cualquier otro esquema (`javascript:`, `data:`, `vbscript:`, protocol-relative `//host`) se rechaza en **tres** capas: al guardar (zod, `lib/admin-content-validation.ts`), al leer de la DB (`normalizeSolucionItems`) y al renderizar (`safeExternalUrl`). Ver RNF-SEC-06.
+  - Todo enlace de demo abre en pestaña nueva con `rel="noopener noreferrer"`.
+  - El nombre accesible del enlace contiene su texto visible (criterio WCAG "Label in Name") e indica que abre en una pestaña nueva.
+  - Una solución sin `demoUrl` se sigue renderizando exactamente como antes (píldora de texto, sin enlace).
+
 ## 17. Requisitos no funcionales
 
 Se heredan íntegros de v0.2 §17 (rendimiento, disponibilidad, seguridad, escalabilidad, mantenibilidad), **todos ya cumplidos o decididos** (ver §7). Se agrega:
@@ -174,6 +189,9 @@ Se heredan íntegros de v0.2 §17 (rendimiento, disponibilidad, seguridad, escal
 ### Diseño
 - **RNF-DIS-01:** la paleta expandida (Anexo A, ADR-010) debe mantener WCAG 2.2 AA (4.5:1 texto normal, 3:1 texto grande/iconografía) en **toda** combinación fondo/texto usada — verificación obligatoria con axe-core antes de mergear, no solo revisión visual (lección ya aprendida en v0.2: el contraste falla de forma no evidente a simple vista).
 - **RNF-DIS-02:** cualquier panel de color nuevo se define como token en `tailwind.config.ts` — cero colores ad-hoc en `style={{}}` o clases arbitrarias `bg-[#...]`.
+
+### Seguridad
+- **RNF-SEC-06 — Ninguna URL de contenido editable llega cruda a un `href`.** Toda URL almacenada en `site_content` que se renderice como enlace debe pasar por `safeExternalUrl()` (parser `URL` del runtime, allowlist `http`/`https`) **en el punto de render**, además de validarse al guardar. Razón: la validación de escritura protege el camino del panel admin, pero la fila de la DB también puede escribirse por fuera (service-role, consola de Supabase, futuro import); un `href="javascript:..."` es XSS almacenado que React no escapa (React escapa el texto, no el esquema de un atributo). Verificación: `lib/safe-url.test.ts` + casos de esquema ejecutable en `lib/admin-content-validation.test.ts`. **Origen del requisito:** el campo `projects[].externalUrl` (eliminado en ADR-012) tenía exactamente este agujero — se validaba solo el largo y se renderizaba crudo.
 
 ## 18. Casos de uso (resumen)
 
@@ -292,6 +310,7 @@ Se heredan ADR-001 a ADR-009 de v0.2 (todos con estado final, ver changelog). Nu
 |---|---|---|---|---|
 | ADR-010 | Paleta expandida derivada de los tonos de marca ya existentes, con valores y contraste verificados por cálculo (fórmula de luminancia relativa WCAG, no estimación visual). **4 roles de panel, 3 reutilizan tokens ya existentes, 1 token nuevo** (`forge-peach-tint: #FFDEC2`). | Reproduce el ritmo de paneles alternados del modelo de referencia (§29) con el mínimo de tokens nuevos posible. | Importar la paleta literal de CI&T; elegir el tono "a ojo". | **Superada por ADR-011** — el cliente cambió de dirección antes de que se propagara al sitio (solo se había aplicado a `SolucionesSection`). Se conserva el registro por trazabilidad. |
 | ADR-011 | **Rediseño frontend completo con sistema de color nuevo, orange degradado a acento secundario.** El cliente (2026-07-22) pidió explícitamente un frontend nuevo ("no trabajar sobre la apariencia actual"), aportó 3 plantillas de v0.app como referencia adicional a CI&T, y decidió: (a) estética editorial estilo CI&T pero **menos saturada**, (b) **naranja secundario, base nueva**, (c) rebuild completo, (d) motion GSAP. Paleta nueva `ef-*` con contraste calculado por par: **`ink #17171C`** (base oscura/texto), **`paper #F5F2EC`** + **`paper-dim #E7E1D5`** (base clara cálida), **`teal #1F4A47`** (PRIMARIO nuevo — petrol desaturado), **`clay #C67B54`** (panel cálido, solo texto ink), **`orange #F97300`** (SECUNDARIO, fill con texto ink), más `teal-mid`/`orange-deep`/`sage`/`dust-blue`. Regla de contraste por token comentada en `tailwind.config.ts`. Motion: `Reveal.tsx` (scroll-reveal GSAP, visible por defecto bajo reduced-motion). | El cliente pidió una identidad propia más sofisticada y menos genérica; teal como primario da lectura de "ingeniería/precisión/calma" y deja el naranja como acento de energía puntual. Menos saturación = más formal y cercano (objetivo del brief). | Importar la paleta literal de CI&T o de las plantillas v0 (copiar identidad de terceros — excluido por ADR-007). Mantener el naranja como ancla (el cliente lo degradó explícitamente). | **Aceptada e implementada (2026-07-22).** Home + chrome + 8 páginas públicas + legales + errores rebuildeadas; `/admin` conserva `forge-*` (fuera de scope). Verificado: 39 unit + 35 e2e (axe WCAG 2.2 AA en 8 páginas, 0 violaciones) + typecheck + lint + build. |
+| ADR-012 | **Eliminar el portafolio de proyectos por completo, sin reemplazo; los demos en vivo del catálogo pasan a ser la evidencia pública (RF-027).** El cliente (2026-08-03) planteó el problema con precisión: un portafolio "con pocos proyectos no da suficiente confianza y con muchos no es atractivo ni legible" — es decir, el formato solo funciona en una ventana estrecha de volumen que ElevaForge no tiene hoy ni tendrá pronto. Elegidas por el cliente entre las opciones presentadas: (a) eliminar la sección sin reemplazo, (b) borrar `/proyectos` y `/proyectos/[slug]` con redirect permanente a `/soluciones`. Alcance ejecutado: sección de Home, ambas rutas, clave de contenido `projects` (tipos/defaults/zod/normalización/editor admin), `about.projectsInProgress`, copy `homeContent.projects`, contadores del ticker del Hero, entradas de sitemap, ítems de nav en header y footer, `ProjectCard`, `ProjectsAdminEditor` y `ProjectNarrativeAdminEditor` (este último ya era código muerto). | La señal que quedaba era "1 proyecto entregado · 1 en curso": un número que **resta** confianza en vez de darla, y que además envejece mal sin trabajo editorial constante. Un demo navegable (RF-027) cumple la misma función — evidencia verificable — sin comunicar volumen: escala honestamente de 2 a 10 sin cambiar de formato ni mentir sobre el tamaño de la operación (regla de escala honesta, §29). | Reemplazar la sección por un bloque de garantías, o por una grilla de demos en Home: ambas se le ofrecieron al cliente y eligió no agregar sección nueva. Dejar `/proyectos` viva con contenido nuevo: descartado, arrastraba el mismo problema de escala. Borrar las rutas sin redirect: descartado, dejaría 404 en lo ya indexado. | **Aceptada e implementada (2026-08-03).** Verificado: 64 unit + 38 e2e (axe WCAG 2.2 AA en 7 páginas públicas, 0 violaciones) + typecheck + lint + build, más un pase manual completo con agent-browser sobre el build de producción y el panel admin. Migración de DB pendiente de ejecutar por el cliente (`supabase/01-schema-and-rls.sql`, bloque MIGRACIÓN ADR-012). |
 
 ## Anexo B — `[PENDIENTE]` abiertos
 

@@ -3,11 +3,6 @@ import { validateContentByKey } from './admin-content-validation'
 import { DEFAULT_SITE_CONTENT } from './site-content'
 
 describe('validateContentByKey', () => {
-  it('accepts the default projects content as-is', () => {
-    const result = validateContentByKey('projects', DEFAULT_SITE_CONTENT.projects)
-    expect(result.ok).toBe(true)
-  })
-
   it('accepts the default soluciones content as-is', () => {
     const result = validateContentByKey('soluciones', DEFAULT_SITE_CONTENT.soluciones)
     expect(result.ok).toBe(true)
@@ -18,14 +13,37 @@ describe('validateContentByKey', () => {
     expect(result.ok).toBe(true)
   })
 
-  it('rejects a project with an invalid id (path traversal / injection-shaped)', () => {
-    const bad = [
-      {
-        ...DEFAULT_SITE_CONTENT.projects[0],
-        id: '../../etc/passwd',
-      },
-    ]
-    const result = validateContentByKey('projects', bad)
+  it('no longer accepts the removed `projects` key (ADR-012)', () => {
+    // @ts-expect-error — la clave `projects` se eliminó del modelo de contenido
+    expect(() => validateContentByKey('projects', [])).toThrow()
+  })
+
+  it('accepts a solución with an https demo url', () => {
+    const withDemo = structuredClone(DEFAULT_SITE_CONTENT.soluciones)
+    withDemo[0].soluciones[0].demoUrl = 'https://koa.elevaforge.com/'
+    expect(validateContentByKey('soluciones', withDemo).ok).toBe(true)
+  })
+
+  it('accepts a solución with no demo url at all', () => {
+    const withoutDemo = structuredClone(DEFAULT_SITE_CONTENT.soluciones)
+    delete withoutDemo[0].soluciones[0].demoUrl
+    expect(validateContentByKey('soluciones', withoutDemo).ok).toBe(true)
+  })
+
+  // El demoUrl termina en un href público: un esquema ejecutable acá es XSS
+  // almacenado, no un dato feo. Ver lib/safe-url.ts.
+  it.each([
+    'javascript:alert(1)',
+    'JaVaScRiPt:alert(1)',
+    '\tjavascript:alert(1)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+    '//evil.example.com',
+    'koa.elevaforge.com',
+  ])('rejects a demo url with a non-http(s) scheme: %s', (demoUrl) => {
+    const bad = structuredClone(DEFAULT_SITE_CONTENT.soluciones)
+    bad[0].soluciones[0].demoUrl = demoUrl
+    const result = validateContentByKey('soluciones', bad)
     expect(result.ok).toBe(false)
   })
 

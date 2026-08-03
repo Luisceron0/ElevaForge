@@ -38,6 +38,15 @@ const config: NextConfig = {
     })),
     { source: '/xmlrpc.php', destination: '/404', permanent: false },
     { source: '/.htaccess', destination: '/404', permanent: false },
+
+    // ADR-012: /proyectos y sus casos dejaron de existir (el portafolio con
+    // 1 caso entregado restaba confianza en vez de darla). Redirect
+    // permanente a /soluciones, que es donde ahora vive la evidencia pública
+    // (demos en vivo). Sin esto, cualquier URL ya indexada de /proyectos/*
+    // daría 404. `permanent: true` en Next emite 308, no 301 — igual de
+    // permanente para los buscadores y además preserva el método.
+    { source: '/proyectos', destination: '/soluciones', permanent: true },
+    { source: '/proyectos/:slug*', destination: '/soluciones', permanent: true },
   ],
 
   // Security headers in config (static) instead of middleware (dynamic)
