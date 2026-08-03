@@ -154,8 +154,18 @@ export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
     descripcion:
       'Para negocios que necesitan mostrarse online y dirigir a sus clientes hacia una acción concreta: escribir por WhatsApp, pedir una cotización, reservar o conocer tu catálogo.',
     soluciones: [
-      { nombre: 'Landing Page', descripcion: '', demoUrl: 'https://koa.elevaforge.com/' },
-      { nombre: 'Sitio Web', descripcion: '', demoUrl: 'https://store.koa.elevaforge.com/es' },
+      {
+        nombre: 'Landing Page',
+        descripcion:
+          'Una sola página con un único objetivo de conversión: dejar tus datos, escribir por WhatsApp o sumarse a una lista de espera. Ideal para lanzamientos, campañas o validar una idea rápido, sin la complejidad de un sitio completo.',
+        demoUrl: 'https://koa.elevaforge.com/',
+      },
+      {
+        nombre: 'Sitio Web',
+        descripcion:
+          'Sitio multipágina con catálogo, blog y navegación institucional completa, con soporte multilenguaje si tu negocio lo necesita. Para cuando ya tenés un catálogo de productos o servicios y necesitás presencia digital robusta y administrable.',
+        demoUrl: 'https://store.koa.elevaforge.com/es',
+      },
     ],
     capacidades: [
       'Panel administrativo y gestión de contenido',
