@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { FamiliaDeSolucion, SolucionItem } from '@/lib/site-content'
+import { isSafeExternalUrl } from '@/lib/safe-url'
 import EntityListEditor from './EntityListEditor'
 
 interface Props {
@@ -34,7 +35,13 @@ function toFamilia(draft: FamiliaDraft): FamiliaDeSolucion {
     nombre: draft.nombre.trim(),
     descripcion: draft.descripcion.trim(),
     soluciones: draft.soluciones
-      .map((s) => ({ nombre: s.nombre.trim(), descripcion: s.descripcion.trim() }))
+      .map((s) => ({
+        nombre: s.nombre.trim(),
+        descripcion: s.descripcion.trim(),
+        // Sin demo se manda undefined (no ''), para no persistir claves vacías
+        // en el jsonb.
+        demoUrl: s.demoUrl?.trim() || undefined,
+      }))
       .filter((s) => s.nombre),
     capacidades: draft.capacidadesText.split('\n').map((line) => line.trim()).filter(Boolean),
   }
@@ -49,6 +56,7 @@ const NOMBRE_MAX = 120
 const DESCRIPCION_MAX = 600
 const SOLUCION_NOMBRE_MAX = 120
 const SOLUCION_DESCRIPCION_MAX = 400
+const SOLUCION_DEMO_URL_MAX = 300
 const ITEM_MAX = 120
 
 function validate(draft: FamiliaDraft): string {
@@ -60,6 +68,12 @@ function validate(draft: FamiliaDraft): string {
   if (soluciones.length === 0) return 'Debes agregar al menos una solución'
   const longNombre = soluciones.find((s) => s.nombre.length > SOLUCION_NOMBRE_MAX)
   if (longNombre) return `El nombre de una solución supera ${SOLUCION_NOMBRE_MAX} caracteres: "${longNombre.nombre.slice(0, 40)}..."`
+  // Mismo criterio que el schema del servidor (lib/admin-content-validation.ts):
+  // solo http(s). Se avisa acá para no descubrirlo recién en el 400 de la API.
+  const badDemo = soluciones.find((s) => s.demoUrl?.trim() && !isSafeExternalUrl(s.demoUrl))
+  if (badDemo) return `El demo de "${badDemo.nombre}" debe ser una URL completa que empiece con https:// (recibido: "${badDemo.demoUrl?.slice(0, 40)}")`
+  const longDemo = soluciones.find((s) => (s.demoUrl?.length ?? 0) > SOLUCION_DEMO_URL_MAX)
+  if (longDemo) return `La URL de demo de "${longDemo.nombre}" supera ${SOLUCION_DEMO_URL_MAX} caracteres`
   const capacidades = draft.capacidadesText.split('\n').map((l) => l.trim()).filter(Boolean)
   const longCapacidad = capacidades.find((c) => c.length > ITEM_MAX)
   if (longCapacidad) return `Esta capacidad supera ${ITEM_MAX} caracteres: "${longCapacidad.slice(0, 40)}..."`
@@ -139,6 +153,7 @@ export default function SolucionesAdminEditor({ familias, saving, onSave }: Prop
                     <li key={s.nombre}>
                       {s.nombre}
                       {s.descripcion && <span className="text-white/50"> — {s.descripcion}</span>}
+                      {s.demoUrl && <span className="block text-xs text-forge-orange-main break-all">Demo: {s.demoUrl}</span>}
                     </li>
                   ))}
                 </ul>
@@ -169,15 +184,18 @@ function FamiliaForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
   const longestCapacidad = Math.max(0, ...capacidadesLines.map((c) => c.length))
 
   function addSolucion() {
-    onChange({ ...draft, soluciones: [...draft.soluciones, { nombre: '', descripcion: '' }] })
+    onChange({ ...draft, soluciones: [...draft.soluciones, { nombre: '', descripcion: '', demoUrl: '' }] })
   }
 
   function removeSolucion(index: number) {
     onChange({ ...draft, soluciones: draft.soluciones.filter((_, i) => i !== index) })
   }
 
-  function changeSoluciones(entities: { title: string; description: string }[]) {
-    onChange({ ...draft, soluciones: entities.map((e) => ({ nombre: e.title, descripcion: e.description })) })
+  function changeSoluciones(entities: { title: string; description: string; extra?: string }[]) {
+    onChange({
+      ...draft,
+      soluciones: entities.map((e) => ({ nombre: e.title, descripcion: e.description, demoUrl: e.extra ?? '' })),
+    })
   }
 
   return (
@@ -193,7 +211,7 @@ function FamiliaForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
 
       <EntityListEditor
         title="Soluciones principales"
-        items={draft.soluciones.map((s) => ({ title: s.nombre, description: s.descripcion }))}
+        items={draft.soluciones.map((s) => ({ title: s.nombre, description: s.descripcion, extra: s.demoUrl ?? '' }))}
         onAdd={addSolucion}
         onRemove={removeSolucion}
         onChange={changeSoluciones}
@@ -203,6 +221,11 @@ function FamiliaForm({ draft, onChange, onConfirm, onCancel }: FormProps) {
         descriptionPlaceholder="Describe brevemente en qué consiste esta solución..."
         titleMaxLength={SOLUCION_NOMBRE_MAX}
         descriptionMaxLength={SOLUCION_DESCRIPCION_MAX}
+        extraLabel="Demo público (opcional)"
+        extraPlaceholder="https://demo.elevaforge.com"
+        extraMaxLength={SOLUCION_DEMO_URL_MAX}
+        extraHelp="Si se completa, aparece como botón 'Ver demo' en la home y en la página de la familia. Solo URLs https:// completas."
+        extraType="url"
       />
 
       <div>

@@ -29,10 +29,13 @@ function getBucketName(): string {
   return process.env.SUPABASE_STORAGE_BUCKET || 'site-assets'
 }
 
-function sanitizeFolder(raw: string): 'projects' | 'about' | 'members' {
+// Allowlist de carpetas de destino: el valor viene del form del admin y se
+// concatena al path del objeto en Storage. `projects` salió con ADR-012 (ya
+// no hay editor que suba imágenes ahí); los objetos viejos bajo `projects/`
+// siguen existiendo, solo no se escriben más.
+function sanitizeFolder(raw: string): 'about' | 'members' {
   const folder = raw.trim().toLowerCase()
-  if (folder === 'members') return 'members'
-  return folder === 'about' ? 'about' : 'projects'
+  return folder === 'members' ? 'members' : 'about'
 }
 
 function toSlug(value: string): string {
@@ -84,7 +87,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Formato no permitido. Usa JPG, PNG, WEBP, GIF o AVIF' }, { status: 415 })
   }
 
-  const folder = sanitizeFolder(String(form.get('folder') ?? 'projects'))
+  const folder = sanitizeFolder(String(form.get('folder') ?? 'about'))
   const ext = EXT_BY_MIME[file.type] || 'bin'
   const filenameSlug = toSlug(file.name)
   const path = `${folder}/${Date.now()}-${filenameSlug}-${randomUUID()}.${ext}`

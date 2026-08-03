@@ -1,10 +1,10 @@
 import { z } from 'zod'
 import type { SiteContent } from '@/lib/site-content'
 import { isAssetRef } from '@/lib/asset-refs'
+import { isSafeExternalUrl } from '@/lib/safe-url'
 
 const text = (max: number) => z.string().trim().min(1).max(max)
 const optionalText = (max: number) => z.string().trim().max(max)
-const optionalUrl = z.string().trim().max(300).optional().or(z.literal(''))
 const optionalAssetRef = (message: string) =>
   optionalText(300).refine((value) => !value || isAssetRef(value), message).optional()
 
@@ -59,7 +59,6 @@ const aboutSchema = z.object({
     seo: lighthouseMetricSchema,
     auditedProject: text(180),
   }),
-  projectsInProgress: z.array(text(220)).max(20),
   supportItems: z.array(text(220)).max(20),
   autonomyCards: z.array(autonomyCardSchema).max(4),
   teamSection: homeSectionSchema,
@@ -89,11 +88,6 @@ const aboutSchema = z.object({
       title: text(240),
       body: text(700),
     }),
-    projects: homeSectionSchema.extend({
-      deliveredLabel: text(120),
-      inProgressLabel: text(120),
-      notesTitle: text(140),
-    }),
     soluciones: homeSectionSchema.extend({
       ctaLabel: text(80),
     }),
@@ -117,26 +111,14 @@ const aboutSchema = z.object({
   }),
 })
 
-const projectSchema = z.object({
-  id: z.string().trim().min(1).max(60).regex(/^[a-z0-9-]+$/i, 'ID inválido'),
-  title: optionalText(140),
-  sector: optionalText(100),
-  summary: optionalText(1200),
-  results: z.array(optionalText(220)).max(12),
-  imageUrl: optionalAssetRef('imageUrl debe ser ruta relativa, storage ref o URL http(s)'),
-  externalUrl: optionalUrl,
-  status: z.enum(['entregado', 'en-curso']),
-  lighthouse: z.object({
-    performance: lighthouseMetricSchema.optional(),
-    accessibility: lighthouseMetricSchema.optional(),
-    bestPractices: lighthouseMetricSchema.optional(),
-    seo: lighthouseMetricSchema.optional(),
-  }).optional(),
-})
-
 const solucionItemSchema = z.object({
   nombre: text(120),
   descripcion: optionalText(400),
+  // El demo termina en un href público: solo http/https, validado por el
+  // parser de URL del runtime (no por regex — ver lib/safe-url.ts).
+  demoUrl: optionalText(300)
+    .refine((value) => !value || isSafeExternalUrl(value), 'El demo debe ser una URL http(s) completa')
+    .optional(),
 })
 
 const familiaSchema = z.object({
@@ -149,7 +131,6 @@ const familiaSchema = z.object({
 
 const byKeySchema = {
   about: aboutSchema,
-  projects: z.array(projectSchema).max(30),
   // Exactamente 3 familias fijas (§15 del SRS) — nunca más ni menos.
   soluciones: z.array(familiaSchema).length(3),
 } as const

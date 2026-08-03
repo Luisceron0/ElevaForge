@@ -1,6 +1,7 @@
 import WhatsAppLink from '@/components/ui/WhatsAppLink'
 import Reveal from '@/components/ui/Reveal'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import { safeExternalUrl } from '@/lib/safe-url'
 import type { FamiliaDeSolucion } from '@/lib/site-content'
 
 const ctaByFamiliaId: Record<string, string> = {
@@ -20,6 +21,8 @@ type PanelStyle = {
   heading: string
   body: string
   pill: string
+  /** Estado hover/focus de las píldoras que además son enlace a un demo. */
+  pillLink: string
   capLabel: string
   capText: string
   cta: string
@@ -33,6 +36,7 @@ const panelStyles: Record<string, PanelStyle> = {
     heading: 'text-ef-paper',
     body: 'text-ef-paper/85',
     pill: 'border-ef-paper/35 text-ef-paper',
+    pillLink: 'hover:bg-ef-paper hover:text-ef-blue-deep focus-visible:bg-ef-paper focus-visible:text-ef-blue-deep',
     capLabel: 'text-ef-paper/70',
     capText: 'text-ef-paper/75',
     cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-blue-deep',
@@ -46,6 +50,7 @@ const panelStyles: Record<string, PanelStyle> = {
     heading: 'text-ef-ink',
     body: 'text-ef-ink',
     pill: 'border-ef-ink/35 text-ef-ink',
+    pillLink: 'hover:bg-ef-ink hover:text-ef-orange focus-visible:bg-ef-ink focus-visible:text-ef-orange',
     capLabel: 'text-ef-ink',
     capText: 'text-ef-ink',
     cta: 'border-ef-ink/40 text-ef-ink hover:bg-ef-ink hover:text-ef-orange',
@@ -57,6 +62,7 @@ const panelStyles: Record<string, PanelStyle> = {
     heading: 'text-ef-paper',
     body: 'text-ef-paper/85',
     pill: 'border-ef-paper/35 text-ef-paper',
+    pillLink: 'hover:bg-ef-paper hover:text-ef-ink focus-visible:bg-ef-paper focus-visible:text-ef-ink',
     capLabel: 'text-ef-paper/70',
     capText: 'text-ef-paper/75',
     cta: 'border-ef-paper/40 text-ef-paper hover:bg-ef-paper hover:text-ef-ink',
@@ -121,15 +127,44 @@ export default function SolucionesSection({ familias, eyebrow, title, descriptio
                     Soluciones principales
                   </p>
                   <div className="flex flex-wrap gap-2.5 mb-8">
-                    {familia.soluciones.map((solucion) => (
-                      <span
-                        key={solucion.nombre}
-                        title={solucion.descripcion || undefined}
-                        className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium ${style.pill}`}
-                      >
-                        {solucion.nombre}
-                      </span>
-                    ))}
+                    {familia.soluciones.map((solucion) => {
+                      // Re-sanitizado en render (defensa en profundidad): el
+                      // valor ya pasó por zod al guardar y por safeExternalUrl
+                      // al normalizar, pero la fila de site_content también
+                      // puede escribirse por fuera del panel admin.
+                      const demoUrl = safeExternalUrl(solucion.demoUrl)
+
+                      if (!demoUrl) {
+                        return (
+                          <span
+                            key={solucion.nombre}
+                            title={solucion.descripcion || undefined}
+                            className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium ${style.pill}`}
+                          >
+                            {solucion.nombre}
+                          </span>
+                        )
+                      }
+
+                      return (
+                        <a
+                          key={solucion.nombre}
+                          href={demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-200 ${style.pill} ${style.pillLink}`}
+                        >
+                          {solucion.nombre}
+                          <span className="font-semibold">
+                            Ver demo
+                            <span className="sr-only"> de {solucion.nombre} (se abre en una pestaña nueva)</span>
+                          </span>
+                          <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H18v4.5M17.5 6.5 10 14M15 14.5V18H6V9h3.5" />
+                          </svg>
+                        </a>
+                      )
+                    })}
                   </div>
 
                   {familia.capacidades.length > 0 && (

@@ -160,25 +160,6 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
-              <p className="text-sm font-semibold text-white">Proyectos</p>
-              <input value={draft.homeContent.projects.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
-              <input value={draft.homeContent.projects.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
-              <textarea value={draft.homeContent.projects.description} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, description: e.target.value } } }))} className="w-full min-h-[80px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none" placeholder="Descripción" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input value={draft.homeContent.projects.deliveredLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, deliveredLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Label entregados" />
-                <input value={draft.homeContent.projects.inProgressLabel} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, inProgressLabel: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Label en curso" />
-              </div>
-              <input value={draft.homeContent.projects.notesTitle} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, projects: { ...prev.homeContent.projects, notesTitle: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título bloque de seguimiento" />
-              <label className="block text-xs text-white/60">Notas del bloque de seguimiento (una por línea)</label>
-              <textarea
-                value={draft.projectsInProgress.join('\n')}
-                onChange={(e) => setDraft((prev) => ({ ...prev, projectsInProgress: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
-                className="w-full min-h-[100px] border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white resize-none"
-                placeholder="Actualmente tenemos varios proyectos en desarrollo en distintos sectores."
-              />
-            </div>
-
-            <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
               <p className="text-sm font-semibold text-white">Soluciones</p>
               <input value={draft.homeContent.soluciones.eyebrow} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, eyebrow: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Eyebrow" />
               <input value={draft.homeContent.soluciones.title} onChange={(e) => setDraft((prev) => ({ ...prev, homeContent: { ...prev.homeContent, soluciones: { ...prev.homeContent.soluciones, title: e.target.value } } }))} className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white" placeholder="Título" />
@@ -592,10 +573,6 @@ export default function AboutAdminEditor({ about, saving, onSave }: Props) {
 function normalizeAboutDraft(about: AboutContent): AboutContent {
   const mergedDifferentiationItems = dedupeAboutItems([...about.pillars, ...about.differentiators])
 
-  const projectsInProgress = Array.isArray(about.projectsInProgress)
-    ? about.projectsInProgress
-    : [String(about.projectsInProgress ?? '').trim()].filter(Boolean)
-
   const experienceItems = Array.isArray(about.experience?.items)
     ? about.experience.items
     : []
@@ -616,7 +593,6 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
       'Diseñamos, construimos y optimizamos plataformas web con métricas verificables, acompañamiento cercano y decisiones técnicas enfocadas en resultados de negocio.',
     pillars: mergedDifferentiationItems,
     differentiators: [],
-    projectsInProgress,
     supportItems: padSupportItems(about.supportItems),
     autonomyCards: normalizeAutonomyCardsDraft(about),
     teamSection: {
@@ -651,16 +627,6 @@ function normalizeAboutDraft(about: AboutContent): AboutContent {
         eyebrow: about.homeContent?.statement?.eyebrow || DEFAULT_ABOUT.homeContent.statement.eyebrow,
         title: about.homeContent?.statement?.title || DEFAULT_ABOUT.homeContent.statement.title,
         body: about.homeContent?.statement?.body || DEFAULT_ABOUT.homeContent.statement.body,
-      },
-      projects: {
-        eyebrow: about.homeContent?.projects?.eyebrow || DEFAULT_ABOUT.homeContent.projects.eyebrow,
-        title: about.homeContent?.projects?.title || DEFAULT_ABOUT.homeContent.projects.title,
-        description: about.homeContent?.projects?.description || DEFAULT_ABOUT.homeContent.projects.description,
-        deliveredLabel:
-          about.homeContent?.projects?.deliveredLabel || DEFAULT_ABOUT.homeContent.projects.deliveredLabel,
-        inProgressLabel:
-          about.homeContent?.projects?.inProgressLabel || DEFAULT_ABOUT.homeContent.projects.inProgressLabel,
-        notesTitle: about.homeContent?.projects?.notesTitle || DEFAULT_ABOUT.homeContent.projects.notesTitle,
       },
       soluciones: {
         eyebrow: about.homeContent?.soluciones?.eyebrow || DEFAULT_ABOUT.homeContent.soluciones.eyebrow,

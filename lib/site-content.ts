@@ -6,6 +6,7 @@ import {
   resolveSiteContentAssets,
 } from '@/lib/storage-assets'
 import { normalizeAssetRef } from '@/lib/asset-refs'
+import { safeExternalUrl } from '@/lib/safe-url'
 
 export type FamiliaId = 'presencia-digital' | 'sistemas-de-gestion' | 'software-personalizado'
 
@@ -13,6 +14,12 @@ export interface SolucionItem {
   nombre: string
   /** Opcional: se muestra en la página de detalle de la familia, no en Home. */
   descripcion: string
+  /**
+   * Demo público en vivo de esta solución (opcional). Solo http/https —
+   * ver `lib/safe-url.ts`. Es la evidencia clicable que reemplaza al listado
+   * de proyectos (decisión del cliente 2026-08-03, ADR-012).
+   */
+  demoUrl?: string
 }
 
 export interface FamiliaDeSolucion {
@@ -23,23 +30,6 @@ export interface FamiliaDeSolucion {
   soluciones: SolucionItem[]
   /** Capacidades configurables que complementan las soluciones — nunca productos independientes. */
   capacidades: string[]
-}
-
-export interface ProjectItem {
-  id: string
-  title: string
-  sector: string
-  summary: string
-  results: string[]
-  imageUrl?: string
-  externalUrl?: string
-  status: 'entregado' | 'en-curso'
-  lighthouse?: {
-    performance?: LighthouseMetric
-    accessibility?: LighthouseMetric
-    bestPractices?: LighthouseMetric
-    seo?: LighthouseMetric
-  }
 }
 
 export interface AboutPhase {
@@ -81,11 +71,6 @@ export interface HomeContent {
     eyebrow: string
     title: string
     body: string
-  }
-  projects: HomeSectionCopy & {
-    deliveredLabel: string
-    inProgressLabel: string
-    notesTitle: string
   }
   soluciones: HomeSectionCopy & {
     ctaLabel: string
@@ -148,7 +133,6 @@ export interface AboutContent {
     imageUrl?: string
   }
   lighthouse: LighthouseScores
-  projectsInProgress: string[]
   supportItems: string[]
   autonomyCards: AutonomyCard[]
   /** Copy of the /nosotros page header (the team list itself is `team`). */
@@ -160,7 +144,6 @@ export interface AboutContent {
 
 export interface SiteContent {
   about: AboutContent
-  projects: ProjectItem[]
   soluciones: FamiliaDeSolucion[]
 }
 
@@ -171,8 +154,8 @@ export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
     descripcion:
       'Para negocios que necesitan mostrarse online y dirigir a sus clientes hacia una acción concreta: escribir por WhatsApp, pedir una cotización, reservar o conocer tu catálogo.',
     soluciones: [
-      { nombre: 'Landing Page', descripcion: '' },
-      { nombre: 'Sitio Web', descripcion: '' },
+      { nombre: 'Landing Page', descripcion: '', demoUrl: 'https://koa.elevaforge.com/' },
+      { nombre: 'Sitio Web', descripcion: '', demoUrl: 'https://store.koa.elevaforge.com/es' },
     ],
     capacidades: [
       'Panel administrativo y gestión de contenido',
@@ -224,37 +207,6 @@ export const DEFAULT_SOLUCIONES: FamiliaDeSolucion[] = [
       'Integración con sistemas y capacidades existentes',
       'Escalabilidad y mantenibilidad como requisito de diseño',
     ],
-  },
-]
-
-export const DEFAULT_PROJECTS: ProjectItem[] = [
-  {
-    id: 'avc',
-    title: 'AVC Inmobiliaria y Constructora',
-    sector: 'Finca raíz',
-    summary:
-      'Sitio institucional para el sector inmobiliario en Colombia, diseñado para posicionamiento orgánico y tiempos de carga mínimos.',
-    results: [
-      'Puntuaciones destacadas en Google PageSpeed Insights',
-      'Arquitectura SEO técnica lista para indexación',
-      'Experiencia responsive optimizada para móviles',
-    ],
-    imageUrl: '/ElevaIcon.png',
-    status: 'entregado',
-  },
-  {
-    id: 'pipeline',
-    title: 'Cartera de proyectos en curso',
-    sector: 'Multisector',
-    summary:
-      'Actualmente desarrollamos proyectos en distintos sectores, trasladando aprendizajes técnicos entre implementaciones para acelerar la calidad de nuevas entregas.',
-    results: [
-      'Desarrollo activo en múltiples verticales',
-      'Práctica continua del equipo técnico',
-      'Mejora incremental entre proyectos',
-    ],
-    imageUrl: '/LogoEleva.svg',
-    status: 'en-curso',
   },
 ]
 
@@ -391,11 +343,6 @@ export const DEFAULT_ABOUT: AboutContent = {
     },
     auditedProject: 'AVC Inmobiliaria y Constructora',
   },
-  projectsInProgress: [
-    'Actualmente tenemos varios proyectos en desarrollo en distintos sectores.',
-    'El trabajo continuo mantiene al equipo en práctica constante.',
-    'Los aprendizajes entre proyectos aceleran la mejora técnica.',
-  ],
   supportItems: [
     'El código fuente, repositorio y accesos quedan a nombre del cliente al finalizar la entrega.',
     'Entregamos manual PDF y video explicativo para que tu equipo pueda operar la plataforma sin depender de terceros.',
@@ -474,7 +421,7 @@ export const DEFAULT_ABOUT: AboutContent = {
       highlight: 'de tu empresa',
       statement: 'No vendemos tecnología.',
       primaryCta: 'Iniciar proyecto',
-      secondaryCta: 'Ver proyectos',
+      secondaryCta: 'Ver soluciones',
     },
     stats: {
       eyebrow: 'Prueba antes que promesa',
@@ -484,14 +431,6 @@ export const DEFAULT_ABOUT: AboutContent = {
       eyebrow: 'Cómo pensamos',
       title: 'El software es un medio. La solución es el producto.',
       body: 'No vendemos frameworks, lenguajes ni horas de desarrollo. Empezamos por el problema de tu negocio y diseñamos la solución que lo resuelve, con ingeniería, documentación y autonomía para tu equipo.',
-    },
-    projects: {
-      eyebrow: 'Proyectos y resultados',
-      title: 'Casos reales que respaldan nuestro estándar',
-      description: 'Experiencia aplicada en productos digitales con foco en velocidad, SEO y claridad operativa.',
-      deliveredLabel: 'Proyectos entregados',
-      inProgressLabel: 'Proyectos en curso',
-      notesTitle: 'Seguimiento activo del equipo',
     },
     soluciones: {
       eyebrow: 'Familias de soluciones',
@@ -528,9 +467,10 @@ export const DEFAULT_ABOUT: AboutContent = {
 
 export const DEFAULT_SITE_CONTENT: SiteContent = {
   about: DEFAULT_ABOUT,
-  projects: DEFAULT_PROJECTS,
   soluciones: DEFAULT_SOLUCIONES,
 }
+
+export const CONTENT_KEYS = Object.keys(DEFAULT_SITE_CONTENT) as Array<keyof SiteContent>
 
 type ContentKey = keyof SiteContent
 
@@ -573,6 +513,7 @@ function normalizeSolucionItems(value: unknown, fallback: SolucionItem[]): Soluc
   for (const raw of value) {
     let nombre = ''
     let descripcion = ''
+    let demoUrl: string | undefined
 
     if (typeof raw === 'string') {
       // Legacy shape (pre-migration): plain string label, no description yet.
@@ -580,13 +521,17 @@ function normalizeSolucionItems(value: unknown, fallback: SolucionItem[]): Soluc
     } else if (isRecord(raw)) {
       nombre = String(raw.nombre ?? '').trim()
       descripcion = String(raw.descripcion ?? '').trim()
+      // Un demoUrl con esquema no-http se descarta acá, antes de llegar a
+      // ningún `href` — la validación de zod al guardar no alcanza porque la
+      // fila de la DB puede escribirse por fuera del panel.
+      demoUrl = safeExternalUrl(raw.demoUrl)
     }
 
     if (!nombre) continue
     const key = nombre.toLowerCase()
     if (seen.has(key)) continue
     seen.add(key)
-    items.push({ nombre, descripcion })
+    items.push({ nombre, descripcion, demoUrl })
     if (items.length >= 20) break
   }
 
@@ -661,10 +606,23 @@ function normalizeSection(sectionValue: unknown, sectionFallback: HomeSectionCop
   }
 }
 
+// El CTA secundario del hero apuntaba a /proyectos; esa ruta ya no existe
+// (ADR-012). Si la fila guardada todavía tiene el label viejo, se remapea al
+// nuevo — de lo contrario el botón diría "Ver proyectos" y llevaría a
+// /soluciones, exactamente la divergencia que este cambio elimina. Cualquier
+// otro label lo definió un admin a mano y se respeta.
+const LEGACY_SECONDARY_CTA_LABELS = new Set(['ver proyectos', 'ver casos', 'ver proyectos entregados'])
+
+function normalizeSecondaryCta(value: unknown, fallbackLabel: string): string {
+  const label = String(value ?? '').trim()
+  if (!label) return fallbackLabel
+  if (LEGACY_SECONDARY_CTA_LABELS.has(label.toLowerCase())) return fallbackLabel
+  return label
+}
+
 function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeContent {
   const merged = isRecord(value) ? value : {}
 
-  const projects = isRecord(merged.projects) ? merged.projects : {}
   const hero = isRecord(merged.hero) ? merged.hero : {}
   const stats = isRecord(merged.stats) ? merged.stats : {}
   const statement = isRecord(merged.statement) ? merged.statement : {}
@@ -687,8 +645,7 @@ function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeConten
       highlight: String(hero.highlight ?? fallback.hero.highlight).trim() || fallback.hero.highlight,
       statement: String(hero.statement ?? fallback.hero.statement).trim() || fallback.hero.statement,
       primaryCta: String(hero.primaryCta ?? fallback.hero.primaryCta).trim() || fallback.hero.primaryCta,
-      secondaryCta:
-        String(hero.secondaryCta ?? fallback.hero.secondaryCta).trim() || fallback.hero.secondaryCta,
+      secondaryCta: normalizeSecondaryCta(hero.secondaryCta, fallback.hero.secondaryCta),
     },
     stats: {
       eyebrow: String(stats.eyebrow ?? fallback.stats.eyebrow).trim() || fallback.stats.eyebrow,
@@ -698,18 +655,6 @@ function normalizeHomeContent(value: unknown, fallback: HomeContent): HomeConten
       eyebrow: String(statement.eyebrow ?? fallback.statement.eyebrow).trim() || fallback.statement.eyebrow,
       title: String(statement.title ?? fallback.statement.title).trim() || fallback.statement.title,
       body: String(statement.body ?? fallback.statement.body).trim() || fallback.statement.body,
-    },
-    projects: {
-      ...normalizeSection(projects, fallback.projects),
-      deliveredLabel:
-        String(projects.deliveredLabel ?? fallback.projects.deliveredLabel).trim() ||
-        fallback.projects.deliveredLabel,
-      inProgressLabel:
-        String(projects.inProgressLabel ?? fallback.projects.inProgressLabel).trim() ||
-        fallback.projects.inProgressLabel,
-      notesTitle:
-        String(projects.notesTitle ?? fallback.projects.notesTitle).trim() ||
-        fallback.projects.notesTitle,
     },
     soluciones: {
       ...normalizeSection(soluciones, fallback.soluciones),
@@ -763,31 +708,6 @@ function normalizeScore(value: unknown, fallback: number): number {
   if (!Number.isFinite(parsed)) return fallback
   const bounded = Math.max(0, Math.min(100, Math.round(parsed)))
   return bounded
-}
-
-function normalizeProjectStatus(value: unknown, fallback: ProjectItem['status']): ProjectItem['status'] {
-  const normalized = String(value ?? '').trim().toLowerCase().replace(/[_\s]+/g, '-')
-  if (!normalized) return fallback
-
-  if (
-    normalized === 'en-curso' ||
-    normalized === 'encurso' ||
-    normalized === 'enproceso' ||
-    normalized === 'in-progress' ||
-    normalized === 'inprogress'
-  ) {
-    return 'en-curso'
-  }
-
-  return 'entregado'
-}
-
-function normalizeExternalUrl(value: unknown): string | undefined {
-  const raw = String(value ?? '').trim()
-  if (!raw) return undefined
-  if (/^https?:\/\//i.test(raw)) return raw
-  if (/^www\./i.test(raw)) return `https://${raw}`
-  return raw
 }
 
 function normalizeLighthouseMetric(
@@ -884,73 +804,12 @@ function normalizeAboutContent(value: unknown, fallback: AboutContent): AboutCon
       auditedProject:
         String(lighthouseRecord.auditedProject ?? '').trim() || fallback.lighthouse.auditedProject,
     },
-    projectsInProgress: dedupeTextList(
-      normalizeTextList(merged.projectsInProgress, fallback.projectsInProgress),
-    ),
     supportItems: normalizeSupportItems(merged.supportItems, fallback.supportItems),
     autonomyCards: normalizeAutonomyCards(merged.autonomyCards, fallback.autonomyCards),
     teamSection: normalizeSection(merged.teamSection, fallback.teamSection),
     faq: normalizeFaq(merged.faq, fallback.faq),
     homeContent: normalizeHomeContent(merged.homeContent, fallback.homeContent),
   }
-}
-
-function normalizeProjectsContent(value: unknown, fallback: ProjectItem[]): ProjectItem[] {
-  const merged = safeMerge(value, fallback)
-  if (!Array.isArray(merged)) return fallback
-
-  return merged.map((project, index) => {
-    const fallbackProject = fallback[index] ?? fallback[0]
-    const projectRecord: Record<string, unknown> = isRecord(project) ? project : {}
-    const lighthouseData = isRecord(projectRecord.lighthouse) ? projectRecord.lighthouse : fallbackProject?.lighthouse
-    
-    const normalizedLighthouse = lighthouseData
-      ? {
-          performance: isRecord((lighthouseData as any).performance)
-            ? {
-                score: normalizeScore((lighthouseData as any).performance.score, 0),
-                description: String((lighthouseData as any).performance.description ?? '').slice(0, 300)
-              }
-            : undefined,
-          accessibility: isRecord((lighthouseData as any).accessibility)
-            ? {
-                score: normalizeScore((lighthouseData as any).accessibility.score, 0),
-                description: String((lighthouseData as any).accessibility.description ?? '').slice(0, 300)
-              }
-            : undefined,
-          bestPractices: isRecord((lighthouseData as any).bestPractices)
-            ? {
-                score: normalizeScore((lighthouseData as any).bestPractices.score, 0),
-                description: String((lighthouseData as any).bestPractices.description ?? '').slice(0, 300)
-              }
-            : undefined,
-          seo: isRecord((lighthouseData as any).seo)
-            ? {
-                score: normalizeScore((lighthouseData as any).seo.score, 0),
-                description: String((lighthouseData as any).seo.description ?? '').slice(0, 300)
-              }
-            : undefined,
-        }
-      : undefined
-    return {
-      ...fallbackProject,
-      ...projectRecord,
-      imageUrl: normalizeAssetRef(String((isRecord(project) ? project.imageUrl : '') ?? '')) || undefined,
-      externalUrl: normalizeExternalUrl(isRecord(project) ? project.externalUrl : undefined),
-      results: Array.isArray(isRecord(project) ? project.results : undefined)
-        ? (project.results as unknown[]).map((item) => String(item ?? '').trim()).filter(Boolean)
-        : fallbackProject?.results ?? [],
-      title: String((isRecord(project) ? project.title : '') ?? ''),
-      sector: String((isRecord(project) ? project.sector : '') ?? ''),
-      summary: String((isRecord(project) ? project.summary : '') ?? ''),
-      id: String((isRecord(project) ? project.id : '') ?? fallbackProject?.id ?? `project-${index + 1}`),
-      status: normalizeProjectStatus(
-        isRecord(project) ? project.status : undefined,
-        fallbackProject?.status ?? 'entregado',
-      ),
-      lighthouse: normalizedLighthouse,
-    }
-  })
 }
 
 function normalizeSolucionesContent(value: unknown, fallback: FamiliaDeSolucion[]): FamiliaDeSolucion[] {
@@ -983,7 +842,7 @@ export async function getSiteContent(): Promise<SiteContent> {
     const { data, error } = await supabase
       .from('site_content')
       .select('key,value')
-      .in('key', ['about', 'projects', 'soluciones'])
+      .in('key', CONTENT_KEYS)
 
     if (error || !data) {
       return DEFAULT_SITE_CONTENT
@@ -996,7 +855,6 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     return {
       about: normalizeAboutContent(byKey.get('about'), DEFAULT_SITE_CONTENT.about),
-      projects: normalizeProjectsContent(byKey.get('projects'), DEFAULT_SITE_CONTENT.projects),
       soluciones: normalizeSolucionesContent(byKey.get('soluciones'), DEFAULT_SITE_CONTENT.soluciones),
     }
   } catch {
@@ -1039,10 +897,11 @@ export async function saveSiteContent<K extends ContentKey>(
   const nextPathSet = new Set(nextPaths)
   const removedPaths = previousPaths.filter((path) => !nextPathSet.has(path))
   const currentContent = await getSiteContent()
-  const globalReferencedPaths = new Set<string>([
-    ...collectAssetPathsForContent('about', currentContent.about),
-    ...collectAssetPathsForContent('projects', currentContent.projects),
-  ])
+  const globalReferencedPaths = new Set<string>(
+    CONTENT_KEYS.flatMap((contentKey) =>
+      collectAssetPathsForContent(contentKey, currentContent[contentKey]),
+    ),
+  )
 
   await deleteStorageAssets(removedPaths.filter((path) => !globalReferencedPaths.has(path)))
 }

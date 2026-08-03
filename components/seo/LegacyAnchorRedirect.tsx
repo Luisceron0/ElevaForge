@@ -3,15 +3,16 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-// SEO-11: `#precios` is the one old in-page anchor that no longer resolves
-// to anything on this page (the section was renamed to #soluciones as part
-// of §11/ADR-003, dropping prices). `#proyectos`, `#proceso` and
-// `#autonomia` still point to real sections here and need no mapping.
-// A real 301 isn't possible for a URL fragment — it's stripped by the
-// browser before the request ever reaches the server — so this has to be
-// a client-side redirect once the page has loaded.
+// SEO-11: anclas viejas que ya no resuelven a ninguna sección de esta
+// página. `#precios` desapareció con §11/ADR-003 (sin precios) y
+// `#proyectos` con ADR-012 (la sección de proyectos se eliminó). `#proceso`
+// y `#autonomia` siguen apuntando a secciones reales y no necesitan mapeo.
+// Un 301 real no es posible para un fragmento de URL — el navegador lo
+// remueve antes de que la request llegue al servidor — así que tiene que
+// ser un redirect client-side una vez cargada la página.
 const LEGACY_ANCHOR_MAP: Record<string, string> = {
   '#precios': '/soluciones',
+  '#proyectos': '/soluciones',
 }
 
 export default function LegacyAnchorRedirect() {

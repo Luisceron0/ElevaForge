@@ -79,7 +79,7 @@ alter table public.admin_users enable row level security;
 
 -- ── site_content ───────────────────────────────────────────────────────
 create table if not exists public.site_content (
-  key text primary key check (key in ('about', 'projects', 'soluciones')),
+  key text primary key check (key in ('about', 'soluciones')),
   value jsonb not null,
   updated_at timestamptz not null default now()
 );
@@ -99,6 +99,26 @@ alter table public.site_content enable row level security;
 -- tocan). Para limpiarla del todo, una vez que hayas confirmado en el
 -- panel admin que "Familias de soluciones" ya tiene el contenido correcto:
 --   delete from public.site_content where key = 'packages';
+--
+-- MIGRACIÓN ADR-012 (eliminación de `projects`): la sección de proyectos
+-- entregados/en curso se retiró del sitio, así que la clave `projects` ya no
+-- existe en el modelo de contenido. Igual que arriba, el CHECK de este script
+-- NO se aplica solo a una tabla ya creada (`create table if not exists` no la
+-- altera): hay que correr los 3 pasos, en este orden, una sola vez:
+--
+--   delete from public.site_content where key = 'projects';
+--   alter table public.site_content drop constraint if exists site_content_key_check;
+--   alter table public.site_content
+--     add constraint site_content_key_check check (key in ('about', 'soluciones'));
+--
+-- El DELETE va primero: con la fila `projects` todavía presente, el ADD
+-- CONSTRAINT falla al validar las filas existentes.
+--
+-- Las imágenes que esa fila referenciaba (bucket `site-assets`, prefijo
+-- `projects/`) quedan huérfanas en Storage. NO se borran automáticamente
+-- (`saveSiteContent` solo depura assets de las claves vigentes) — si querés
+-- recuperar ese espacio, borralas a mano desde el panel de Storage después de
+-- confirmar que el sitio quedó bien.
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- Verificación TC-06 — CIERRA el hallazgo F-02 (potencialmente CRÍTICO).

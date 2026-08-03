@@ -5,8 +5,6 @@ import CTAButton from '@/components/ui/CTAButton'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
 
 interface HeroSectionProps {
-  deliveredProjects: number
-  inProgressProjects: number
   subtitle?: string
   badge?: string
   title?: string
@@ -17,8 +15,6 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({
-  deliveredProjects,
-  inProgressProjects,
   subtitle,
   badge,
   title,
@@ -90,16 +86,17 @@ export default function HeroSection({
 
           <div data-hero-ctas className="flex flex-col sm:flex-row gap-4 lg:justify-end">
             <CTAButton href="/contacto" size="lg" label={primaryCtaLabel || 'Solicitar diagnóstico'} />
-            <CTAButton href="/proyectos" size="lg" variant="outline" label={secondaryCtaLabel || 'Ver proyectos'} />
+            <CTAButton href="/soluciones" size="lg" variant="outline" label={secondaryCtaLabel || 'Ver soluciones'} />
           </div>
         </div>
       </div>
 
       {/* bottom credential ticker */}
       <div data-hero-meta className="relative z-10 max-w-[1400px] w-full mx-auto px-4 md:px-8 lg:px-12 mt-10 border-t border-ef-paper/12 pt-6 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm text-ef-paper/55">
+        {/* Conteos de proyectos removidos (ADR-012): con 1 entregado el número
+            restaba confianza en vez de darla. Queda solo la credencial que no
+            depende del volumen de portafolio. */}
         <span className="font-humanst text-ef-paper text-base">3 ingenieros de software</span>
-        <span className="font-humanst text-ef-paper text-base">{deliveredProjects} {deliveredProjects === 1 ? 'proyecto entregado' : 'proyectos entregados'}</span>
-        <span className="font-humanst text-ef-paper text-base">{inProgressProjects} en curso</span>
         <span className="hidden md:inline">Métricas Lighthouse verificadas en producción</span>
       </div>
     </section>

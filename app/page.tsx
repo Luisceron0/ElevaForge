@@ -4,7 +4,6 @@ import LegacyAnchorRedirect from '@/components/seo/LegacyAnchorRedirect'
 import HeroSection from '@/components/sections/HeroSection'
 import StatsBand from '@/components/sections/StatsBand'
 import StatementBand from '@/components/sections/StatementBand'
-import ProjectsSection from '@/components/sections/ProjectsSection'
 import SolucionesSection from '@/components/sections/SolucionesSection'
 import RoadmapSection from '@/components/sections/RoadmapSection'
 import TechMarquee from '@/components/sections/TechMarquee'
@@ -18,9 +17,6 @@ export default async function Home() {
   const content = await getResolvedSiteContent()
   const lighthouse = content.about.lighthouse
   const phases = content.about.phases
-  const deliveredProjects = content.projects.filter((project) => project.status === 'entregado').length
-  const inProgressProjects = content.projects.filter((project) => project.status === 'en-curso').length
-  const projectsInProgress = content.about.projectsInProgress
   const autonomyCards = content.about.autonomyCards
   const homeContent = content.about.homeContent
 
@@ -30,8 +26,6 @@ export default async function Home() {
       <Navbar />
       <main id="main-content" className="min-h-screen w-full overflow-x-hidden">
         <HeroSection
-          deliveredProjects={deliveredProjects}
-          inProgressProjects={inProgressProjects}
           subtitle={content.about.heroSubtitle}
           badge={homeContent.hero.badge}
           title={homeContent.hero.title}
@@ -71,16 +65,6 @@ export default async function Home() {
           frameworksLabel={homeContent.techStack.frameworksLabel}
           languages={homeContent.techStack.languages}
           frameworks={homeContent.techStack.frameworks}
-        />
-        <ProjectsSection
-          projects={content.projects}
-          inProgressNotes={projectsInProgress}
-          eyebrow={homeContent.projects.eyebrow}
-          title={homeContent.projects.title}
-          description={homeContent.projects.description}
-          deliveredLabel={homeContent.projects.deliveredLabel}
-          inProgressLabel={homeContent.projects.inProgressLabel}
-          notesTitle={homeContent.projects.notesTitle}
         />
         <AutonomySection
           eyebrow={homeContent.autonomy.eyebrow}

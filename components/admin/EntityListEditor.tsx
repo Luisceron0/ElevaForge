@@ -9,6 +9,8 @@
 export interface Entity {
   title: string
   description: string
+  /** Campo opcional extra (una línea). Solo se edita si se pasa `extraLabel`. */
+  extra?: string
 }
 
 interface EntityListEditorProps {
@@ -24,6 +26,12 @@ interface EntityListEditorProps {
   descriptionPlaceholder?: string
   titleMaxLength?: number
   descriptionMaxLength?: number
+  /** Activa el tercer campo (input de una línea) por ítem. */
+  extraLabel?: string
+  extraPlaceholder?: string
+  extraMaxLength?: number
+  extraHelp?: string
+  extraType?: 'text' | 'url'
 }
 
 export default function EntityListEditor({
@@ -39,6 +47,11 @@ export default function EntityListEditor({
   descriptionPlaceholder = 'Describe esta fase o pilar...',
   titleMaxLength,
   descriptionMaxLength,
+  extraLabel,
+  extraPlaceholder,
+  extraMaxLength,
+  extraHelp,
+  extraType = 'text',
 }: EntityListEditorProps) {
   return (
     <div className={showTitle ? "space-y-3 pt-2 border-t border-white/10" : "space-y-3"}>
@@ -85,6 +98,24 @@ export default function EntityListEditor({
                 />
                 {descriptionMaxLength && <p className="text-xs text-white/40 mt-1 text-right">{item.description.length}/{descriptionMaxLength}</p>}
               </div>
+              {extraLabel && (
+                <div>
+                  <label className="text-xs font-semibold text-white/70 block mb-2">{extraLabel}</label>
+                  <input
+                    type={extraType}
+                    value={item.extra ?? ''}
+                    maxLength={extraMaxLength}
+                    onChange={(e) => {
+                      const next = [...items]
+                      next[index] = { ...next[index], extra: e.target.value }
+                      onChange(next)
+                    }}
+                    placeholder={extraPlaceholder}
+                    className="w-full border border-white/20 rounded-lg px-3 py-2 text-sm bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-forge-blue-mid/50"
+                  />
+                  {extraHelp && <p className="text-xs text-white/40 mt-1">{extraHelp}</p>}
+                </div>
+              )}
               <div className="flex justify-end">
                 <button
                   type="button"

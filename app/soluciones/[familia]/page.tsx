@@ -7,6 +7,7 @@ import WhatsAppLink from '@/components/ui/WhatsAppLink'
 import { breadcrumbJsonLd, serviceJsonLd } from '@/lib/seo'
 import { getResolvedSiteContent, DEFAULT_SOLUCIONES, type FamiliaId } from '@/lib/site-content'
 import { WHATSAPP_URLS } from '@/lib/whatsapp'
+import { safeExternalUrl } from '@/lib/safe-url'
 
 const ctaByFamiliaId: Record<FamiliaId, string> = {
   'presencia-digital': WHATSAPP_URLS.familiaPresenciaDigital,
@@ -85,19 +86,38 @@ export default async function FamiliaPage({
                 Soluciones principales
               </h2>
               <ul className="space-y-4">
-                {familia.soluciones.map((solucion) => (
-                  <li key={solucion.nombre} className="flex items-start gap-3 text-base text-ef-ink">
-                    <svg aria-hidden="true" className="h-5 w-5 text-ef-blue-deep mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>
-                      {solucion.nombre}
-                      {solucion.descripcion && (
-                        <span className="block text-sm text-ef-ink-soft font-normal mt-0.5">{solucion.descripcion}</span>
-                      )}
-                    </span>
-                  </li>
-                ))}
+                {familia.soluciones.map((solucion) => {
+                  // Defensa en profundidad: ver comentario en lib/safe-url.ts.
+                  const demoUrl = safeExternalUrl(solucion.demoUrl)
+
+                  return (
+                    <li key={solucion.nombre} className="flex items-start gap-3 text-base text-ef-ink">
+                      <svg aria-hidden="true" className="h-5 w-5 text-ef-blue-deep mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>
+                        {solucion.nombre}
+                        {solucion.descripcion && (
+                          <span className="block text-sm text-ef-ink-soft font-normal mt-0.5">{solucion.descripcion}</span>
+                        )}
+                        {demoUrl && (
+                          <a
+                            href={demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-ef-ink/25 px-3 py-1.5 text-sm font-semibold text-ef-ink transition-colors duration-200 hover:bg-ef-ink hover:text-ef-paper"
+                          >
+                            Ver demo en vivo
+                            <span className="sr-only"> de {solucion.nombre} (se abre en una pestaña nueva)</span>
+                            <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H18v4.5M17.5 6.5 10 14M15 14.5V18H6V9h3.5" />
+                            </svg>
+                          </a>
+                        )}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
 
